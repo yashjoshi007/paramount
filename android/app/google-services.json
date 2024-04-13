@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "9347458572",
+    "project_id": "paramount-4b774",
+    "storage_bucket": "paramount-4b774.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9347458572:android:d6c1e8bca44c5c7d1f7029",
+        "android_client_info": {
+          "package_name": "com.example.paramount"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHllZOMZfToChdpgLDEBfluUFna05GQGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
