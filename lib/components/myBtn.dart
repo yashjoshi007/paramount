@@ -65,4 +65,53 @@ class MyButton extends StatelessWidget {
   }
 }
 
+class RectangularICBtn extends StatelessWidget {
+  final String text;
+  final String iconAssetPath; // Add this line for the icon image
+  final Color color;
+  final Color btnText;
+  final VoidCallback onPressed;
+
+  const RectangularICBtn({
+    Key? key,
+    required this.text,
+    required this.iconAssetPath, // Add this line for the icon image
+    required this.color,
+    required this.onPressed,
+    required this.btnText,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        elevation: 10,
+        shadowColor: Colors.black.withOpacity(0.7),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            iconAssetPath,
+            height: 24, // Set the height as per your requirement
+            width: 24, // Set the width as per your requirement
+            color: btnText, // Apply color to the image
+          ),
+          SizedBox(width: 10), // Add some space between the icon and text
+          Text(
+            text,
+            style: GoogleFonts.poppins(color: btnText),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
