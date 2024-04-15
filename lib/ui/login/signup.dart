@@ -240,7 +240,7 @@ class _RegistrationScreenState extends State<signinPage> {
 
     Navigator.push(
       context, MaterialPageRoute(builder: (context){
-      return MyHomePage();
+      return HomePageClient();
     },
     ),
     );

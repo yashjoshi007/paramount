@@ -223,7 +223,7 @@ class _LoginScreenState extends State<LoginPage> {
             email: email, password: password);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MyHomePage()),
+          MaterialPageRoute(builder: (context) => HomePageClient()),
         );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

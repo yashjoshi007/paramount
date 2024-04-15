@@ -4,17 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../localization/language_provider.dart';
 import '../login/login.dart';
 
-class MyHomePage extends StatefulWidget {
+class HomePageClient extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<HomePageClient> {
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-String? _selectedLanguage;
+String? _selectedLanguage = 'en';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 List<String> _barcodeList = [];
 String _scanBarcodeResult = "";
@@ -67,6 +69,7 @@ void removeBarcode(int index) {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -82,7 +85,7 @@ void removeBarcode(int index) {
           actions: [
             Row(
               children: [
-                Text('Logout',style: GoogleFonts.poppins(color: Colors.red),),
+                Text(languageProvider.translate('logout'),style: GoogleFonts.poppins(color: Colors.red),),
                 IconButton(
                   icon: Image.asset('assets/logout.png',color: Colors.red,),
                   onPressed: () async{
@@ -118,34 +121,37 @@ void removeBarcode(int index) {
               ),
               RadioListTile<String>(
                 title: Text('English', style: GoogleFonts.poppins()),
-                value: 'English',
+                value: 'en',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
               RadioListTile<String>(
                 title: Text('Chinese (Simplied)', style: GoogleFonts.poppins(),),
-                value: 'Chinese (Simplied)',
+                value: 'ch_si',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
               RadioListTile<String>(
                 title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-                value: 'Chinese (Traditional)',
+                value: 'ch_td',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
@@ -157,15 +163,26 @@ void removeBarcode(int index) {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Your Product List',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    languageProvider.translate('sample_list'),
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(width: 20,),
+                // RectangularICBtn(
+                //   onPressed: () async {
+                //     scanBarcodeNormal();
+                //   },
+                //   text: languageProvider.translate('email_list'), color: Colors.grey, btnText: Colors.white, iconAssetPath:"assets/plus.png",
+                // ),
+              ],
             ),
             Expanded(
               child: ListView.builder(
@@ -213,10 +230,10 @@ void removeBarcode(int index) {
                 ),
                 SizedBox(height: 25),
                 Text(
-                  'Scan to add Product!',
+                  languageProvider.translate('empty_list'),
                   style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 25,
+                    fontWeight: FontWeight.w300,
+                    fontSize: 16,
                   ),
                 ),
               ],
@@ -232,7 +249,7 @@ void removeBarcode(int index) {
                   // Handle the first button press
                   print('First button pressed');
                 },
-                text: 'Email list to PJC',
+                text: languageProvider.translate('email_list'),
                 color: Colors.grey,
                 btnText: Colors.black, iconAssetPath: "assets/mbox.png",
               ),
@@ -241,7 +258,7 @@ void removeBarcode(int index) {
                 onPressed: () async {
                   scanBarcodeNormal();
                 },
-                text: 'Add Product', color: Colors.red, btnText: Colors.white, iconAssetPath:"assets/qr.png",
+                text: languageProvider.translate('add_p'), color: Colors.red, btnText: Colors.white, iconAssetPath:"assets/qr.png",
               ),
             ],
           ),

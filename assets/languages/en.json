@@ -1,0 +1,19 @@
+{
+  "sample_list":"Your Product List",
+  "email_list": "Email List to PJC",
+  "empty_list":"Select Sample by scanning the barcode or adding them manually \uD83D\uDC47\uD83C\uDFFB",
+  "add_p": "Add Product",
+  "add": "Add Manually",
+  "scan": "Scan Samples",
+  "logout": "Logout",
+  "login": "Login",
+  "Welcome": "Welcome",
+  "forgot_pass": "Forgot password ?",
+  "Login_text": "Login with your username or email",
+  "account": "Create an account",
+  "email": "Email",
+  "pass": "Password",
+  "send": "Send Instructions",
+  "reset": "Reset Password",
+  "reset_txt": "Enter the email associated with the account and we’ll send an email with instructions to reset your password."
+}

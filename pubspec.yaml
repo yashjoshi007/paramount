@@ -46,7 +46,7 @@ dependencies:
   fluttertoast:
   flutter_barcode_scanner: ^2.0.0
   shared_preferences: ^2.0.8
-
+  provider: ^6.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,6 +72,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
+    - assets/languages/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
