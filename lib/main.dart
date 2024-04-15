@@ -9,14 +9,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isAndroid) {
     await Firebase.initializeApp(
-      options: const FirebaseOptions(
+        options: const FirebaseOptions(
         apiKey: "AIzaSyBHllZOMZfToChdpgLDEBfluUFna05GQGI",
         appId: "1:9347458572:android:d6c1e8bca44c5c7d1f7029",
         messagingSenderId: "9347458572",
         projectId: "paramount-4b774",
       ),
     );
-  } else {
+  } 
+  else if (Platform.isIOS) {
     await Firebase.initializeApp();
   }
 

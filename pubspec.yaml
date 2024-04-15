@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.0-99.1.beta <4.0.0'
+  sdk: '>=3.3.2 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -38,11 +38,11 @@ dependencies:
   google_fonts:
   image_picker:
   file_picker: ^6.1.1
-  cloud_firestore: 4.16.1
+  cloud_firestore: ^4.16.1
   firebase_database: ^10.0.14
   firebase_storage: ^11.0.11
-  firebase_core: 2.29.0
-  firebase_auth: 4.19.1
+  firebase_core: ^2.29.0
+  firebase_auth: ^4.19.1
   fluttertoast:
 
 dev_dependencies:

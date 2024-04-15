@@ -58,7 +58,7 @@ class MyButton extends StatelessWidget {
             minWidth: MediaQuery.of(context).size.width,
             onPressed: onPressed ,
             child: Text(text,style:GoogleFonts.poppins()
-                ?.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
+                .copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
           ),
         )
     );
