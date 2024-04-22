@@ -99,11 +99,11 @@ class RectangularICBtn extends StatelessWidget {
         children: [
           Image.asset(
             iconAssetPath,
-            height: 24, // Set the height as per your requirement
-            width: 24, // Set the width as per your requirement
-            color: btnText, // Apply color to the image
+            height: 24,
+            width: 24,
+            color: btnText,
           ),
-          SizedBox(width: 10), // Add some space between the icon and text
+          SizedBox(width: 10),
           Text(
             text,
             style: GoogleFonts.poppins(color: btnText),
