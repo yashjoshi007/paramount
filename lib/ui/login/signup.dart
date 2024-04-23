@@ -31,122 +31,121 @@ class _RegistrationScreenState extends State<signinPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        // backgroundColor: Colors.green,
         body: SafeArea(
           child: Stack(
-            children:[ Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start (left)
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Images at the top
-                    Center(child: Image.asset('assets/logo.png', width: 150, height: 150)),
-                    SizedBox(height: 20,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Welcome!',
-                            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Create a new account with PJC',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Form(
-                        key: _formKey, // Assign the GlobalKey to Form
-                        child: Column(
-                          children: [
-                            MyTextField(
-                              hintText: 'Name',
-                              obscureText: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your name';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                nameController.text = value!;
-                              },
-                              keyboardType: TextInputType.text, controller: nameController,
-                            ),// Name
-                            SizedBox(height: 20),
-                            MyTextField(
-                              hintText: 'Company Name',
-                              obscureText: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your company name';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                compNameController.text = value!;
-                              },
-                              keyboardType: TextInputType.text, controller: compNameController,
-                            ),// Company Name
-                            SizedBox(height: 20),
-                            MyTextField(
-                              hintText: 'Email',
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return ("Please Enter Your Email");
-                                }
-                                // reg expression for email validation
-                                if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-                                    .hasMatch(value)) {
-                                  return ("Please Enter a valid email");
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                emailController.text = value!;
-                              },
-                              keyboardType: TextInputType.emailAddress, controller: emailController, obscureText: false,
-                            ),// Email
-                            SizedBox(height: 20),
-                            MyTextField(
-                              hintText: 'Password',
-                              obscureText: true,
-                                validator:(value) {
-                                  RegExp regex = new RegExp(r'^.{6,}$');
-                                  if (value!.isEmpty) {
-                                    return ("Password is required for login");
-                                  }
-                                  if (!regex.hasMatch(value)) {
-                                    return ("Enter Valid Password(Min. 6 Character)");
-                                  }
-                                  else{
-                                    return("Incorrect Password");
-                                  }
-                                },
-                              onSaved: (value) {
-                                passwordController.text = value!;
-                              },
-                              keyboardType: TextInputType.text, controller: passwordController,
-                            ), // Password
-                            SizedBox(height: 20),
-                          ],
+            children:[ SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start (left)
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Images at the top
+                  Center(child: Image.asset('assets/logo.png', width: 150, height: 150)),
+                  SizedBox(height: 20,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Welcome!',
+                          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Create a new account with PMT-TXT',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Form(
+                      key: _formKey, // Assign the GlobalKey to Form
+                      child: Column(
+                        children: [
+                          MyTextField(
+                            hintText: 'Name',
+                            obscureText: false,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              nameController.text = value!;
+                            },
+                            keyboardType: TextInputType.text, controller: nameController,
+                          ),// Name
+                          SizedBox(height: 20),
+                          MyTextField(
+                            hintText: 'Company Name',
+                            obscureText: false,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your company name';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              compNameController.text = value!;
+                            },
+                            keyboardType: TextInputType.text, controller: compNameController,
+                          ),// Company Name
+                          SizedBox(height: 20),
+                          MyTextField(
+                            hintText: 'Email',
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return ("Please Enter Your Email");
+                              }
+                              // reg expression for email validation
+                              if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                  .hasMatch(value)) {
+                                return ("Please Enter a valid email");
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              emailController.text = value!;
+                            },
+                            keyboardType: TextInputType.emailAddress, controller: emailController, obscureText: false,
+                          ),// Email
+                          SizedBox(height: 20),
+                          MyTextField(
+                            hintText: 'Password',
+                            obscureText: true,
+                              validator:(value) {
+                                RegExp regex = new RegExp(r'^.{6,}$');
+                                if (value!.isEmpty) {
+                                  return ("Password is required for login");
+                                }
+                                if (!regex.hasMatch(value)) {
+                                  return ("Enter Valid Password(Min. 6 Character)");
+                                }
+                                else{
+                                  return("Incorrect Password");
+                                }
+                              },
+                            onSaved: (value) {
+                              passwordController.text = value!;
+                            },
+                            keyboardType: TextInputType.text, controller: passwordController,
+                          ), // Password
+                          SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 30),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 30),
+                ],
               ),
             ),
               if (isLoading)
@@ -156,8 +155,8 @@ class _RegistrationScreenState extends State<signinPage> {
           ]),
         ),
         bottomNavigationBar: Container(
-          height: 100,
-          child:Column(
+          height: 120,
+          child: Column(
             children: [
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -192,16 +191,16 @@ class _RegistrationScreenState extends State<signinPage> {
                   backgroundColor: MaterialStateProperty.all(Colors.red),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(12),
                       side: BorderSide(color: Colors.red), // Border color
                     ),
                   ),
-                  shadowColor: MaterialStateProperty.all(Colors.orange.withOpacity(0.5)),
-                  elevation: MaterialStateProperty.all(5), // Adjust elevation as needed
+                  // shadowColor: MaterialStateProperty.all(Colors.orange.withOpacity(0.5)),
+                  elevation: MaterialStateProperty.all(0), // Adjust elevation as needed
                 ),
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.6, // Set to 40% of the screen width
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  width: MediaQuery.of(context).size.width * 0.75, // Set to 40% of the screen width
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     'Create new account',
                     style: GoogleFonts.poppins(
@@ -213,7 +212,6 @@ class _RegistrationScreenState extends State<signinPage> {
                   ),
                 ),
               ),
-
             ],
           ),
         ),
