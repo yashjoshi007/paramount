@@ -6,7 +6,6 @@ import 'package:paramount/components/confirmation_page.dart';
 import 'package:paramount/components/myBtn.dart';
 
 import '../../components/textField.dart';
-import '../../constants/theme.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);

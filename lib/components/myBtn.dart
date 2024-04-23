@@ -26,8 +26,8 @@ class RectangularButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5), // Increased border radius
         ),
-        elevation: 10, // Increased elevation
-        shadowColor: Colors.black.withOpacity(0.7), // Increased shadow opacity
+        elevation: 0.0, // Increased elevation
+        // shadowColor: Colors.black.withOpacity(0.7), // Increased shadow opacity
       ),
       child: Text(
         text,
@@ -91,8 +91,8 @@ class RectangularICBtn extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
         ),
-        elevation: 10,
-        shadowColor: Colors.black.withOpacity(0.7),
+        elevation: 0,
+        // shadowColor: Colors.black.withOpacity(0.7),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

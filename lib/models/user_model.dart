@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 class UserModel {
   String? uid;
   String? email;
@@ -30,6 +33,17 @@ class UserModel {
       'companyName':companyName,
 
     };
+  }
+
+
+  static Future<List<UserModel>> fetchAll() async{
+    final response = await http.get(Uri.parse('https://script.google.com/macros/s/AKfycbxSnFxRkT5RnDfqxpouu9miiHwAUBTG2L4TIiYOq_ESOiUuHuIUeImp5-5HaacpLnel/exec'));
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((data) => UserModel.fromMap(data)).toList();
+    } else{
+      throw Exception('failed to load API');
+    }
   }
 }
 

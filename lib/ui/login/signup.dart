@@ -130,6 +130,9 @@ class _RegistrationScreenState extends State<signinPage> {
                                   if (!regex.hasMatch(value)) {
                                     return ("Enter Valid Password(Min. 6 Character)");
                                   }
+                                  else{
+                                    return("Incorrect Password");
+                                  }
                                 },
                               onSaved: (value) {
                                 passwordController.text = value!;
@@ -231,6 +234,7 @@ class _RegistrationScreenState extends State<signinPage> {
     userModel.uid = user.uid;
     userModel.firstName = nameController.text;
     userModel.companyName = compNameController.text;
+    userModel.role = "Customer";
 
 
     await firebaseFirestore
@@ -254,6 +258,7 @@ class _RegistrationScreenState extends State<signinPage> {
           .createUserWithEmailAndPassword(email: emailController.text.trim(), password: passwordController.text.trim())
           .then((value) => {postDetailsToFirestore()})
 
+          // ignore: body_might_complete_normally_catch_error
           .catchError((e) {
         print("Error: $e");
         setState(() {

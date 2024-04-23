@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:paramount/ui/login/Welcome.dart';
 import 'package:paramount/ui/login/login.dart';
 import 'package:paramount/ui/screens/homeColleague.dart';
 import 'package:paramount/ui/screens/homeScreen.dart';
@@ -40,12 +40,15 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => LanguageProvider()), // Replace LanguageProvider with your actual provider
       ],
+
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Sample Selector',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
+
+        // home: WelcomeScreen(),
         home: FutureBuilder<User?>(
           future: FirebaseAuth.instance.authStateChanges().first,
           builder: (context, snapshot) {
@@ -57,22 +60,28 @@ class MyApp extends StatelessWidget {
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return SplashScreen(); // Use SplashScreen while waiting
-                  } else if (userSnapshot.hasData && userSnapshot.data != null) {
+                  } 
+                  else if (userSnapshot.hasData && userSnapshot.data != null) {
                     // Get user role from Firestore
                     String? role = userSnapshot.data!['role'];
 
-                    if (role == 'colleague') {
+                    if (role == 'colleague' || role == 'Colleague') {
                       return HomePageColleague(); // Navigate to colleague home screen
-                    } else {
+                    } 
+                    else if(role == 'customer' || role == 'Customer'){
                       return HomePageClient(); // Navigate to user home screen
                     }
-                  } else {
+                    else{
+                      return LoginPage();
+                    }
+                  } 
+                  else {
                     return LoginPage(); // Navigate to login screen if user data is not available
                   }
                 },
               );
             } else {
-              return LoginPage(); // Navigate to login screen if user is not logged in
+              return WelcomeScreen(); // Navigate to login screen if user is not logged in
             }
           },
         ),
@@ -84,7 +93,7 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

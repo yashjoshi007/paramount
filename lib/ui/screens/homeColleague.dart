@@ -17,6 +17,7 @@ class _MyHomePageState extends State<HomePageColleague> {
   String? _selectedLanguage;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<String> _barcodeList = [];
+  // ignore: unused_field
   String _scanBarcodeResult = "";
 
   Future<void> signOutGoogle() async {
