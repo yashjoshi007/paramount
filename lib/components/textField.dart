@@ -37,7 +37,7 @@ class MyTextField extends StatelessWidget {
         obscureText: obscureText,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 15),
           hintText: hintText,
           hintStyle: GoogleFonts.poppins(
             color: Colors.grey, // Customize hint text color
@@ -48,6 +48,47 @@ class MyTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class DelayedEditableTextField extends StatefulWidget {
+  final String initialValue;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onEditingComplete;
+
+  const DelayedEditableTextField({
+    Key? key,
+    required this.initialValue,
+    this.onChanged,
+    this.onEditingComplete,
+  }) : super(key: key);
+
+  @override
+  _DelayedEditableTextFieldState createState() => _DelayedEditableTextFieldState();
+}
+
+class _DelayedEditableTextFieldState extends State<DelayedEditableTextField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      onChanged: widget.onChanged,
+      onEditingComplete: widget.onEditingComplete,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'Quantity',
+        labelStyle: TextStyle(fontWeight: FontWeight.normal),
+        border: OutlineInputBorder(),
       ),
     );
   }
