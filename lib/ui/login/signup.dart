@@ -242,7 +242,7 @@ class _RegistrationScreenState extends State<signinPage> {
 
     Navigator.push(
       context, MaterialPageRoute(builder: (context){
-      return HomePageClient();
+      return HomePageClient(userRole: "Customer",);
     },
     ),
     );

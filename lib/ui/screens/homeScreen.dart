@@ -18,6 +18,8 @@ import 'package:http/http.dart' as http;
 import 'articleDetailScreen.dart';
 
 class HomePageClient extends StatefulWidget {
+  final String userRole;
+  const HomePageClient({Key? key, required this.userRole}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -190,21 +192,31 @@ class _MyHomePageState extends State<HomePageClient> {
       },
     );
     // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
-
+    // String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+    String apiUrl ='https://script.googleusercontent.com/macros/echo?user_content_key=SZa40AY9rfqhExnKvwM1FqY6J56sDuxFEPs8gh-tgApgVhzQkrCkcskwn2KIHwssX95Nu5FKqW7yQhCyGWH3Ld6fsR8nOHQqm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnNBmNAKeBaD9czgVuRt9gcjNHsbpRbZ_ppcvgDaYciClrfGnslr-dhIGR31fB4YNTiF38lb3tftmCGC1EXOccdoTqq0Q0ehCsg&lib=MnzLeKFEzaDXQskcGEV8k10MGXjZ7dl0W&req=$barcode';
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
-        if (article != null) {
+        var articles = data['data'];
+        if (articles[barcode]){
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article),
+              builder: (context) => ArticleDetailsPage(articleDetails: articles[barcode], userRole: widget.userRole,),
             ),
           );
-        } else {
+        }
+        // var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
+        // if (article != null) {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ArticleDetailsPage(articleDetails: article),
+        //     ),
+        //   );
+        // }
+        else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found')));
         }
       } else {
@@ -219,6 +231,7 @@ class _MyHomePageState extends State<HomePageClient> {
     }
   }
 
+
   void removeBarcode(int index) {
     setState(() {
       _barcodeList.removeAt(index);
@@ -232,6 +245,7 @@ class _MyHomePageState extends State<HomePageClient> {
     final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         key: _scaffoldKey,
         appBar: AppBar(
           title: Center(child: Image.asset('assets/logo.png')),
@@ -321,16 +335,31 @@ class _MyHomePageState extends State<HomePageClient> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
-              child: Text(
-                'Sample List',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
+                  child: Text(
+                    languageProvider.translate('samp'),
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
-              ),
+                Spacer(), // This will push the button to the extreme right
+                RectangularICBtn(
+                  onPressed: () {
+                    //showAddArticleDialog(context);
+                  },
+                  text: languageProvider.translate('email_list'),
+                  color: Colors.grey,
+                  btnText: Colors.black,
+                  iconAssetPath: "assets/mbox.png",
+                ),
+              ],
             ),
+
             SizedBox(height: 10), // Add some space between the text and the list
             Expanded(
               child: _barcodeList.length != 0
@@ -338,9 +367,7 @@ class _MyHomePageState extends State<HomePageClient> {
                 child: ListView.builder(
                   itemCount: _barcodeList.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 4.0,
-                      child: GestureDetector(
+                    return GestureDetector(
                         onTap: () {
                           // Handle tap on the list tile
                           _fetchArticleDetails(_barcodeList[index]['barcode']!);
@@ -378,8 +405,7 @@ class _MyHomePageState extends State<HomePageClient> {
                             ),
                           ),
                         ),
-                      ),
-                    );
+                      );
                   },
                 ),
               )
@@ -421,17 +447,17 @@ class _MyHomePageState extends State<HomePageClient> {
                 onPressed: () {
                   showAddArticleDialog(context);
                 },
-                text: languageProvider.translate('email_list'),
+                text: languageProvider.translate('add'),
                 color: Colors.grey,
                 btnText: Colors.black,
-                iconAssetPath: "assets/mbox.png",
+                iconAssetPath: "assets/plus.png",
               ),
               SizedBox(width: 20,),
               RectangularICBtn(
                 onPressed: () async {
                   scanBarcodeWithDelay();
                 },
-                text: languageProvider.translate('add_p'),
+                text: languageProvider.translate('scan'),
                 color: Colors.red,
                 btnText: Colors.white,
                 iconAssetPath: "assets/qr.png",

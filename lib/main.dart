@@ -63,13 +63,13 @@ class MyApp extends StatelessWidget {
                   } 
                   else if (userSnapshot.hasData && userSnapshot.data != null) {
                     // Get user role from Firestore
-                    String? role = userSnapshot.data!['role'];
-
+                    String role = userSnapshot.data!['role'];
+                     print(role);
                     if (role == 'colleague' || role == 'Colleague') {
-                      return HomePageColleague(); // Navigate to colleague home screen
+                      return HomePageColleague(userRole: role,); // Navigate to colleague home screen
                     } 
                     else if(role == 'customer' || role == 'Customer'){
-                      return HomePageClient(); // Navigate to user home screen
+                      return HomePageClient(userRole: role,); // Navigate to user home screen
                     }
                     else{
                       return LoginPage();

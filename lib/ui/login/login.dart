@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +8,7 @@ import 'package:paramount/ui/login/signup.dart';
 import 'package:paramount/ui/screens/homeScreen.dart';
 
 import '../../components/textField.dart';
+import '../screens/homeColleague.dart';
 import 'forgotPwd.dart';
 
 class LoginPage extends StatefulWidget {
@@ -256,13 +258,37 @@ class _LoginScreenState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        await _auth.signInWithEmailAndPassword(
+        final userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePageClient()),
-        );
+
+        print("User authenticated successfully!");
+
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        print("User document retrieved successfully!");
+
+        // Extract role from user document
+        final userRole = userDoc['role'];
+        print("User role: $userRole");
+
+        // Navigate based on user role
+        if (userRole == 'client' || userRole == 'Client') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePageClient(userRole: userRole,)),
+          );
+        } else if (userRole == 'colleague' || userRole == 'Colleague') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePageColleague(userRole: userRole,)),
+          );
+        }
       } on FirebaseAuthException catch (e) {
+        // Handle FirebaseAuthException
+        print("FirebaseAuthException occurred: ${e.code}");
         if (e.code == 'user-not-found') {
           Fluttertoast.showToast(
               msg: "No user found for that email",
@@ -299,4 +325,5 @@ class _LoginScreenState extends State<LoginPage> {
       }
     }
   }
+
 }

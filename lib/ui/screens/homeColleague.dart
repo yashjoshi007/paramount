@@ -5,20 +5,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../components/textField.dart';
+import '../../localization/language_provider.dart';
 import '../login/login.dart';
 import 'articleDetailScreen.dart';
 import 'package:http/http.dart' as http;
 
 class HomePageColleague extends StatefulWidget {
+  final String userRole;
+  const HomePageColleague({Key? key, required this.userRole}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<HomePageColleague> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String? _selectedLanguage;
+  String? _selectedLanguage = 'en';
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -34,7 +39,7 @@ class _MyHomePageState extends State<HomePageColleague> {
   @override
   void initState() {
     super.initState();
-    _clearUserDetails(); // Clear user details on app start
+   // _clearUserDetails(); // Clear user details on app start
     _loadBarcodeList();
   }
 
@@ -211,9 +216,12 @@ class _MyHomePageState extends State<HomePageColleague> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article),
+              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
             ),
-          );
+          ).then((_) {
+            // Close the dialog when navigating back from ArticleDetailsPage
+            Navigator.pop(context);
+          });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found')));
         }
@@ -229,10 +237,63 @@ class _MyHomePageState extends State<HomePageColleague> {
     }
   }
 
+  // void sendEmail(String recipient, String subject, String body) async {
+  //   // Check if the device can send emails
+  //   if (await canLaunch('mailto:$recipient')) {
+  //     // Launch the email client
+  //     await launch('mailto:$recipient?subject=$subject&body=$body');
+  //   } else {
+  //     // If the device cannot send emails, show an error message
+  //     throw 'Could not launch email';
+  //   }
+  // }
+
+  void sendEmail(String recipient, String subject, String body) async {
+    final emailJsApiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+
+    // Replace these values with your EmailJS service ID and template ID
+    final serviceId = 'service_s0bpub7';
+    final templateId = 'template_22ev90g';
+
+    // Construct the request body
+    final requestBody = {
+      'service_id': serviceId,
+      'template_id': templateId,
+      'user_id': 'bOirGg6PsenrVhRpr',
+      'template_params': {
+        'to_email': recipient,
+        'subject': subject,
+        'body': body,
+      },
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(emailJsApiUrl),
+        headers: {
+          'origin': 'http://localhost',
+          'Content-Type': 'application/json'},
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print('Email sent successfully!');
+      } else {
+        print('Failed to send email. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending email: $e');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         key: _scaffoldKey,
         appBar: AppBar(
           title: Center(child: Image.asset('assets/logo.png')),
@@ -258,7 +319,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                 //   },
                 // ),
                 Text(
-                  'Logout',
+                  languageProvider.translate('logout'),
                   style: GoogleFonts.poppins(color: Colors.red),
                 ),
                 IconButton(
@@ -299,34 +360,37 @@ class _MyHomePageState extends State<HomePageColleague> {
               ),
               RadioListTile<String>(
                 title: Text('English', style: GoogleFonts.poppins()),
-                value: 'English',
+                value: 'en',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
               RadioListTile<String>(
                 title: Text('Chinese (Simplied)', style: GoogleFonts.poppins()),
-                value: 'Chinese (Simplied)',
+                value: 'ch_si',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
               RadioListTile<String>(
                 title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-                value: 'Chinese (Traditional)',
+                value: 'ch_td',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value;
                   });
+                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
                   Navigator.pop(context); // Close the drawer
                 },
               ),
@@ -351,7 +415,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        'Enter Details',
+                        languageProvider.translate('details'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -366,7 +430,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                             child: TextField(
                               controller: _nameController,
                               decoration: InputDecoration(
-                                labelText: 'Name',
+                                labelText: languageProvider.translate('name'),
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -378,7 +442,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                             child: TextField(
                               controller: _companyNameController,
                               decoration: InputDecoration(
-                                labelText: 'Company Name',
+                                labelText: languageProvider.translate('comp_name'),
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -394,21 +458,23 @@ class _MyHomePageState extends State<HomePageColleague> {
                             child: TextField(
                               controller: _emailController,
                               decoration: InputDecoration(
-                                labelText: 'Email Address',
+                                labelText: languageProvider.translate('email'),
                                 border: OutlineInputBorder(),
                               ),
                             ),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            String name = _nameController.text;
-                            String companyName = _companyNameController.text;
-                            String email = _emailController.text;
-                            await saveUserDetails(name, companyName, email);
-                            setState(() {});
-                          },
-                          child: Text('Add'),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4.0),
+                          child: RectangularICBtn(
+                            onPressed: () async {
+                              String name = _nameController.text;
+                              String companyName = _companyNameController.text;
+                              String email = _emailController.text;
+                              await saveUserDetails(name, companyName, email);
+                              setState(() {});
+                            }, text: 'Add', iconAssetPath: "assets/mbox.png", color: Colors.grey, btnText: Colors.black87,
+                          ),
                         ),
                       ],
                     ),
@@ -424,7 +490,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Text(
-                                  'Customer Details',
+                                  languageProvider.translate('customer_det'),
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -435,21 +501,21 @@ class _MyHomePageState extends State<HomePageColleague> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(16,10,0,5),
                                 child: Text(
-                                  'Name: ${userDetails['name']}',
+                                  '${languageProvider.translate('name')}: ${userDetails['name']}',
                                   style: GoogleFonts.poppins(),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(16,10,0,10),
                                 child: Text(
-                                  'Company Name: ${userDetails['companyName']}',
+                                  '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
                                   style: GoogleFonts.poppins(),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(16,10,0,10),
                                 child: Text(
-                                  'Email: ${userDetails['email']}',
+                                  '${languageProvider.translate('email')}: ${userDetails['email']}',
                                   style: GoogleFonts.poppins(),
                                 ),
                               ),
@@ -475,7 +541,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        'Sample List',
+                        languageProvider.translate('samp'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -487,9 +553,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                     child: ListView.builder(
                       itemCount: _barcodeList.length,
                       itemBuilder: (context, index) {
-                        return Card(
-                          elevation: 4.0,
-                          child: GestureDetector(
+                        return GestureDetector(
                             onTap: () {
                               // Handle tap on the list tile
                               _fetchArticleDetails(_barcodeList[index]['barcode']);
@@ -499,7 +563,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               child: ListTile(
                                 leading: Icon(Icons.qr_code),
                                 title: Text(
-                                  'Barcode: ${_barcodeList[index]['barcode']}',
+                                  '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
                                   style: GoogleFonts.poppins(),
                                 ),
                                 subtitle: DelayedEditableTextField(
@@ -526,8 +590,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 ),
                               ),
                             ),
-                          ),
-                        );
+                          );
                       },
                     ),
 
@@ -546,7 +609,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                   showAddArticleDialog(context);
                   print('First button pressed');
                 },
-                text: 'Add Manually',
+                text: languageProvider.translate('add'),
                 color: Colors.grey,
                 btnText: Colors.black,
                 iconAssetPath: "assets/plus.png",
@@ -554,9 +617,10 @@ class _MyHomePageState extends State<HomePageColleague> {
               SizedBox(width: 20),
               RectangularICBtn(
                 onPressed: () async {
-                  scanBarcodeNormal();
+                 scanBarcodeNormal();
+                 // sendEmail('yashjoshi785@gmail.com',"Hii","Body");
                 },
-                text: 'Scan Samples',
+                text: languageProvider.translate('scan'),
                 color: Colors.red,
                 btnText: Colors.white,
                 iconAssetPath: "assets/qr.png",
