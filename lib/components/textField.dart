@@ -87,7 +87,7 @@ class _DelayedEditableTextFieldState extends State<DelayedEditableTextField> {
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'Quantity',
-        labelStyle: TextStyle(fontWeight: FontWeight.normal),
+        labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.normal),
         border: OutlineInputBorder(),
       ),
     );

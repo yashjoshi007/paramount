@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -38,6 +39,16 @@ class _MyHomePageState extends State<HomePageClient> {
     _loadBarcodeList();
   }
 
+  Future<void> signOutGoogle() async {
+    await _clearBarcodeList();
+    await _auth.signOut();
+  }
+
+  _clearBarcodeList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('barcodeList');
+  }
+
   void showAddArticleDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -52,68 +63,99 @@ class _MyHomePageState extends State<HomePageClient> {
     String quantity = "";
 
     return AlertDialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6), // Adjust border radius as needed
+      ),
       title: Text(
         "Add Article Manually",
-        style: GoogleFonts.poppins(),
+        style: GoogleFonts.poppins(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            onChanged: (value) {
-              articleNo = value;
-            },
-            decoration: InputDecoration(
-              labelText: 'Article No.',
-              labelStyle: GoogleFonts.poppins(),
-              border: OutlineInputBorder(),
+      content: Container(
+        width: MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              onChanged: (value) {
+                articleNo = value;
+              },
+              decoration: InputDecoration(
+                labelText: 'Article No.',
+                labelStyle: GoogleFonts.poppins(),
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            onChanged: (value) {
-              quantity = value;
-            },
-            decoration: InputDecoration(
-              labelText: 'Quantity',
-              labelStyle: GoogleFonts.poppins(),
-              border: OutlineInputBorder(),
+            SizedBox(height: 16),
+            TextField(
+              onChanged: (value) {
+                quantity = value;
+              },
+              decoration: InputDecoration(
+                labelText: 'Quantity',
+                labelStyle: GoogleFonts.poppins(),
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      actionsPadding: EdgeInsets.symmetric(horizontal: 20), // Add padding to actions
       actions: [
-        Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () {
-                  _addArticleManually(articleNo, int.parse(quantity)); // Add article manually
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Add',
-                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+                  color: Color(0xFFF4F1F1), // Set the background color
+                ),
+                child: TextButton(
+                  onPressed: () {
+                    _addArticleManually(articleNo, int.parse(quantity)); // Add article manually
+                    Navigator.of(context).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5), // Adjust button padding
+                  ),
+                  child: Text(
+                    'Add',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red, // Set text color
+                    ),
+                  ),
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Cancel',
-                  style: GoogleFonts.poppins(fontSize: 16),
+            ),
+            SizedBox(width: 10), // Add spacing between buttons
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust button padding
+              ),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.grey,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
   }
-
 
 
 
@@ -142,24 +184,12 @@ class _MyHomePageState extends State<HomePageClient> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
+
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
       _barcodeList.add({'barcode': articleNo, 'quantity': quantity.toString()});
       _saveBarcodeList();
     });
-  }
-
-  void _updateQuantity(int index, String newQuantity) {
-    setState(() {
-      _barcodeList[index]['quantity'] = newQuantity;
-      _saveBarcodeList();
-    });
-  }
-
-  Future<void> signOutAndClearPrefs() async {
-    await _auth.signOut();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
   }
 
   Future<void> scanBarcodeNormal() async {
@@ -172,62 +202,99 @@ class _MyHomePageState extends State<HomePageClient> {
       barcodeScanRes = 'Failed to get platform version.';
     }
 
-    if (!mounted) return;
-    setState(() {
-      _scanBarcodeResult = barcodeScanRes;
-      _barcodeList.add({'barcode': barcodeScanRes, 'quantity': '1'});
-      _saveBarcodeList();
-    });
+    if (barcodeScanRes.length == 8 || barcodeScanRes.length == 9) {
+      if (!mounted) return;
+      setState(() {
+        _scanBarcodeResult = barcodeScanRes;
+        _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
+        _saveBarcodeList();
+      });
+    } else if(barcodeScanRes == "-1") {
+      // Show snackbar if barcode length is not 8 or 9
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Try again to scan a barcode.'),
+        ),
+      );
+    }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Scan Barcode Properly.'),
+        ),
+      );
+    }
   }
 
   void _fetchArticleDetails(String barcode) async {
+    bool snackbarShown = false; // Flag to track whether a Snackbar is shown
 
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent dialog from closing when tapping outside
       builder: (BuildContext context) {
-        return Center(
-          child: CircularProgressIndicator(),
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: CupertinoActivityIndicator(
+                  color: Colors.red,
+                  radius: 20,
+                  animating: true,
+                ),
+              ),
+              SizedBox(height: 50), // Add some space between CircularProgressIndicator and the text
+              Text(
+                'Loading Article Details...', // Add your desired text here
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
+
     // Replace this URL with your actual Google Sheets API endpoint
-    // String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
-    String apiUrl ='https://script.googleusercontent.com/macros/echo?user_content_key=SZa40AY9rfqhExnKvwM1FqY6J56sDuxFEPs8gh-tgApgVhzQkrCkcskwn2KIHwssX95Nu5FKqW7yQhCyGWH3Ld6fsR8nOHQqm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnNBmNAKeBaD9czgVuRt9gcjNHsbpRbZ_ppcvgDaYciClrfGnslr-dhIGR31fB4YNTiF38lb3tftmCGC1EXOccdoTqq0Q0ehCsg&lib=MnzLeKFEzaDXQskcGEV8k10MGXjZ7dl0W&req=$barcode';
+    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var articles = data['data'];
-        if (articles[barcode]){
+        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
+        if (article != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: articles[barcode], userRole: widget.userRole,),
+              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
             ),
-          );
-        }
-        // var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
-        // if (article != null) {
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ArticleDetailsPage(articleDetails: article),
-        //     ),
-        //   );
-        // }
-        else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found')));
+          ).then((_) {
+            if (!snackbarShown) {
+              Navigator.pop(context);
+            }
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found', style: GoogleFonts.poppins(),)));
+          snackbarShown = true;
+          Navigator.pop(context);
         }
       } else {
         // If the server returns an error response, show an error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
+        snackbarShown = true;
+        Navigator.pop(context);
       }
     } catch (error) {
-      // Handle errors
       print('Error fetching article details: $error');
-      // Show an error message
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
+      snackbarShown = true;
+      Navigator.pop(context);
     }
   }
 
@@ -261,9 +328,12 @@ class _MyHomePageState extends State<HomePageClient> {
               children: [
                 Text(languageProvider.translate('logout'), style: GoogleFonts.poppins(color: Colors.red),),
                 IconButton(
-                  icon: Image.asset('assets/logout.png', color: Colors.red,),
+                  icon: Image.asset(
+                    'assets/logout.png',
+                    color: Colors.red,
+                  ),
                   onPressed: () async {
-                    await signOutAndClearPrefs();
+                    signOutGoogle();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -348,14 +418,17 @@ class _MyHomePageState extends State<HomePageClient> {
                   ),
                 ),
                 Spacer(), // This will push the button to the extreme right
-                RectangularICBtn(
-                  onPressed: () {
-                    //showAddArticleDialog(context);
-                  },
-                  text: languageProvider.translate('email_list'),
-                  color: Colors.grey,
-                  btnText: Colors.black,
-                  iconAssetPath: "assets/mbox.png",
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: RectangularICBtn(
+                    onPressed: () {
+                      //showAddArticleDialog(context);
+                    },
+                    text: languageProvider.translate('email_list'),
+                    color: Color(0xFFF4F1F1),
+                    btnText: Colors.black,
+                    iconAssetPath: "assets/mbox.png",
+                  ),
                 ),
               ],
             ),
@@ -368,44 +441,65 @@ class _MyHomePageState extends State<HomePageClient> {
                   itemCount: _barcodeList.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                        onTap: () {
-                          // Handle tap on the list tile
-                          _fetchArticleDetails(_barcodeList[index]['barcode']!);
-                        },
-                        child: Card(
-                          elevation: 4.0,
-                          child: ListTile(
-                            leading: Icon(Icons.qr_code),
-                            title: Text(
-                              'Barcode: ${_barcodeList[index]['barcode']}',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            subtitle: DelayedEditableTextField(
-                              initialValue: _barcodeList[index]['quantity'].toString(),
-                              onChanged: (value) {
-                                _updateQuantity(index, value);
-
-                              },
-                              onEditingComplete: () {
-                                // Save the updated list after a delay when editing is complete
-                                FocusScope.of(context).unfocus();
-                                Future.delayed(Duration(milliseconds: 500), () {
-                                  setState(() {
-                                    _saveBarcodeList(); // Save the updated list
-                                  });
-                                });
-                              },
-                            ),
-                            trailing: IconButton(
-                              icon: Image.asset(
-                                'assets/delete.png',
-                                color: Colors.red,
+                      onTap: () {
+                        // Handle tap on the list tile
+                        _fetchArticleDetails(_barcodeList[index]['barcode']!);
+                      },
+                      child: Card(
+                        elevation: 0.0,
+                        color: Color(0xFFF4F1F1),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              // Display barcode and leading icon
+                              Expanded(
+                                flex: 2,
+                                child: ListTile(
+                                  leading: Icon(Icons.qr_code),
+                                  title: Text(
+                                    '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                ),
                               ),
-                              onPressed: () => removeBarcode(index),
-                            ),
+                              // Display quantity input field
+                              Expanded(
+                                child: SizedBox(
+                                  width: 30, // Set a fixed width for the input field
+                                  child: DelayedEditableTextField(
+                                    initialValue: _barcodeList[index]['quantity'].toString(),
+                                    onChanged: (value) {
+                                      // Update the quantity when the user inputs a value
+                                      _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
+                                    },
+                                    onEditingComplete: () {
+                                      // Save the updated list after a delay when editing is complete
+                                      Future.delayed(Duration(milliseconds: 500), () {
+                                        setState(() {
+                                          _saveBarcodeList(); // Save the updated list
+                                        });
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                              // Display delete icon
+                              Expanded(
+                                flex: 0, // Prevent delete icon from expanding
+                                child: IconButton(
+                                  icon: Image.asset(
+                                    'assets/delete.png',
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => removeBarcode(index),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
+                      ),
+                    );
                   },
                 ),
               )
@@ -440,6 +534,7 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
 
         bottomNavigationBar: BottomAppBar(
+          color:Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -448,7 +543,7 @@ class _MyHomePageState extends State<HomePageClient> {
                   showAddArticleDialog(context);
                 },
                 text: languageProvider.translate('add'),
-                color: Colors.grey,
+                color: Color(0xFFF4F1F1),
                 btnText: Colors.black,
                 iconAssetPath: "assets/plus.png",
               ),

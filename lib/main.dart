@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:paramount/ui/login/Welcome.dart';
 import 'package:paramount/ui/login/login.dart';
@@ -102,7 +103,11 @@ class SplashScreen extends StatelessWidget {
               size: 100,
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(),
+            CupertinoActivityIndicator(
+          color: Colors.red,
+          radius: 20,
+          animating: true,
+        ),
           ],
         ),
       ),

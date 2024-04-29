@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,6 +24,7 @@ class _LoginScreenState extends State<LoginPage> {
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
   final _auth = FirebaseAuth.instance;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +190,15 @@ class _LoginScreenState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 30),
+                _loading
+                    ? Center(
+                  child:  CupertinoActivityIndicator(
+                    color: Colors.red,
+                    radius: 20,
+                    animating: true,
+                  ),
+                )
+                    : SizedBox()
               ],
             ),
           ),
@@ -258,6 +269,10 @@ class _LoginScreenState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
+        setState(() {
+          _loading = true;
+        });
+
         final userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
 
@@ -274,8 +289,12 @@ class _LoginScreenState extends State<LoginPage> {
         final userRole = userDoc['role'];
         print("User role: $userRole");
 
+
+        setState(() {
+          _loading = false;
+        });
         // Navigate based on user role
-        if (userRole == 'client' || userRole == 'Client') {
+        if (userRole == 'customer' || userRole == 'Customer') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePageClient(userRole: userRole,)),

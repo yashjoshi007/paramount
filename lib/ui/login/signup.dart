@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -150,11 +151,16 @@ class _RegistrationScreenState extends State<signinPage> {
             ),
               if (isLoading)
                 Center(
-                  child: CircularProgressIndicator(),
+                  child: CupertinoActivityIndicator(
+                    color: Colors.red,
+                    radius: 20,
+                    animating: true,
+                  ),
                 ),
           ]),
         ),
         bottomNavigationBar: Container(
+          color: Colors.white,
           height: 120,
           child: Column(
             children: [

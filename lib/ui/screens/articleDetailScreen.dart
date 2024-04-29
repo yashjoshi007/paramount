@@ -13,6 +13,7 @@ class ArticleDetailsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('Article Details',style:GoogleFonts.poppins()),
       ),
       body: Padding(
