@@ -490,6 +490,7 @@ class _MyHomePageState extends State<HomePageClient> {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
                     onPressed: () {
+                      doPostRequest(context);
                       //showAddArticleDialog(context);
                     },
                     text: languageProvider.translate('email_list'),
@@ -615,7 +616,7 @@ class _MyHomePageState extends State<HomePageClient> {
                     onPressed: () {
                       showAddArticleDialog(context);
                     },
-                    text: languageProvider.translate('add'),
+                    text: languageProvider.translate('Add Manually'),
                     color: Color(0xFFF4F1F1),
                     btnText: Colors.black,
                     iconAssetPath: "assets/plus.png",
@@ -626,7 +627,7 @@ class _MyHomePageState extends State<HomePageClient> {
                     onPressed: () async {
                       scanBarcodeWithDelay();
                     },
-                    text: languageProvider.translate('scan'),
+                    text: languageProvider.translate('Scan Samples'),
                     color: Colors.red,
                     btnText: Colors.white,
                     iconAssetPath: "assets/qr.png",

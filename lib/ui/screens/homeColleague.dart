@@ -819,28 +819,29 @@ class _MyHomePageState extends State<HomePageColleague> {
                     onPressed: () {
                       showAddArticleDialog(context);
                     },
-                    text: languageProvider.translate('add'),
+                    text: languageProvider.translate('Add Manually'),
                     color: Color(0xFFF4F1F1),
                     btnText: Colors.black,
                     iconAssetPath: "assets/plus.png",
-                    constraints: constraints, // Pass the constraints for responsiveness
+                    constraints: constraints,
                   ),
                   SizedBox(width: 20,),
                   RectangularIBtn(
                     onPressed: () async {
                       scanBarcodeNormal();
                     },
-                    text: languageProvider.translate('scan'),
+                    text: languageProvider.translate('Scan Samples'),
                     color: Colors.red,
                     btnText: Colors.white,
                     iconAssetPath: "assets/qr.png",
-                    constraints: constraints, // Pass the constraints for responsiveness
+                    constraints: constraints,
                   ),
                 ],
               );
             },
           ),
         ),
+
       ),
     );
   }
