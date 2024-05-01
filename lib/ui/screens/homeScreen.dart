@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:paramount/components/myBtn.dart';
 import 'package:paramount/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../components/confirmation_page.dart';
 import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
 import '../login/login.dart';
@@ -182,6 +184,72 @@ class _MyHomePageState extends State<HomePageClient> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> encodedList = _barcodeList.map((item) => jsonEncode(item)).toList();
     await prefs.setStringList('barcodeList', encodedList);
+  }
+
+  Future<void> doPostRequest(BuildContext context) async {
+    // URL of your Google Apps Script web app
+    String scriptUrl = 'https://script.google.com/macros/s/AKfycbyd6aJmcHBHy10jRtZmHgWra5cMvJjiGhuzpL_asQQEgli1EB0AXt4eeuD26JtOypp6/exec';
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('users')
+            .doc(user.uid)
+            .get();
+        Map<String, dynamic> userData = userSnapshot.data() as Map<
+            String,
+            dynamic>;
+        String email = userData['email'];
+        String name = userData['name'];
+        String companyName = userData['companyName'];
+        String role = userData['role'];
+
+
+        // Load barcode list
+        _loadBarcodeList(); // Assuming this function updates _barcodeList
+
+        // Constructing requestData
+        Map<String, dynamic> requestData = {
+          'Customer_Email': email,
+          'Customer_Name': name,
+          'Company_Name': companyName,
+          'total_Samples': _barcodeList.length,
+        };
+
+        // Adding barcode data dynamically
+        for (int i = 0; i < _barcodeList.length; i++) {
+          requestData['Article ${i + 1}'] = _barcodeList[i]['barcode'];
+          requestData['Qty ${i + 1}'] = _barcodeList[i]['quantity'];
+        }
+
+        // Sending POST request to the Google Apps Script web app
+        var response = await http.post(
+          Uri.parse(scriptUrl),
+          body: json.encode(requestData),
+        );
+
+        // Checking the response
+        if (response.statusCode == 200 || response.statusCode == 302) {
+          print('Request successful: ${response.body}');
+          // Navigate to another page
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ConfirmPage(
+                    description: 'Mail has been successfully sent to PJC and your account.',),
+            ),
+          );
+
+          await _clearBarcodeList();
+        } else {
+          print('Request failed with status: ${response.statusCode}');
+        }
+      }
+    }catch (e) {
+      print('Error occurred: $e');
+    }
   }
 
 
@@ -437,70 +505,73 @@ class _MyHomePageState extends State<HomePageClient> {
             Expanded(
               child: _barcodeList.length != 0
                   ? Expanded(
-                child: ListView.builder(
-                  itemCount: _barcodeList.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        // Handle tap on the list tile
-                        _fetchArticleDetails(_barcodeList[index]['barcode']!);
-                      },
-                      child: Card(
-                        elevation: 0.0,
-                        color: Color(0xFFF4F1F1),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              // Display barcode and leading icon
-                              Expanded(
-                                flex: 2,
-                                child: ListTile(
-                                  leading: Icon(Icons.qr_code),
-                                  title: Text(
-                                    '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                    style: GoogleFonts.poppins(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
+                  child: ListView.builder(
+                    itemCount: _barcodeList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          // Handle tap on the list tile
+                          _fetchArticleDetails(_barcodeList[index]['barcode']!);
+                        },
+                        child: Card(
+                          elevation: 0.0,
+                          color: Color(0xFFF4F1F1),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                // Display barcode and leading icon
+                                Expanded(
+                                  flex: 2,
+                                  child: ListTile(
+                                    leading: Icon(Icons.qr_code),
+                                    title: Text(
+                                      '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                      style: GoogleFonts.poppins(),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Display quantity input field
-                              Expanded(
-                                child: SizedBox(
-                                  width: 30, // Set a fixed width for the input field
-                                  child: DelayedEditableTextField(
-                                    initialValue: _barcodeList[index]['quantity'].toString(),
-                                    onChanged: (value) {
-                                      // Update the quantity when the user inputs a value
-                                      _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
-                                    },
-                                    onEditingComplete: () {
-                                      // Save the updated list after a delay when editing is complete
-                                      Future.delayed(Duration(milliseconds: 500), () {
-                                        setState(() {
-                                          _saveBarcodeList(); // Save the updated list
+                                // Display quantity input field
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 30, // Set a fixed width for the input field
+                                    child: DelayedEditableTextField(
+                                      initialValue: _barcodeList[index]['quantity'].toString(),
+                                      onChanged: (value) {
+                                        // Update the quantity when the user inputs a value
+                                        _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
+                                      },
+                                      onEditingComplete: () {
+                                        // Save the updated list after a delay when editing is complete
+                                        Future.delayed(Duration(milliseconds: 500), () {
+                                          setState(() {
+                                            _saveBarcodeList(); // Save the updated list
+                                          });
                                         });
-                                      });
-                                    },
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Display delete icon
-                              Expanded(
-                                flex: 0, // Prevent delete icon from expanding
-                                child: IconButton(
-                                  icon: Image.asset(
-                                    'assets/delete.png',
-                                    color: Colors.red,
+                                // Display delete icon
+                                Expanded(
+                                  flex: 0, // Prevent delete icon from expanding
+                                  child: IconButton(
+                                    icon: Image.asset(
+                                      'assets/delete.png',
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => removeBarcode(index),
                                   ),
-                                  onPressed: () => removeBarcode(index),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               )
 
@@ -534,32 +605,39 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
 
         bottomNavigationBar: BottomAppBar(
-          color:Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              RectangularICBtn(
-                onPressed: () {
-                  showAddArticleDialog(context);
-                },
-                text: languageProvider.translate('add'),
-                color: Color(0xFFF4F1F1),
-                btnText: Colors.black,
-                iconAssetPath: "assets/plus.png",
-              ),
-              SizedBox(width: 20,),
-              RectangularICBtn(
-                onPressed: () async {
-                  scanBarcodeWithDelay();
-                },
-                text: languageProvider.translate('scan'),
-                color: Colors.red,
-                btnText: Colors.white,
-                iconAssetPath: "assets/qr.png",
-              ),
-            ],
+          color: Colors.white,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RectangularIBtn(
+                    onPressed: () {
+                      showAddArticleDialog(context);
+                    },
+                    text: languageProvider.translate('add'),
+                    color: Color(0xFFF4F1F1),
+                    btnText: Colors.black,
+                    iconAssetPath: "assets/plus.png",
+                    constraints: constraints, // Pass the constraints for responsiveness
+                  ),
+                  SizedBox(width: 20,),
+                  RectangularIBtn(
+                    onPressed: () async {
+                      scanBarcodeWithDelay();
+                    },
+                    text: languageProvider.translate('scan'),
+                    color: Colors.red,
+                    btnText: Colors.white,
+                    iconAssetPath: "assets/qr.png",
+                    constraints: constraints, // Pass the constraints for responsiveness
+                  ),
+                ],
+              );
+            },
           ),
         ),
+
       ),
     );
   }

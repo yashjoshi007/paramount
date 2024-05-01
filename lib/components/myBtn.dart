@@ -114,4 +114,56 @@ class RectangularICBtn extends StatelessWidget {
   }
 }
 
+class RectangularIBtn extends StatelessWidget {
+  final String text;
+  final String iconAssetPath;
+  final Color color;
+  final Color btnText;
+  final VoidCallback onPressed;
+  final BoxConstraints constraints; // Accepting constraints
+
+  const RectangularIBtn({
+    Key? key,
+    required this.text,
+    required this.iconAssetPath,
+    required this.color,
+    required this.onPressed,
+    required this.btnText,
+    required this.constraints, // Add this line
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(
+          horizontal: constraints.maxWidth * 0.05,
+          vertical: constraints.maxWidth * 0.03,
+        ),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        elevation: 0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            iconAssetPath,
+            height: constraints.maxWidth * 0.06,
+            width: constraints.maxWidth * 0.06,
+            color: btnText,
+          ),
+          SizedBox(width: constraints.maxWidth * 0.03),
+          Text(
+            text,
+            style: GoogleFonts.poppins(color: btnText), // Removed GoogleFonts.poppins
+          ),
+        ],
+      ),
+    );
+  }
+}
 

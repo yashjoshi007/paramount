@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:paramount/ui/screens/homeScreen.dart';
 
 import '../ui/login/login.dart';
+import '../ui/screens/homeColleague.dart';
 
 class ConfirmPage extends StatelessWidget {
   final String description;
@@ -58,9 +60,25 @@ class ConfirmPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async{
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context){
-                  return LoginPage();}));
+                if (description == "Mail has been successfully sent to PJC.")
+                  {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) {
+                      return HomePageColleague(userRole: '',);
+                    }));
+                  }
+                else if(description == "Mail has been successfully sent to PJC and your account."){
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) {
+                    return HomePageClient(userRole: '',);
+                  }));
+                }
+                else {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) {
+                    return LoginPage();
+                  }));
+                }
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.red),

@@ -9,6 +9,7 @@ import 'package:paramount/components/myBtn.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../components/confirmation_page.dart';
 import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
 import '../login/login.dart';
@@ -71,12 +72,7 @@ class _MyHomePageState extends State<HomePageColleague> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
-  void _addArticleManually(String articleNo, int quantity) {
-    setState(() {
-      _barcodeList.add({'barcode': articleNo, 'quantity': quantity});
-      _saveBarcodeList();
-    });
-  }
+
 
   Future<void> scanBarcodeNormal() async {
     String barcodeScanRes;
@@ -138,6 +134,156 @@ class _MyHomePageState extends State<HomePageColleague> {
     } else {
       return {};
     }
+  }
+
+  void _fetchArticleDetails(String barcode) async {
+    bool snackbarShown = false; // Flag to track whether a Snackbar is shown
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog from closing when tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: CupertinoActivityIndicator(
+                  color: Colors.red,
+                  radius: 20,
+                  animating: true,
+                ),
+              ),
+              SizedBox(height: 50), // Add some space between CircularProgressIndicator and the text
+              Text(
+                'Loading Article Details...', // Add your desired text here
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Replace this URL with your actual Google Sheets API endpoint
+    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
+        if (article != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
+            ),
+          ).then((_) {
+            if (!snackbarShown) {
+              Navigator.pop(context);
+            }
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found', style: GoogleFonts.poppins(),)));
+          snackbarShown = true;
+          Navigator.pop(context);
+        }
+      } else {
+        // If the server returns an error response, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
+        snackbarShown = true;
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      print('Error fetching article details: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
+      snackbarShown = true;
+      Navigator.pop(context);
+    }
+  }
+
+
+  // void sendEmail(String recipient, String subject, String body) async {
+  //   // Check if the device can send emails
+  //   if (await canLaunch('mailto:$recipient')) {
+  //     // Launch the email client
+  //     await launch('mailto:$recipient?subject=$subject&body=$body');
+  //   } else {
+  //     // If the device cannot send emails, show an error message
+  //     throw 'Could not launch email';
+  //   }
+  // }
+
+  Future<void> doPostRequest(BuildContext context) async {
+    // URL of your Google Apps Script web app
+    String scriptUrl = 'https://script.google.com/macros/s/AKfycbyd6aJmcHBHy10jRtZmHgWra5cMvJjiGhuzpL_asQQEgli1EB0AXt4eeuD26JtOypp6/exec';
+
+    try {
+      // Load user details
+      Map<String, dynamic> userDetails = await loadUserDetails();
+      if (userDetails.isEmpty) {
+        print('User details not found.');
+        return; // Exit the function if user details are not available
+      }
+
+      // Load barcode list
+      _loadBarcodeList(); // Assuming this function updates _barcodeList
+
+      // Constructing requestData
+      Map<String, dynamic> requestData = {
+        'Customer_Email': userDetails['email'],
+        'Customer_Name': userDetails['name'],
+        'Company_Name': userDetails['companyName'],
+        'total_Samples': _barcodeList.length,
+      };
+
+      // Adding barcode data dynamically
+      for (int i = 0; i < _barcodeList.length; i++) {
+        requestData['Article ${i + 1}'] = _barcodeList[i]['barcode'];
+        requestData['Qty ${i + 1}'] = _barcodeList[i]['quantity'];
+      }
+
+      // Sending POST request to the Google Apps Script web app
+      var response = await http.post(
+        Uri.parse(scriptUrl),
+        body: json.encode(requestData),
+      );
+
+      // Checking the response
+      if (response.statusCode == 200 || response.statusCode == 302) {
+        print('Request successful: ${response.body}');
+        // Navigate to another page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfirmPage(description: 'Mail has been successfully sent to PJC.',),
+          ),
+        );
+
+        // Clear user details and barcode list
+        await _clearUserDetails();
+        await _clearBarcodeList();
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
+
+
+  void _addArticleManually(String articleNo, int quantity) {
+    setState(() {
+      _barcodeList.add({'barcode': articleNo, 'quantity': quantity});
+      _saveBarcodeList();
+    });
   }
 
   void showAddArticleDialog(BuildContext context) {
@@ -250,89 +396,6 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   }
 
-  void _fetchArticleDetails(String barcode) async {
-    bool snackbarShown = false; // Flag to track whether a Snackbar is shown
-
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dialog from closing when tapping outside
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: CupertinoActivityIndicator(
-                  color: Colors.red,
-                  radius: 20,
-                  animating: true,
-                ),
-              ),
-              SizedBox(height: 50), // Add some space between CircularProgressIndicator and the text
-              Text(
-                'Loading Article Details...', // Add your desired text here
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
-
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
-        if (article != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
-            ),
-          ).then((_) {
-            if (!snackbarShown) {
-              Navigator.pop(context);
-            }
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found', style: GoogleFonts.poppins(),)));
-          snackbarShown = true;
-          Navigator.pop(context);
-        }
-      } else {
-        // If the server returns an error response, show an error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
-        snackbarShown = true;
-        Navigator.pop(context);
-      }
-    } catch (error) {
-      print('Error fetching article details: $error');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
-      snackbarShown = true;
-      Navigator.pop(context);
-    }
-  }
-
-
-  // void sendEmail(String recipient, String subject, String body) async {
-  //   // Check if the device can send emails
-  //   if (await canLaunch('mailto:$recipient')) {
-  //     // Launch the email client
-  //     await launch('mailto:$recipient?subject=$subject&body=$body');
-  //   } else {
-  //     // If the device cannot send emails, show an error message
-  //     throw 'Could not launch email';
-  //   }
-  // }
 
   void sendEmail(String recipient, String subject, String body) async {
     final emailJsApiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
@@ -371,8 +434,6 @@ class _MyHomePageState extends State<HomePageColleague> {
       print('Error sending email: $e');
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -609,6 +670,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                                     padding: const EdgeInsets.only(left: 0.0),
                                     child: RectangularICBtn(
                                       onPressed: () async {
+                                        print("execute");
+                                        doPostRequest(context);
                                       //  sendEmail("${userDetails['email']}","PCG ORder Confirmtion", "Your product list is sent to the vendor");
                                       }, text: 'Email List to PJC', iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
                                     ),
@@ -673,74 +736,73 @@ class _MyHomePageState extends State<HomePageColleague> {
                     ),
                   // Display sample list here
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: _barcodeList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            // Handle tap on the list tile
-                            _fetchArticleDetails(_barcodeList[index]['barcode']);
-                          },
-                          child: Card(
-                            elevation: 0.0,
-                            color: Color(0xFFF4F1F1),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  // Display barcode and leading icon
-                                  Expanded(
-                                    flex: 2,
-                                    child: ListTile(
-                                      leading: Icon(Icons.qr_code),
-                                      title: Text(
-                                        '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                        style: GoogleFonts.poppins(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
+                      child: ListView.builder(
+                        itemCount: _barcodeList.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              // Handle tap on the list tile
+                              _fetchArticleDetails(_barcodeList[index]['barcode']);
+                            },
+                            child: Card(
+                              elevation: 0.0,
+                              color: Color(0xFFF4F1F1),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    // Display barcode and leading icon
+                                    Expanded(
+                                      flex: 2,
+                                      child: ListTile(
+                                        leading: Icon(Icons.qr_code),
+                                        title: Text(
+                                          '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                          style: GoogleFonts.poppins(),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // Display quantity input field
-                                  Expanded(
-                                    child: SizedBox(
-                                      width: 50, // Set a fixed width for the input field
-                                      child: DelayedEditableTextField(
-                                        initialValue: _barcodeList[index]['quantity'].toString(),
-                                        onChanged: (value) {
-                                          // Update the quantity when the user inputs a value
-                                          _barcodeList[index]['quantity'] = int.tryParse(value) ?? 0;
-                                        },
-                                        onEditingComplete: () {
-                                          // Save the updated list after a delay when editing is complete
-                                          Future.delayed(Duration(milliseconds: 500), () {
-                                            setState(() {
-                                              _saveBarcodeList(); // Save the updated list
+                                    // Display quantity input field
+                                    Expanded(
+                                      child: SizedBox(
+                                        width: double.infinity, // Set width to occupy available space
+                                        child: DelayedEditableTextField(
+                                          initialValue: _barcodeList[index]['quantity'].toString(),
+                                          onChanged: (value) {
+                                            // Update the quantity when the user inputs a value
+                                            _barcodeList[index]['quantity'] = int.tryParse(value) ?? 0;
+                                          },
+                                          onEditingComplete: () {
+                                            // Save the updated list after a delay when editing is complete
+                                            Future.delayed(Duration(milliseconds: 500), () {
+                                              setState(() {
+                                                _saveBarcodeList(); // Save the updated list
+                                              });
                                             });
-                                          });
-                                        },
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // Display delete icon
-                                  Expanded(
-                                    flex: 0, // Prevent delete icon from expanding
-                                    child: IconButton(
+                                    // Display delete icon
+                                    IconButton(
                                       icon: Image.asset(
                                         'assets/delete.png',
                                         color: Colors.red,
                                       ),
                                       onPressed: () => removeBarcode(index),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
+                  )
 
-
-                  ),
                 ],
               );
             }
@@ -748,31 +810,35 @@ class _MyHomePageState extends State<HomePageColleague> {
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              RectangularICBtn(
-                onPressed: () {
-                  showAddArticleDialog(context);
-                  print('First button pressed');
-                },
-                text: languageProvider.translate('add'),
-                color: Color(0xFFF4F1F1),
-                btnText: Colors.black,
-                iconAssetPath: "assets/plus.png",
-              ),
-              SizedBox(width: 20),
-              RectangularICBtn(
-                onPressed: () async {
-                 scanBarcodeNormal();
-                 // sendEmail('yashjoshi785@gmail.com',"Hii","Body");
-                },
-                text: languageProvider.translate('scan'),
-                color: Colors.red,
-                btnText: Colors.white,
-                iconAssetPath: "assets/qr.png",
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RectangularIBtn(
+                    onPressed: () {
+                      showAddArticleDialog(context);
+                    },
+                    text: languageProvider.translate('add'),
+                    color: Color(0xFFF4F1F1),
+                    btnText: Colors.black,
+                    iconAssetPath: "assets/plus.png",
+                    constraints: constraints, // Pass the constraints for responsiveness
+                  ),
+                  SizedBox(width: 20,),
+                  RectangularIBtn(
+                    onPressed: () async {
+                      scanBarcodeNormal();
+                    },
+                    text: languageProvider.translate('scan'),
+                    color: Colors.red,
+                    btnText: Colors.white,
+                    iconAssetPath: "assets/qr.png",
+                    constraints: constraints, // Pass the constraints for responsiveness
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
