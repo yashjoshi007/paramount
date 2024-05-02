@@ -57,18 +57,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar:AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-            onPressed: () {
-              // passing this to our root
-              Navigator.of(context).pop();
-            },
-          ),
+    return Scaffold(
+      appBar:AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () {
+            // passing this to our root
+            Navigator.of(context).pop();
+          },
         ),
-        body: Padding(
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Form(
             key: _formKey,
@@ -133,16 +133,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         _formKey.currentState!.save();
                         passwordReset();
                       }
-      
-      
+            
+            
                 }, btnText: Colors.white)
-      
+            
               ],
             ),
           ),
         ),
-      
       ),
+    
     );
   }
 }

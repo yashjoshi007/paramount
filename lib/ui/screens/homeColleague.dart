@@ -438,114 +438,114 @@ class _MyHomePageState extends State<HomePageColleague> {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Center(child: Image.asset('assets/logo.png')),
         backgroundColor: Colors.white,
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Center(child: Image.asset('assets/logo.png')),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: Image.asset('assets/lang.png'),
-            onPressed: () {
-              _scaffoldKey.currentState!.openDrawer();
-            },
-          ),
-          actions: [
-            Row(
-              children: [
-                // IconButton(
-                //   icon: Icon(Icons.delete), // Add delete icon
-                //   onPressed: () async {
-                //     setState(() {
-                //       _nameController.text = ''; // Clear text fields
-                //       _companyNameController.text = '';
-                //       _emailController.text = '';
-                //     });
-                //     await _clearUserDetails();
-                //   },
-                // ),
-                Text(
-                  languageProvider.translate('logout'),
-                  style: GoogleFonts.poppins(color: Colors.red),
-                ),
-                IconButton(
-                  icon: Image.asset(
-                    'assets/logout.png',
-                    color: Colors.red,
-                  ),
-                  onPressed: () async {
-                    signOutGoogle();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
+        elevation: 0,
+        leading: IconButton(
+          icon: Image.asset('assets/lang.png'),
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
+        actions: [
+          Row(
             children: [
-              Container(
-                height: 110,
-                child: DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                  ),
-                  child: Text(
-                    'Change Language',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
+              // IconButton(
+              //   icon: Icon(Icons.delete), // Add delete icon
+              //   onPressed: () async {
+              //     setState(() {
+              //       _nameController.text = ''; // Clear text fields
+              //       _companyNameController.text = '';
+              //       _emailController.text = '';
+              //     });
+              //     await _clearUserDetails();
+              //   },
+              // ),
+              Text(
+                languageProvider.translate('logout'),
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
+              IconButton(
+                icon: Image.asset(
+                  'assets/logout.png',
+                  color: Colors.red,
                 ),
-              ),
-              RadioListTile<String>(
-                title: Text('English', style: GoogleFonts.poppins()),
-                value: 'en',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value;
-                  });
-                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Chinese (Simplied)', style: GoogleFonts.poppins()),
-                value: 'ch_si',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value;
-                  });
-                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-                value: 'ch_td',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value;
-                  });
-                  Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
-                  Navigator.pop(context); // Close the drawer
+                onPressed: () async {
+                  signOutGoogle();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
                 },
               ),
             ],
           ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Container(
+              height: 110,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                ),
+                child: Text(
+                  'Change Language',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+            ),
+            RadioListTile<String>(
+              title: Text('English', style: GoogleFonts.poppins()),
+              value: 'en',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            RadioListTile<String>(
+              title: Text('Chinese (Simplied)', style: GoogleFonts.poppins()),
+              value: 'ch_si',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            RadioListTile<String>(
+              title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
+              value: 'ch_td',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+          ],
         ),
-        body: FutureBuilder<Map<String, dynamic>>(
+      ),
+      body: SafeArea(
+        child: FutureBuilder<Map<String, dynamic>>(
           future: loadUserDetails(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -559,7 +559,7 @@ class _MyHomePageState extends State<HomePageColleague> {
             } else {
               Map<String, dynamic> userDetails = snapshot.data ?? {};
               bool userDetailsAvailable = userDetails.isNotEmpty;
-
+            
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -626,7 +626,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               String name = _nameController.text;
                               String companyName = _companyNameController.text;
                               String email = _emailController.text;
-
+            
                               if (name.isEmpty || companyName.isEmpty || email.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -665,7 +665,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                       ),
                                     ),
                                   ),
-
+            
                                   Padding(
                                     padding: const EdgeInsets.only(left: 0.0),
                                     child: RectangularICBtn(
@@ -717,7 +717,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                             });
                             //await _clearBarcodeList();
                             await _clearUserDetails();
-
+            
                           },
                         ),
                       ],
@@ -802,47 +802,47 @@ class _MyHomePageState extends State<HomePageColleague> {
                       ),
                     ),
                   )
-
+            
                 ],
               );
             }
           },
         ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  RectangularIBtn(
-                    onPressed: () {
-                      showAddArticleDialog(context);
-                    },
-                    text: languageProvider.translate('Add Manually'),
-                    color: Color(0xFFF4F1F1),
-                    btnText: Colors.black,
-                    iconAssetPath: "assets/plus.png",
-                    constraints: constraints,
-                  ),
-                  SizedBox(width: 20,),
-                  RectangularIBtn(
-                    onPressed: () async {
-                      scanBarcodeNormal();
-                    },
-                    text: languageProvider.translate('Scan Samples'),
-                    color: Colors.red,
-                    btnText: Colors.white,
-                    iconAssetPath: "assets/qr.png",
-                    constraints: constraints,
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-
       ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                RectangularIBtn(
+                  onPressed: () {
+                    showAddArticleDialog(context);
+                  },
+                  text: languageProvider.translate('Add Manually'),
+                  color: Color(0xFFF4F1F1),
+                  btnText: Colors.black,
+                  iconAssetPath: "assets/plus.png",
+                  constraints: constraints,
+                ),
+                SizedBox(width: 20,),
+                RectangularIBtn(
+                  onPressed: () async {
+                    scanBarcodeNormal();
+                  },
+                  text: languageProvider.translate('Scan Samples'),
+                  color: Colors.red,
+                  btnText: Colors.white,
+                  iconAssetPath: "assets/qr.png",
+                  constraints: constraints,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    
     );
   }
 
