@@ -126,23 +126,64 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       email1Controller.text = value!;
                     },  obscureText: false, keyboardType: TextInputType.emailAddress,  ),
                 ),
-                SizedBox(height: 30,),
-                RectangularButton(text: "Send Instructions", color: Colors.red,
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        passwordReset();
-                      }
+                // SizedBox(height: 30,),
+                // RectangularButton(text: "Send Instructions", color: Colors.red,
+                //     onPressed: () {
+                //       if (_formKey.currentState!.validate()) {
+                //         _formKey.currentState!.save();
+                //         passwordReset();
+                //       }
             
             
-                }, btnText: Colors.white)
+                // }, btnText: Colors.white)
             
               ],
             ),
           ),
         ),
       ),
-    
+      bottomNavigationBar: Container(
+          height: 90,
+          child: Column(
+            children: [
+                
+              
+              ElevatedButton(
+                onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        passwordReset();
+                      }
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.red), // Border color
+                    ),
+                  ),
+                  // shadowColor: MaterialStateProperty.all(Colors.orange.withOpacity(0.5)),
+                  elevation: MaterialStateProperty.all(0), // Adjust elevation as needed
+                ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.75, // Set to 40% of the screen width
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    'Send Instructions',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+            ],
+          ),),
     );
   }
 }
