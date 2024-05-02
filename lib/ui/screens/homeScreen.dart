@@ -478,7 +478,7 @@ class _MyHomePageState extends State<HomePageClient> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
                   child: Text(
-                    languageProvider.translate('samp'),
+                    languageProvider.translate('Sample List'),
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -493,7 +493,7 @@ class _MyHomePageState extends State<HomePageClient> {
                       doPostRequest(context);
                       //showAddArticleDialog(context);
                     },
-                    text: languageProvider.translate('email_list'),
+                    text: languageProvider.translate('Email List to PJC'),
                     color: Color(0xFFF4F1F1),
                     btnText: Colors.black,
                     iconAssetPath: "assets/mbox.png",
@@ -591,7 +591,7 @@ class _MyHomePageState extends State<HomePageClient> {
                       ),
                       SizedBox(height: 25),
                       Text(
-                        languageProvider.translate('empty_list'),
+                        languageProvider.translate('No items in the list, scan or add from below buttons'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w300,
                           fontSize: 16,
