@@ -131,9 +131,10 @@ class _RegistrationScreenState extends State<signinPage> {
                                 if (!regex.hasMatch(value)) {
                                   return ("Enter Valid Password(Min. 6 Character)");
                                 }
-                                else{
-                                  return("Incorrect Password");
-                                }
+                                // else{
+                                //   return("Incorrect Password");
+                                // }
+                                return null;
                               },
                             onSaved: (value) {
                               passwordController.text = value!;

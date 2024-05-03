@@ -72,13 +72,23 @@ class _MyHomePageState extends State<HomePageColleague> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
+  Future<void> barcodeScanStream() async {
+    String scanedBarcode = '';
+    FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Done', true, ScanMode.BARCODE)!.listen((barcode) =>  scanedBarcode = barcode);
+    if (!mounted) return;
+      setState(() {
+        _scanBarcodeResult = scanedBarcode;
+        _barcodeList.add({'barcode': scanedBarcode, 'quantity': 1});
+        _saveBarcodeList();
+      });
+  }
 
 
   Future<void> scanBarcodeNormal() async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+          '#ff6666', 'Done', true, ScanMode.BARCODE);
       print(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
@@ -829,7 +839,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                    scanBarcodeNormal();
+                    // scanBarcodeNormal();
+                    barcodeScanStream();
                   },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,
