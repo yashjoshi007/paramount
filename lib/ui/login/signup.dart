@@ -123,19 +123,16 @@ class _RegistrationScreenState extends State<signinPage> {
                           MyTextField(
                             hintText: 'Password',
                             obscureText: true,
-                              validator:(value) {
-                                RegExp regex = new RegExp(r'^.{6,}$');
-                                if (value!.isEmpty) {
-                                  return ("Password is required for login");
-                                }
-                                if (!regex.hasMatch(value)) {
-                                  return ("Enter Valid Password(Min. 6 Character)");
-                                }
-                                // else{
-                                //   return("Incorrect Password");
-                                // }
-                                return null;
-                              },
+                            validator: (value) {
+                              RegExp regex = RegExp(r'^.{6,}$');
+                              if (value!.isEmpty) {
+                                return "Password is required for login";
+                              }
+                              if (!regex.hasMatch(value)) {
+                                return "Enter Valid Password (Min. 6 Characters)";
+                              }
+                              return null; // Return null if the password is valid
+                            },
                             onSaved: (value) {
                               passwordController.text = value!;
                             },

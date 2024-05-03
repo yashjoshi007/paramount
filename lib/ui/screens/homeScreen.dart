@@ -327,20 +327,24 @@ class _MyHomePageState extends State<HomePageClient> {
         );
       },
     );
-
+   //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
     // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbzu9oxmUU2my_7xmv0isvMT64CCKMRfNsoyh3mk03EmQ01wJlTn5R8rEb0nK-F7bozn/exec?action=getArticleColleague&articleNumber=$barcode';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
-        if (article != null) {
+        var article = data['data'];
+        if (article != null && article.isNotEmpty) {
+          // Extracting the first key from the map
+          var articleKey = article.keys.first;
+          var articleDetails = article[articleKey];
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
+              builder: (context) => ArticleDetailsPage(articleDetails: articleDetails,userRole: widget.userRole),
             ),
           ).then((_) {
             if (!snackbarShown) {
@@ -490,7 +494,15 @@ class _MyHomePageState extends State<HomePageClient> {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
                     onPressed: () {
-                      doPostRequest(context);
+                      if(_barcodeList.length != 0){
+                        doPostRequest(context);
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('No barcodes are available.'),
+                          ),
+                        );
+                      }
                       //showAddArticleDialog(context);
                     },
                     text: languageProvider.translate('Email List to PJC'),
