@@ -162,16 +162,6 @@ class _MyHomePageState extends State<HomePageClient> {
     );
   }
 
-
-
-  Future<void> scanBarcodeWithDelay() async {
-    // Delay for 2 seconds before starting the barcode scanning
-    await Future.delayed(Duration(seconds: 1));
-    // Call the actual barcode scanning function after the delay
-    scanBarcodeNormal();
-  }
-
-
   _loadBarcodeList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? barcodeListString = prefs.getStringList('barcodeList');
@@ -268,39 +258,65 @@ class _MyHomePageState extends State<HomePageClient> {
     });
   }
 
-  Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-
-    if (barcodeScanRes.length == 8 || barcodeScanRes.length == 9) {
-      if (!mounted) return;
-      setState(() {
-        _scanBarcodeResult = barcodeScanRes;
-        _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
-        _saveBarcodeList();
-      });
-    } else if(barcodeScanRes == "-1") {
-      // Show snackbar if barcode length is not 8 or 9
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Try again to scan a barcode.'),
-        ),
-      );
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Scan Barcode Properly.'),
-        ),
-      );
-    }
+  newBarcodeScan() async {
+    var res = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Done', true, ScanMode.BARCODE);
+    setState(() {
+      if (res is String && res != '') {
+        _scanBarcodeResult = res;
+        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+          _saveBarcodeList();
+        }
+        else{
+          ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Barcode Already Scanned!'),
+          ),
+        );
+        }
+      } else if(res == "-1") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Try again to scan a barcode.'),
+          ),
+        );
+      }
+    });
   }
+
+  // Future<void> scanBarcodeNormal() async {
+  //   String barcodeScanRes;
+  //   try {
+  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+  //         '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+  //     print(barcodeScanRes);
+  //   } on PlatformException {
+  //     barcodeScanRes = 'Failed to get platform version.';
+  //   }
+
+  //   if (barcodeScanRes.length == 8 || barcodeScanRes.length == 9) {
+  //     if (!mounted) return;
+  //     setState(() {
+  //       _scanBarcodeResult = barcodeScanRes;
+  //       _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
+  //       _saveBarcodeList();
+  //     });
+  //   } else if(barcodeScanRes == "-1") {
+  //     // Show snackbar if barcode length is not 8 or 9
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Try again to scan a barcode.'),
+  //       ),
+  //     );
+  //   }
+  //   else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Scan Barcode Properly.'),
+  //       ),
+  //     );
+  //   }
+  // }
 
   void _fetchArticleDetails(String barcode) async {
     bool snackbarShown = false; // Flag to track whether a Snackbar is shown
@@ -698,7 +714,7 @@ class _MyHomePageState extends State<HomePageClient> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                    scanBarcodeWithDelay();
+                    newBarcodeScan();
                   },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,

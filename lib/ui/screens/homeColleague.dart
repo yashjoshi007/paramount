@@ -77,51 +77,65 @@ class _MyHomePageState extends State<HomePageColleague> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
-  // Future<void> barcodeScanStream() async {
-  //   FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Done', true, ScanMode.BARCODE)!.listen((barcode) {
+  newBarcodeScan() async {
+    var res = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Done', true, ScanMode.BARCODE);
+    setState(() {
+      if (res is String && res != '') {
+        _scanBarcodeResult = res;
+        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+          _saveBarcodeList();
+        }
+        else{
+          ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Barcode Already Scanned!'),
+          ),
+        );
+        }
+      } else if(res == "-1") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Try again to scan a barcode.'),
+          ),
+        );
+      }
+    });
+  }
+
+  // Future<void> scanBarcodeNormal() async {
+  //   String barcodeScanRes;
+  //   try {
+  //     barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+  //         '#ff6666', 'Done', true, ScanMode.BARCODE);
+  //     print(barcodeScanRes);
+  //   } on PlatformException {
+  //     barcodeScanRes = 'Failed to get platform version.';
+  //   }
+
+  //   if (barcodeScanRes.length == 8 || barcodeScanRes.length == 9) {
   //     if (!mounted) return;
   //     setState(() {
-  //       print("Scan- $barcode");
-  //       _scanBarcodeResult = barcode;
-  //       _barcodeList.add({'barcode': barcode, 'quantity': 1});
+  //       _scanBarcodeResult = barcodeScanRes;
+  //       _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
   //       _saveBarcodeList();
   //     });
-  //   });
+  //   } else if(barcodeScanRes == "-1") {
+  //     // Show snackbar if barcode length is not 8 or 9
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Try again to scan a barcode.'),
+  //       ),
+  //     );
+  //   }
+  //   else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Scan Barcode Properly.'),
+  //       ),
+  //     );
+  //   }
   // }
-
-  Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Done', true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-
-    if (barcodeScanRes.length == 8 || barcodeScanRes.length == 9) {
-      if (!mounted) return;
-      setState(() {
-        _scanBarcodeResult = barcodeScanRes;
-        _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
-        _saveBarcodeList();
-      });
-    } else if(barcodeScanRes == "-1") {
-      // Show snackbar if barcode length is not 8 or 9
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Try again to scan a barcode.'),
-        ),
-      );
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Scan Barcode Properly.'),
-        ),
-      );
-    }
-  }
 
   void removeBarcode(int index) {
     setState(() {
@@ -862,7 +876,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                    scanBarcodeNormal();
+                    newBarcodeScan();
                    // barcodeScanStream();
                   },
                   text: languageProvider.translate('Scan Samples'),
