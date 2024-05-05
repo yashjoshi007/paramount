@@ -712,14 +712,24 @@ class _MyHomePageState extends State<HomePageColleague> {
                                     padding: const EdgeInsets.only(left: 0.0),
                                     child: RectangularICBtn(
                                       onPressed: () async {
-                                        Navigator.push(
+                                      bool refresh = await  Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ConfirmPage2(
-                                                  description: 'Mail has been successfully sent to PJC and your account.',btnText: 'Send',userRole: widget.userRole,),
+                                                  description: 'Mail has been successfully sent to PJC and your account.',
+                                                  btnText: 'Send',
+                                                  userRole: widget.userRole,
+                                                  Email: '${userDetails['email']}',),
                                           ),
                                         );
+                                      if(refresh==true)
+                                        {
+                                          setState(() {
+                                            _barcodeList = [];
+                                          });
+
+                                        }
                                       }, text: languageProvider.translate('Email List to PJC'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
                                     ),
                                   ),
@@ -764,7 +774,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                             });
                             //await _clearBarcodeList();
                             await _clearUserDetails();
-            
+
                           },
                         ),
                       ],

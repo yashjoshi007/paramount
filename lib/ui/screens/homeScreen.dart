@@ -558,7 +558,7 @@ class _MyHomePageState extends State<HomePageClient> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
-                    onPressed: () {
+                    onPressed: () async{
                       // if(_barcodeList.length != 0){
                       //   print("exed");
                       //   doPostRequest(context);
@@ -572,14 +572,24 @@ class _MyHomePageState extends State<HomePageClient> {
                       //   );
                       // }
                       //showAddArticleDialog(context);
-                      Navigator.push(
+                    bool refresh = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               ConfirmPage2(
-                                description: 'Mail has been successfully sent to PJC and your account.',btnText: 'Send',userRole: widget.userRole,),
+                                description: 'Mail has been successfully sent to PJC and your account.',
+                                btnText: 'Send',
+                                userRole: widget.userRole,
+                                Email: Email,),
                         ),
                       );
+                      if(refresh==true)
+                      {
+                        setState(() {
+                          _barcodeList = [];
+                        });
+
+                      }
                     },
                     text: languageProvider.translate('Email List to PJC'),
                     color: Color(0xFFF4F1F1),

@@ -14,8 +14,9 @@ class ConfirmPage2 extends StatefulWidget {
   final String description;
   final String btnText;
   final String userRole;
+  final String Email;
 
-  ConfirmPage2({required this.description, required this.btnText, required this.userRole});
+  ConfirmPage2({required this.description, required this.btnText, required this.userRole,required this.Email});
 
   @override
   _ConfirmPage2State createState() => _ConfirmPage2State();
@@ -180,7 +181,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
 
     // Append each barcode to the body
     barcodeList.forEach((barcode) {
-      body += 'Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}\n';
+      body += 'Barcode: ${barcode['barcode']}, Unit: ${barcode['quantity']}\n';
       // Add other properties if available
     });
 
@@ -212,9 +213,12 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () async{
-            await _clearBarcodeList();
-            await _clearUserDetails();
-            Navigator.pop(context,true);
+            if(_barcodeList.length==0){
+            _clearUserDetails();
+            _clearBarcodeList();
+            Navigator.pop(context,true);}else{
+              Navigator.pop(context,false);
+            }
           },
         ),
       ),
@@ -262,10 +266,9 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
                     doPostRequestColleague(context);
 
                   }
-                  print("esec");
-                  print("EM- $Email");
+                  print(widget.Email);
                   sendEmails('yashjoshi1105@gmail.com', 'HI', _barcodeList,
-                      cc: [Email]);
+                      cc: [widget.Email]);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
