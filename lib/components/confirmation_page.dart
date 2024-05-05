@@ -7,8 +7,9 @@ import '../ui/screens/homeColleague.dart';
 
 class ConfirmPage extends StatelessWidget {
   final String description;
+  final String btnText;
 
-  ConfirmPage({ required this.description});
+  ConfirmPage({ required this.description, required this.btnText});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +96,7 @@ class ConfirmPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.6, // Set to 40% of the screen width
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: Text(
-                  'Done',
+                  btnText,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,

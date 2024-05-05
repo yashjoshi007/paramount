@@ -86,7 +86,7 @@ class _DelayedEditableTextFieldState extends State<DelayedEditableTextField> {
       onEditingComplete: widget.onEditingComplete,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        labelText: 'Quantity',
+        labelText: 'Unit',
         labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.normal),
         border: OutlineInputBorder(),
       ),

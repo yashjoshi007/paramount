@@ -31,7 +31,7 @@ class RectangularButton extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: GoogleFonts.poppins(color: btnText),
+        style: GoogleFonts.poppins(color: btnText,fontSize: 12),
       ),
     );
   }

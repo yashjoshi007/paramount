@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../components/confirmation_page.dart';
+import '../../components/confirmpage2.dart';
 import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
 import '../login/login.dart';
@@ -30,7 +31,7 @@ class _MyHomePageState extends State<HomePageColleague> {
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  List<Map<String, dynamic>> _barcodeList = [];
+  List<Map<String, String>> _barcodeList = [];
   String _scanBarcodeResult = "";
 
   Future<void> signOutGoogle() async {
@@ -61,7 +62,11 @@ class _MyHomePageState extends State<HomePageColleague> {
     List<String>? barcodeListString = prefs.getStringList('barcodeList');
     if (barcodeListString != null) {
       setState(() {
-        _barcodeList = barcodeListString.map<Map<String, dynamic>>((item) => json.decode(item)).toList();
+        _barcodeList = barcodeListString.map<Map<String, String>>((item) => Map<String, String>.from(json.decode(item))).toList();
+      });
+      _barcodeList.forEach((barcode) {
+        print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}');
+        // Add other properties if available
       });
     }
   }
@@ -72,17 +77,17 @@ class _MyHomePageState extends State<HomePageColleague> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
-  Future<void> barcodeScanStream() async {
-    String scanedBarcode = '';
-    FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Done', true, ScanMode.BARCODE)!.listen((barcode) =>  scanedBarcode = barcode);
-    if (!mounted) return;
-      setState(() {
-        _scanBarcodeResult = scanedBarcode;
-        _barcodeList.add({'barcode': scanedBarcode, 'quantity': 1});
-        _saveBarcodeList();
-      });
-  }
-
+  // Future<void> barcodeScanStream() async {
+  //   FlutterBarcodeScanner.getBarcodeStreamReceiver('#ff6666', 'Done', true, ScanMode.BARCODE)!.listen((barcode) {
+  //     if (!mounted) return;
+  //     setState(() {
+  //       print("Scan- $barcode");
+  //       _scanBarcodeResult = barcode;
+  //       _barcodeList.add({'barcode': barcode, 'quantity': 1});
+  //       _saveBarcodeList();
+  //     });
+  //   });
+  // }
 
   Future<void> scanBarcodeNormal() async {
     String barcodeScanRes;
@@ -98,7 +103,7 @@ class _MyHomePageState extends State<HomePageColleague> {
       if (!mounted) return;
       setState(() {
         _scanBarcodeResult = barcodeScanRes;
-        _barcodeList.add({'barcode': barcodeScanRes, 'quantity': 1});
+        _barcodeList.add({'barcode': barcodeScanRes, 'quantity': "1"});
         _saveBarcodeList();
       });
     } else if(barcodeScanRes == "-1") {
@@ -192,7 +197,7 @@ class _MyHomePageState extends State<HomePageColleague> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole),
+              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole,barcode: barcode,),
             ),
           ).then((_) {
             if (!snackbarShown) {
@@ -219,11 +224,24 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
 
-  // void sendEmail(String recipient, String subject, String body) async {
+  // void sendEmails(String recipient, String subject, String body, {required List<String> cc, required List<String> bcc}) async {
+  //   // Construct the email URI
+  //   String uri = 'mailto:$recipient';
+  //
+  //   if (cc != null && cc.isNotEmpty) {
+  //     uri += '?cc=${cc.join(",")}';
+  //   }
+  //
+  //   if (bcc != null && bcc.isNotEmpty) {
+  //     uri += '&bcc=${bcc.join(",")}';
+  //   }
+  //
+  //   uri += '&subject=$subject&body=$body';
+  //
   //   // Check if the device can send emails
-  //   if (await canLaunch('mailto:$recipient')) {
+  //   if (await canLaunch(uri)) {
   //     // Launch the email client
-  //     await launch('mailto:$recipient?subject=$subject&body=$body');
+  //     await launch(uri);
   //   } else {
   //     // If the device cannot send emails, show an error message
   //     throw 'Could not launch email';
@@ -272,7 +290,7 @@ class _MyHomePageState extends State<HomePageColleague> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ConfirmPage(description: 'Mail has been successfully sent to PJC.',),
+            builder: (context) => ConfirmPage(description: 'Mail has been successfully sent to PJC.',btnText: "Send",),
           ),
         );
 
@@ -291,7 +309,7 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.add({'barcode': articleNo, 'quantity': quantity});
+      _barcodeList.add({'barcode': articleNo, 'quantity': quantity.toString()});
       _saveBarcodeList();
     });
   }
@@ -407,43 +425,43 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
 
-  void sendEmail(String recipient, String subject, String body) async {
-    final emailJsApiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
-
-    // Replace these values with your EmailJS service ID and template ID
-    final serviceId = 'service_s0bpub7';
-    final templateId = 'template_22ev90g';
-
-    // Construct the request body
-    final requestBody = {
-      'service_id': serviceId,
-      'template_id': templateId,
-      'user_id': 'bOirGg6PsenrVhRpr',
-      'template_params': {
-        'to_email': recipient,
-        'subject': subject,
-        'body': body,
-      },
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(emailJsApiUrl),
-        headers: {
-          'origin': 'http://localhost',
-          'Content-Type': 'application/json'},
-        body: json.encode(requestBody),
-      );
-
-      if (response.statusCode == 200) {
-        print('Email sent successfully!');
-      } else {
-        print('Failed to send email. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error sending email: $e');
-    }
-  }
+  // void sendEmail(String recipient, String subject, String body) async {
+  //   final emailJsApiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+  //
+  //   // Replace these values with your EmailJS service ID and template ID
+  //   final serviceId = 'service_s0bpub7';
+  //   final templateId = 'template_22ev90g';
+  //
+  //   // Construct the request body
+  //   final requestBody = {
+  //     'service_id': serviceId,
+  //     'template_id': templateId,
+  //     'user_id': 'bOirGg6PsenrVhRpr',
+  //     'template_params': {
+  //       'to_email': recipient,
+  //       'subject': subject,
+  //       'body': body,
+  //     },
+  //   };
+  //
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse(emailJsApiUrl),
+  //       headers: {
+  //         'origin': 'http://localhost',
+  //         'Content-Type': 'application/json'},
+  //       body: json.encode(requestBody),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('Email sent successfully!');
+  //     } else {
+  //       print('Failed to send email. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error sending email: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -680,10 +698,15 @@ class _MyHomePageState extends State<HomePageColleague> {
                                     padding: const EdgeInsets.only(left: 0.0),
                                     child: RectangularICBtn(
                                       onPressed: () async {
-                                        print("execute");
-                                        doPostRequest(context);
-                                      //  sendEmail("${userDetails['email']}","PCG ORder Confirmtion", "Your product list is sent to the vendor");
-                                      }, text: 'Email List to PJC', iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ConfirmPage2(
+                                                  description: 'Mail has been successfully sent to PJC and your account.',btnText: 'Send',userRole: widget.userRole,),
+                                          ),
+                                        );
+                                      }, text: languageProvider.translate('Email List to PJC'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
                                     ),
                                   ),
                                 ],
@@ -737,7 +760,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        languageProvider.translate('samp'),
+                        languageProvider.translate('Selected Samples'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -754,7 +777,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                           return GestureDetector(
                             onTap: () {
                               // Handle tap on the list tile
-                              _fetchArticleDetails(_barcodeList[index]['barcode']);
+                              _fetchArticleDetails(_barcodeList[index]['barcode']!);
                             },
                             child: Card(
                               elevation: 0.0,
@@ -782,7 +805,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           initialValue: _barcodeList[index]['quantity'].toString(),
                                           onChanged: (value) {
                                             // Update the quantity when the user inputs a value
-                                            _barcodeList[index]['quantity'] = int.tryParse(value) ?? 0;
+                                            _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
                                           },
                                           onEditingComplete: () {
                                             // Save the updated list after a delay when editing is complete
@@ -839,8 +862,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                    // scanBarcodeNormal();
-                    barcodeScanStream();
+                    scanBarcodeNormal();
+                   // barcodeScanStream();
                   },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,

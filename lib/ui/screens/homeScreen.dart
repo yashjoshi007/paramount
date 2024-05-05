@@ -11,7 +11,9 @@ import 'package:paramount/components/myBtn.dart';
 import 'package:paramount/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../components/confirmation_page.dart';
+import '../../components/confirmpage2.dart';
 import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
 import '../login/login.dart';
@@ -33,6 +35,7 @@ class _MyHomePageState extends State<HomePageClient> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<Map<String, String>> _barcodeList = [];
   String _scanBarcodeResult = "";
+  String Email = '';
 
 
   @override
@@ -176,6 +179,10 @@ class _MyHomePageState extends State<HomePageClient> {
       setState(() {
         _barcodeList = barcodeListString.map<Map<String, String>>((item) => Map<String, String>.from(json.decode(item))).toList();
       });
+      _barcodeList.forEach((barcode) {
+        print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}');
+        // Add other properties if available
+      });
     }
   }
 
@@ -204,6 +211,7 @@ class _MyHomePageState extends State<HomePageClient> {
         String name = userData['name'];
         String companyName = userData['companyName'];
         String role = userData['role'];
+        Email = email;
 
 
         // Load barcode list
@@ -238,7 +246,7 @@ class _MyHomePageState extends State<HomePageClient> {
             MaterialPageRoute(
               builder: (context) =>
                   ConfirmPage(
-                    description: 'Mail has been successfully sent to PJC and your account.',),
+                    description: 'Mail has been successfully sent to PJC and your account.',btnText: 'Send',),
             ),
           );
 
@@ -329,7 +337,7 @@ class _MyHomePageState extends State<HomePageClient> {
     );
    //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
     // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbzu9oxmUU2my_7xmv0isvMT64CCKMRfNsoyh3mk03EmQ01wJlTn5R8rEb0nK-F7bozn/exec?action=getArticleColleague&articleNumber=$barcode';
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbxMmW_Z5Tz9dVqP7hIfZldshTLKBt4MlvJco1J0UP_Exhe8Im_kL2ggqEjC496biFJ8/exec?action=getArticleColleague&articleNumber=$barcode';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -338,25 +346,38 @@ class _MyHomePageState extends State<HomePageClient> {
         var data = json.decode(response.body);
         var article = data['data'];
         if (article != null && article.isNotEmpty) {
-          // Extracting the first key from the map
-          var articleKey = article.keys.first;
-          var articleDetails = article[articleKey];
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: articleDetails,userRole: widget.userRole),
-            ),
-          ).then((_) {
-            if (!snackbarShown) {
-              Navigator.pop(context);
-            }
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found', style: GoogleFonts.poppins(),)));
-          snackbarShown = true;
-          Navigator.pop(context);
+          var articleDetails = article[barcode];
+          if (articleDetails != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ArticleDetailsPage(
+                  articleDetails: articleDetails,
+                  userRole: widget.userRole,
+                  barcode: barcode,
+                ),
+              ),
+            ).then((_) {
+              if (!snackbarShown) {
+                Navigator.pop(context);
+              }
+            });
+            return;
+          }
         }
-      } else {
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Article not found',
+            style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
+          ),
+        ),
+      );
+      snackbarShown = true;
+      Navigator.pop(context);
+    } else {
         // If the server returns an error response, show an error message
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
         snackbarShown = true;
@@ -378,6 +399,34 @@ class _MyHomePageState extends State<HomePageClient> {
     });
   }
 
+  void sendEmails(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
+    // Construct the email body
+    String body = 'Your order is -\n';
+
+    // Append each barcode to the body
+    barcodeList.forEach((barcode) {
+      body += 'Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}\n';
+      // Add other properties if available
+    });
+
+    // Construct the email URI
+    String uri = 'mailto:$recipient';
+
+    if (cc.isNotEmpty) {
+      uri += '?cc=${cc.join(",")}';
+    }
+
+    uri += '&subject=$subject&body=${Uri.encodeComponent(body)}';
+
+    // Check if the device can send emails
+    if (await canLaunch(uri)) {
+      // Launch the email client
+      await launch(uri);
+    } else {
+      // If the device cannot send emails, show an error message
+      throw 'Could not launch email';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -482,7 +531,7 @@ class _MyHomePageState extends State<HomePageClient> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
                   child: Text(
-                    languageProvider.translate('Sample List'),
+                    languageProvider.translate('Selected Samples'),
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -494,16 +543,27 @@ class _MyHomePageState extends State<HomePageClient> {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
                     onPressed: () {
-                      if(_barcodeList.length != 0){
-                        doPostRequest(context);
-                      }else{
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('No barcodes are available.'),
-                          ),
-                        );
-                      }
+                      // if(_barcodeList.length != 0){
+                      //   print("exed");
+                      //   doPostRequest(context);
+                      //   print("esec");
+                      //   sendEmails('yashjoshi1105@gmail.com', 'HI', _barcodeList, cc: ['yj8379@srmist.edu.in']);
+                      // }else{
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     SnackBar(
+                      //       content: Text('No barcodes are available.'),
+                      //     ),
+                      //   );
+                      // }
                       //showAddArticleDialog(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ConfirmPage2(
+                                description: 'Mail has been successfully sent to PJC and your account.',btnText: 'Send',userRole: widget.userRole,),
+                        ),
+                      );
                     },
                     text: languageProvider.translate('Email List to PJC'),
                     color: Color(0xFFF4F1F1),

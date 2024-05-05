@@ -34,7 +34,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           context: context,
           builder: (context)
           {
-            return ConfirmPage(description: 'We have sent a password recovery instructions to your mail.',);
+            return ConfirmPage(description: 'We have sent a password recovery instructions to your mail.',btnText: 'Done',);
 
           });
 
