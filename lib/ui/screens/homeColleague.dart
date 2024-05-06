@@ -756,7 +756,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ConfirmPage2(
-                                                  description: 'Mail has been successfully sent to PJC and your account.',
+                                                  description: 'Mail has been successfully sent to PMT-TXT and your account.',
                                                   btnText: 'Send',
                                                   userRole: widget.userRole,
                                                   Email: '${userDetails['email']}',),
