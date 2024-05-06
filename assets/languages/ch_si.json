@@ -3,7 +3,7 @@
   "customer_det": "客户详情",
   "barcode": "条形码",
   "email_list": "发送邮件列表至PJC",
-  "Email List to PJC": "完成清单",
+  "Save List": "保存列表",
   "empty_list": "通过扫描条形码或手动添加样品进行选择 \uD83D\uDC47\uD83C\uDFFB",
   "No items in the list, scan or add from below buttons":"通过扫描条形码或手动添加样品进行选择 \uD83D\uDC47\uD83C\uDFFB",
   "add_p": "添加产品",

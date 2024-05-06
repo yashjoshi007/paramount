@@ -56,9 +56,15 @@ class ArticleDetailsPage extends StatelessWidget {
     //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
     // Replace this URL with your actual Google Sheets API endpoint
     if(btnPressed=='Exhibit') {
-      apiUrl = 'https://script.google.com/macros/s/AKfycbxMmW_Z5Tz9dVqP7hIfZldshTLKBt4MlvJco1J0UP_Exhe8Im_kL2ggqEjC496biFJ8/exec?action=getExhibitSamples&articleNumber=$barcode';
+      apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getExhibitSamples&articleNumber=$barcode';
     }else if(btnPressed=='Sitting'){
-      apiUrl = 'https://script.google.com/macros/s/AKfycbxMmW_Z5Tz9dVqP7hIfZldshTLKBt4MlvJco1J0UP_Exhe8Im_kL2ggqEjC496biFJ8/exec?action=getSittingCustomer&articleNumber=$barcode';
+      if(userRole == "customer") {
+        apiUrl =
+        'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
+      }else if(userRole=="colleague")
+        {
+          apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
+        }
     }
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -172,7 +178,7 @@ class ArticleDetailsPage extends StatelessWidget {
                   DataColumn(label: Text('Value', style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
                 ],
                 rows: [
-                  _buildDetailRow('Article No', '${articleDetails['Article_No']}'),
+                  _buildDetailRow('Article No', '${barcode}'),
                   _buildDetailRow('Composition', '${articleDetails['Compo']}'),
                   _buildDetailRow('Texture', '${articleDetails['Texture']}'),
                   _buildDetailRow('Finish', '${articleDetails['Finish']}'),

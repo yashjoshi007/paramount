@@ -33,6 +33,7 @@ class _MyHomePageState extends State<HomePageColleague> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<Map<String, String>> _barcodeList = [];
   String _scanBarcodeResult = "";
+  bool showBottom = false ;
 
   Future<void> signOutGoogle() async {
     await _clearUserDetails();
@@ -45,6 +46,7 @@ class _MyHomePageState extends State<HomePageColleague> {
     super.initState();
    // _clearUserDetails(); // Clear user details on app start
     _loadBarcodeList();
+    _checkUserDetails();
   }
 
   _clearUserDetails() async {
@@ -165,6 +167,21 @@ class _MyHomePageState extends State<HomePageColleague> {
     }
   }
 
+  Future _checkUserDetails() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDetailsString = prefs.getString('userDetails');
+    if (userDetailsString != null) {
+      setState(() {
+        showBottom = true;
+      });
+    } else {
+      setState(() {
+        showBottom = false;
+      });
+
+    }
+  }
+
   void _fetchArticleDetails(String barcode) async {
     bool snackbarShown = false; // Flag to track whether a Snackbar is shown
 
@@ -198,31 +215,48 @@ class _MyHomePageState extends State<HomePageColleague> {
         );
       },
     );
-
+    //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
     // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getArticleColleague&articleNumber=$barcode';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var article = data['data'].firstWhere((element) => element['Article_No'] == barcode, orElse: () => null);
-        if (article != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ArticleDetailsPage(articleDetails: article,userRole: widget.userRole,barcode: barcode,),
-            ),
-          ).then((_) {
-            if (!snackbarShown) {
-              Navigator.pop(context);
-            }
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Article not found', style: GoogleFonts.poppins(),)));
-          snackbarShown = true;
-          Navigator.pop(context);
+        var article = data['data'];
+        if (article != null && article.isNotEmpty) {
+          var articleDetails = article[barcode];
+          if (articleDetails != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ArticleDetailsPage(
+                  articleDetails: articleDetails,
+                  userRole: widget.userRole,
+                  barcode: barcode,
+                ),
+              ),
+            ).then((_) {
+              if (!snackbarShown) {
+                Navigator.pop(context);
+              }
+            });
+            return;
+          }
         }
+
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Article not found',
+              style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
+            ),
+          ),
+        );
+        snackbarShown = true;
+        Navigator.pop(context);
       } else {
         // If the server returns an error response, show an error message
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
@@ -518,9 +552,12 @@ class _MyHomePageState extends State<HomePageColleague> {
                 ),
                 onPressed: () async {
                   signOutGoogle();
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                        (route) => false,
                   );
                 },
               ),
@@ -601,7 +638,7 @@ class _MyHomePageState extends State<HomePageColleague> {
             } else {
               Map<String, dynamic> userDetails = snapshot.data ?? {};
               bool userDetailsAvailable = userDetails.isNotEmpty;
-            
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -677,7 +714,9 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 );
                               } else {
                                 await saveUserDetails(name, companyName, email);
-                                setState(() {});
+                                setState(() {
+                                  showBottom = true;
+                                });
                               }
                             }, text: 'Add', iconAssetPath: "assets/plus.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
                           ),
@@ -730,7 +769,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           });
 
                                         }
-                                      }, text: languageProvider.translate('Email List to PJC'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
+                                      }, text: languageProvider.translate('Save List'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
                                     ),
                                   ),
                                 ],
@@ -771,6 +810,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               _nameController.text = ''; // Clear text fields
                               _companyNameController.text = '';
                               _emailController.text = '';
+                              showBottom = false;
                             });
                             //await _clearBarcodeList();
                             await _clearUserDetails();
@@ -866,38 +906,41 @@ class _MyHomePageState extends State<HomePageColleague> {
           },
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                RectangularIBtn(
-                  onPressed: () {
-                    showAddArticleDialog(context);
-                  },
-                  text: languageProvider.translate('Add Manually'),
-                  color: Color(0xFFF4F1F1),
-                  btnText: Colors.black,
-                  iconAssetPath: "assets/plus.png",
-                  constraints: constraints,
-                ),
-                SizedBox(width: 20,),
-                RectangularIBtn(
-                  onPressed: () async {
-                    newBarcodeScan();
-                   // barcodeScanStream();
-                  },
-                  text: languageProvider.translate('Scan Samples'),
-                  color: Colors.red,
-                  btnText: Colors.white,
-                  iconAssetPath: "assets/qr.png",
-                  constraints: constraints,
-                ),
-              ],
-            );
-          },
+      bottomNavigationBar: Visibility(
+        visible: showBottom,
+        child: BottomAppBar(
+          color: Colors.white,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RectangularIBtn(
+                    onPressed: () {
+                      showAddArticleDialog(context);
+                    },
+                    text: languageProvider.translate('Add Manually'),
+                    color: Color(0xFFF4F1F1),
+                    btnText: Colors.black,
+                    iconAssetPath: "assets/plus.png",
+                    constraints: constraints,
+                  ),
+                  SizedBox(width: 20,),
+                  RectangularIBtn(
+                    onPressed: () async {
+                      newBarcodeScan();
+                     // barcodeScanStream();
+                    },
+                    text: languageProvider.translate('Scan Samples'),
+                    color: Colors.red,
+                    btnText: Colors.white,
+                    iconAssetPath: "assets/qr.png",
+                    constraints: constraints,
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     

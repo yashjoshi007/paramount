@@ -3,7 +3,7 @@
   "customer_det": "Customer Details",
   "barcode": "Barcode",
   "email_list": "Email List to PJC",
-  "Email List to PJC": "Finalised List",
+  "Save List": "Save List",
   "empty_list":"Select Sample by scanning the barcode or adding them manually \uD83D\uDC47\uD83C\uDFFB",
   "No items in the list, scan or add from below buttons": "No items in the list, scan or add from below buttons",
   "add_p": "Add Product",
