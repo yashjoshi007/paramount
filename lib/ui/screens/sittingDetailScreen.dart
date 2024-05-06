@@ -15,7 +15,7 @@ class SittingDetailsPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Exhibit Details',style:GoogleFonts.poppins()),
+        title: Text('Sitting Details',style:GoogleFonts.poppins()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

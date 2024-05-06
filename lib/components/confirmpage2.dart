@@ -207,6 +207,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -236,7 +237,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
               ),
               SizedBox(height: 25),
               Text(
-                'Check your mail',
+                'Want to send Final list by email?',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,

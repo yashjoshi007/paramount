@@ -32,7 +32,7 @@ class _RegistrationScreenState extends State<signinPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        // backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: Stack(
             children:[ SingleChildScrollView(
