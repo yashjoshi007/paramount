@@ -577,7 +577,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         MaterialPageRoute(
                           builder: (context) =>
                               ConfirmPage2(
-                                description: 'Mail has been successfully sent to PJC and your account.',
+                                description: 'Click "Send" and you will be redirected to your email app with automatically generated email.',
                                 btnText: 'Send',
                                 userRole: widget.userRole,
                                 Email: Email,),

@@ -58,12 +58,11 @@ class ArticleDetailsPage extends StatelessWidget {
     if(btnPressed=='Exhibit') {
       apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getExhibitSamples&articleNumber=$barcode';
     }else if(btnPressed=='Sitting'){
-      if(userRole == "customer") {
-        apiUrl =
-        'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
-      }else if(userRole=="colleague")
+      if(userRole == "customer" || userRole == "Customer") {
+        apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
+      }else if(userRole=="colleague" || userRole == "Colleague")
         {
-          apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
+          apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingColleague&articleNumber=$barcode';
         }
     }
     try {

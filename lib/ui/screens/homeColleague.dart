@@ -756,7 +756,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ConfirmPage2(
-                                                  description: 'Mail has been successfully sent to PMT-TXT and your account.',
+                                                  description: 'Click "Send" and you will be redirected to your email app with automatically generated email.',
                                                   btnText: 'Send',
                                                   userRole: widget.userRole,
                                                   Email: '${userDetails['email']}',),
@@ -909,7 +909,7 @@ class _MyHomePageState extends State<HomePageColleague> {
       bottomNavigationBar: Visibility(
         visible: showBottom,
         child: BottomAppBar(
-          color: Colors.white,
+          surfaceTintColor: Colors.white,
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Row(

@@ -237,11 +237,12 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
               ),
               SizedBox(height: 25),
               Text(
-                'Want to send Final list by email?',
+                'Want to send this list by email?',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 15),
               Text(
