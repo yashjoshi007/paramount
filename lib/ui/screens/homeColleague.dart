@@ -84,8 +84,8 @@ class _MyHomePageState extends State<HomePageColleague> {
     setState(() {
       if (res is String && res != '') {
         _scanBarcodeResult = res;
-        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+        if (!_barcodeList.any((element) => element['barcode'] == _scanBarcodeResult)) {
+          _barcodeList.insert(0, {'barcode': _scanBarcodeResult, 'quantity': '1'}); // Add the new barcode at index 0
           _saveBarcodeList();
         }
         else{
@@ -869,9 +869,10 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           initialValue: _barcodeList[index]['quantity'].toString(),
                                           onChanged: (value) {
                                             // Update the quantity when the user inputs a value
-                                            _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
+                                            _barcodeList[index]['quantity'] = value;
                                           },
                                           onEditingComplete: () {
+                                            FocusScope.of(context).unfocus();
                                             // Save the updated list after a delay when editing is complete
                                             Future.delayed(Duration(milliseconds: 500), () {
                                               setState(() {

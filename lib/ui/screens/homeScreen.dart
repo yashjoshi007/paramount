@@ -603,76 +603,75 @@ class _MyHomePageState extends State<HomePageClient> {
             SizedBox(height: 10), // Add some space between the text and the list
             Expanded(
               child: _barcodeList.length != 0
-                  ? Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
-                  child: ListView.builder(
-                    itemCount: _barcodeList.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Handle tap on the list tile
-                          _fetchArticleDetails(_barcodeList[index]['barcode']!);
-                        },
-                        child: Card(
-                          elevation: 0.0,
-                          color: Color(0xFFF4F1F1),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                // Display barcode and leading icon
-                                Expanded(
-                                  flex: 2,
-                                  child: ListTile(
-                                    leading: Icon(Icons.qr_code),
-                                    title: Text(
-                                      '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                      style: GoogleFonts.poppins(),
+                  ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
+                    child: ListView.builder(
+                      itemCount: _barcodeList.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Handle tap on the list tile
+                            _fetchArticleDetails(_barcodeList[index]['barcode']!);
+                          },
+                          child: Card(
+                            elevation: 0.0,
+                            color: Color(0xFFF4F1F1),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  // Display barcode and leading icon
+                                  Expanded(
+                                    flex: 2,
+                                    child: ListTile(
+                                      leading: Icon(Icons.qr_code),
+                                      title: Text(
+                                        '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                        style: GoogleFonts.poppins(),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                // Display quantity input field
-                                Expanded(
-                                  child: SizedBox(
-                                    width: 30, // Set a fixed width for the input field
-                                    child: DelayedEditableTextField(
-                                      initialValue: _barcodeList[index]['quantity'].toString(),
-                                      onChanged: (value) {
-                                        // Update the quantity when the user inputs a value
-                                        _barcodeList[index]['quantity'] = (int.tryParse(value) ?? 0) as String;
-                                      },
-                                      onEditingComplete: () {
-                                        // Save the updated list after a delay when editing is complete
-                                        Future.delayed(Duration(milliseconds: 500), () {
-                                          setState(() {
-                                            _saveBarcodeList(); // Save the updated list
+                                  // Display quantity input field
+                                  Expanded(
+                                    child: SizedBox(
+                                      width: 30, // Set a fixed width for the input field
+                                      child: DelayedEditableTextField(
+                                        initialValue: _barcodeList[index]['quantity'].toString(),
+                                        onChanged: (value) {
+                                          // Update the quantity when the user inputs a value
+                                          _barcodeList[index]['quantity'] = value;
+                                        },
+                                        onEditingComplete: () {
+                                          FocusScope.of(context).unfocus();
+                                          // Save the updated list after a delay when editing is complete
+                                          Future.delayed(Duration(milliseconds: 500), () {
+                                            setState(() {
+                                              _saveBarcodeList(); // Save the updated list
+                                            });
                                           });
-                                        });
-                                      },
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                // Display delete icon
-                                Expanded(
-                                  flex: 0, // Prevent delete icon from expanding
-                                  child: IconButton(
-                                    icon: Image.asset(
-                                      'assets/delete.png',
-                                      color: Colors.red,
+                                  // Display delete icon
+                                  Expanded(
+                                    flex: 0, // Prevent delete icon from expanding
+                                    child: IconButton(
+                                      icon: Image.asset(
+                                        'assets/delete.png',
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () => removeBarcode(index),
                                     ),
-                                    onPressed: () => removeBarcode(index),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              )
+                        );
+                      },
+                    ),
+                  )
             
                   : Align(
                 alignment: Alignment.center,
