@@ -866,7 +866,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                       child: SizedBox(
                                         width: double.infinity, // Set width to occupy available space
                                         child: DelayedEditableTextField(
-                                          initialValue: _barcodeList[index]['quantity'].toString(),
+                                          value: _barcodeList[index]['quantity'].toString(),
                                           onChanged: (value) {
                                             _barcodeList[index]['quantity'] = value;
                                           },

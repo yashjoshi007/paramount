@@ -54,13 +54,13 @@ class MyTextField extends StatelessWidget {
 }
 
 class DelayedEditableTextField extends StatefulWidget {
-  final String initialValue;
+  final String value;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onEditingComplete;
 
   const DelayedEditableTextField({
     Key? key,
-    required this.initialValue,
+    required this.value,
     this.onChanged,
     this.onEditingComplete,
   }) : super(key: key);
@@ -75,7 +75,15 @@ class _DelayedEditableTextFieldState extends State<DelayedEditableTextField> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialValue);
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant DelayedEditableTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _controller.text = widget.value;
+    }
   }
 
   @override

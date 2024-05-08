@@ -172,7 +172,7 @@ class _MyHomePageState extends State<HomePageClient> {
         _barcodeList = barcodeListString.map<Map<String, String>>((item) => Map<String, String>.from(json.decode(item))).toList();
       });
       _barcodeList.forEach((barcode) {
-        print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}');
+        print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}');
         // Add other properties if available
       });
     }
@@ -638,24 +638,24 @@ class _MyHomePageState extends State<HomePageClient> {
                                     child: SizedBox(
                                       width: 30, // Set a fixed width for the input field
                                       child: DelayedEditableTextField(
-                                        initialValue: _barcodeList[index]['quantity'].toString(),
+                                        // Set the value dynamically based on _barcodeList
+                                        value: _barcodeList[index]['quantity'].toString(),
                                         onChanged: (value) {
                                           // Update the quantity when the user inputs a value
                                           _barcodeList[index]['quantity'] = value;
-                                          setState(() {
-                                            _saveBarcodeList(); // Save the updated list
-                                          });
                                         },
                                         onEditingComplete: () {
                                           FocusScope.of(context).unfocus();
                                           // Save the updated list after a delay when editing is complete
                                           Future.delayed(Duration(milliseconds: 500), () {
                                             setState(() {
-                                              _saveBarcodeList(); // Save the updated list
+                                              _saveBarcodeList();
+                                              _loadBarcodeList(); // Save the updated list
                                             });
                                           });
                                         },
                                       ),
+
                                     ),
                                   ),
                                   // Display delete icon
