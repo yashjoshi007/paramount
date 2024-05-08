@@ -1,5 +1,6 @@
-// ignore_for_file: unused_field
 
+import 'dart:async';
+import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,6 +37,7 @@ class _MyHomePageState extends State<HomePageClient> {
   List<Map<String, String>> _barcodeList = [];
   String _scanBarcodeResult = "";
   String Email = '';
+  String? res;
 
 
   @override
@@ -258,31 +260,31 @@ class _MyHomePageState extends State<HomePageClient> {
     });
   }
 
-  // newBarcodeScan() async {
-  //   var res = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Done', true, ScanMode.BARCODE);
-  //   setState(() {
-  //     if (res is String && res != '') {
-  //       _scanBarcodeResult = res;
-  //       if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-  //         _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
-  //         _saveBarcodeList();
-  //       }
-  //       else{
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Barcode Already Scanned!'),
-  //         ),
-  //       );
-  //       }
-  //     } else if(res == "-1") {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Try again to scan a barcode.'),
-  //         ),
-  //       );
-  //     }
-  //   });
-  // }
+  newBarcodeScan() async {
+    var res = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Done', true, ScanMode.BARCODE);
+    setState(() {
+      if (res is String && res != '') {
+        _scanBarcodeResult = res;
+        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+          _saveBarcodeList();
+        }
+        else{
+          ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Barcode Already Scanned!'),
+          ),
+        );
+        }
+      } else if(res == "-1") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Try again to scan a barcode.'),
+          ),
+        );
+      }
+    });
+  }
 
   // Future<void> scanBarcodeNormal() async {
   //   String barcodeScanRes;
@@ -725,30 +727,35 @@ class _MyHomePageState extends State<HomePageClient> {
                 ),
                 SizedBox(width: 20,),
                 RectangularIBtn(
-                  onPressed: () async {
-                    var res = await FlutterBarcodeScanner.scanBarcode('#ff6666', 'Done', true, ScanMode.BARCODE);
-                    setState(() {
-                      if (res is String && res != '') {
-                        _scanBarcodeResult = res;
-                        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                          _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
-                          _saveBarcodeList();
-                        }
-                        else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Barcode Already Scanned!'),
-                          ),
-                        );
-                        }
-                      } else if(res == "-1") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Try again to scan a barcode.'),
-                          ),
-                        );
-                      }
-                    });
+                  onPressed: () {
+
+                    QrBarCodeScannerDialog().getScannedQrBarCode(
+                        context: context,
+                        onCode: (res) {
+                          setState(() {
+                            if (res is String && res != '') {
+                              _scanBarcodeResult = res;
+                              if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+                                _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+                                _saveBarcodeList();
+                              }
+                              else{
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Barcode Already Scanned!'),
+                                ),
+                              );
+                              }
+                            } else if(res == "-1") {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Try again to scan a barcode.'),
+                                ),
+                              );
+                            }
+                          });
+                          
+                        });
                   },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,

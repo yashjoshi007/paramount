@@ -357,7 +357,7 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.add({'barcode': articleNo, 'quantity': quantity.toString()});
+      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString()});
       _saveBarcodeList();
     });
   }
@@ -868,7 +868,6 @@ class _MyHomePageState extends State<HomePageColleague> {
                                         child: DelayedEditableTextField(
                                           initialValue: _barcodeList[index]['quantity'].toString(),
                                           onChanged: (value) {
-                                            // Update the quantity when the user inputs a value
                                             _barcodeList[index]['quantity'] = value;
                                           },
                                           onEditingComplete: () {
