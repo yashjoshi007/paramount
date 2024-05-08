@@ -253,7 +253,7 @@ class _MyHomePageState extends State<HomePageClient> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.add({'barcode': articleNo, 'quantity': quantity.toString()});
+      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString()});
       _saveBarcodeList();
     });
   }
@@ -640,6 +640,9 @@ class _MyHomePageState extends State<HomePageClient> {
                                         onChanged: (value) {
                                           // Update the quantity when the user inputs a value
                                           _barcodeList[index]['quantity'] = value;
+                                          setState(() {
+                                            _saveBarcodeList(); // Save the updated list
+                                          });
                                         },
                                         onEditingComplete: () {
                                           FocusScope.of(context).unfocus();
@@ -728,7 +731,7 @@ class _MyHomePageState extends State<HomePageClient> {
                       if (res is String && res != '') {
                         _scanBarcodeResult = res;
                         if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+                          _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
                           _saveBarcodeList();
                         }
                         else{
