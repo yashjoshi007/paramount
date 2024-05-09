@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutter_pro_barcode_scanner/flutter_pro_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
 import 'package:provider/provider.dart';
@@ -936,13 +936,10 @@ class _MyHomePageState extends State<HomePageColleague> {
                   RectangularIBtn(
 
                     onPressed: () async {
-                     String res = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ScannerScreen()));
+                     var res = await BarcodeScanner.scan();
                       setState(() {
                         if (res is String && res != '') {
-                          _scanBarcodeResult = res;
+                          _scanBarcodeResult = res.rawContent;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
                             _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
                             _saveBarcodeList();

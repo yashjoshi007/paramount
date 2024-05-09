@@ -1,6 +1,6 @@
 
 import 'dart:async';
-import 'package:flutter_pro_barcode_scanner/flutter_pro_barcode_scanner.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -727,13 +727,10 @@ class _MyHomePageState extends State<HomePageClient> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                     String res = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ScannerScreen()));
+                     var res = await BarcodeScanner.scan();
                       setState(() {
                         if (res is String && res != '') {
-                          _scanBarcodeResult = res;
+                          _scanBarcodeResult = res.rawContent;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
                             _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
                             _saveBarcodeList();
