@@ -815,6 +815,10 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - barcode_scan2 (0.0.1):
+    - Flutter
+    - MTBBarcodeScanner
+    - SwiftProtobuf
   - BoringSSL-GRPC (0.0.32):
     - BoringSSL-GRPC/Implementation (= 0.0.32)
     - BoringSSL-GRPC/Interface (= 0.0.32)
@@ -1058,11 +1062,6 @@ PODS:
     - Flutter
     - FlutterMacOS
   - PromisesObjC (2.4.0)
-  - qr_bar_code_scanner_dialog (0.0.1):
-    - Flutter
-  - qr_code_scanner (0.2.0):
-    - Flutter
-    - MTBBarcodeScanner
   - RecaptchaInterop (100.0.0)
   - SDWebImage (5.19.1):
     - SDWebImage/Core (= 5.19.1)
@@ -1070,12 +1069,14 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - SwiftProtobuf (1.26.0)
   - SwiftyGif (5.4.5)
   - Toast (4.1.1)
   - url_launcher_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - barcode_scan2 (from `.symlinks/plugins/barcode_scan2/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -1087,8 +1088,6 @@ DEPENDENCIES:
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - qr_bar_code_scanner_dialog (from `.symlinks/plugins/qr_bar_code_scanner_dialog/ios`)
-  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -1120,10 +1119,13 @@ SPEC REPOS:
     - PromisesObjC
     - RecaptchaInterop
     - SDWebImage
+    - SwiftProtobuf
     - SwiftyGif
     - Toast
 
 EXTERNAL SOURCES:
+  barcode_scan2:
+    :path: ".symlinks/plugins/barcode_scan2/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   file_picker:
@@ -1146,10 +1148,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  qr_bar_code_scanner_dialog:
-    :path: ".symlinks/plugins/qr_bar_code_scanner_dialog/ios"
-  qr_code_scanner:
-    :path: ".symlinks/plugins/qr_code_scanner/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   url_launcher_ios:
@@ -1157,6 +1155,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: ebec4f56469dd7ce9ab08683c0319a68aa0ad86e
+  barcode_scan2: 0af2bb63c81b4565aab6cd78278e4c0fa136dbb0
   BoringSSL-GRPC: 1e2348957acdbcad360b80a264a90799984b2ba6
   cloud_firestore: 16ad850949e9c68ac1d99e883adaaba9b9fc955c
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
@@ -1191,11 +1190,10 @@ SPEC CHECKSUMS:
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  qr_bar_code_scanner_dialog: d59c27f37c96ef8649711e6eee8033a69191f907
-  qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
+  SwiftProtobuf: 5e8349171e7c2f88f5b9e683cb3cb79d1dc780b3
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586

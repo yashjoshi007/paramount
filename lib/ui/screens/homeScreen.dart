@@ -727,10 +727,11 @@ class _MyHomePageState extends State<HomePageClient> {
                 SizedBox(width: 20,),
                 RectangularIBtn(
                   onPressed: () async {
-                     var res = await BarcodeScanner.scan();
+                     var code = await BarcodeScanner.scan();
+                     String res = code.rawContent;
                       setState(() {
-                        if (res is String && res != '') {
-                          _scanBarcodeResult = res.rawContent;
+                        if (res != '') {
+                          _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
                             _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
                             _saveBarcodeList();
