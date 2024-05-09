@@ -32,6 +32,7 @@ class HomePageClient extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePageClient> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController unitController = new TextEditingController();
   String? _selectedLanguage = 'en';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<Map<String, String>> _barcodeList = [];
@@ -636,12 +637,11 @@ class _MyHomePageState extends State<HomePageClient> {
                                   // Display quantity input field
                                   Expanded(
                                     child: SizedBox(
-                                      width: 30, // Set a fixed width for the input field
+                                      width: 30,
                                       child: DelayedEditableTextField(
                                         // Set the value dynamically based on _barcodeList
                                         value: _barcodeList[index]['quantity'].toString(),
                                         onChanged: (value) {
-                                          // Update the quantity when the user inputs a value
                                           _barcodeList[index]['quantity'] = value;
                                         },
                                         onEditingComplete: () {
@@ -650,7 +650,6 @@ class _MyHomePageState extends State<HomePageClient> {
                                           Future.delayed(Duration(milliseconds: 500), () {
                                             setState(() {
                                               _saveBarcodeList();
-                                              _loadBarcodeList(); // Save the updated list
                                             });
                                           });
                                         },
