@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_pro_barcode_scanner/flutter_pro_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../components/confirmation_page.dart';
@@ -17,6 +17,8 @@ import '../../localization/language_provider.dart';
 import '../login/login.dart';
 import 'articleDetailScreen.dart';
 import 'package:http/http.dart' as http;
+
+
 
 class HomePageColleague extends StatefulWidget {
   final String userRole;
@@ -80,35 +82,35 @@ class _MyHomePageState extends State<HomePageColleague> {
     await prefs.setStringList('barcodeList', encodedList);
   }
 
-  newBarcodeScan() {
-    QrBarCodeScannerDialog().getScannedQrBarCode(
-    context: context,
-    onCode: (res) {
-      setState(() {
-        if (res is String && res != '') {
-          _scanBarcodeResult = res;
-          if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
-            _saveBarcodeList();
-          }
-          else{
-            ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Barcode Already Scanned!'),
-            ),
-          );
-          }
-        } else if(res == "-1") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Try again to scan a barcode.'),
-            ),
-          );
-        }
-      });
+  // newBarcodeScan() {
+  //   QrBarCodeScannerDialog().getScannedQrBarCode(
+  //   context: context,
+  //   onCode: (res) {
+  //     setState(() {
+  //       if (res is String && res != '') {
+  //         _scanBarcodeResult = res;
+  //         if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+  //           _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+  //           _saveBarcodeList();
+  //         }
+  //         else{
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //             content: Text('Barcode Already Scanned!'),
+  //           ),
+  //         );
+  //         }
+  //       } else if(res == "-1") {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //             content: Text('Try again to scan a barcode.'),
+  //           ),
+  //         );
+  //       }
+  //     });
       
-    });
-  }
+  //   });
+  // }
 
   // Future<void> scanBarcodeNormal() async {
   //   String barcodeScanRes;
@@ -932,10 +934,40 @@ class _MyHomePageState extends State<HomePageColleague> {
                   ),
                   SizedBox(width: 20,),
                   RectangularIBtn(
+
                     onPressed: () async {
-                      await newBarcodeScan();
-                     // barcodeScanStream();
+                     String res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ScannerScreen()));
+                      setState(() {
+                        if (res is String && res != '') {
+                          _scanBarcodeResult = res;
+                          if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+                            _saveBarcodeList();
+                          }
+                          else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Barcode Already Scanned!'),
+                            ),
+                          );
+                          }
+                        } else if(res == "-1") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Try again to scan a barcode.'),
+                            ),
+                          );
+                        }
+                      });
                     },
+
+                    // onPressed: () async {
+                    //   await newBarcodeScan();
+                    //  // barcodeScanStream();
+                    // },
                     text: languageProvider.translate('Scan Samples'),
                     color: Colors.red,
                     btnText: Colors.white,

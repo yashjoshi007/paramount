@@ -1,6 +1,6 @@
 
 import 'dart:async';
-import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
+import 'package:flutter_pro_barcode_scanner/flutter_pro_barcode_scanner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -726,36 +726,34 @@ class _MyHomePageState extends State<HomePageClient> {
                 ),
                 SizedBox(width: 20,),
                 RectangularIBtn(
-                  onPressed: () {
-
-                    QrBarCodeScannerDialog().getScannedQrBarCode(
-                        context: context,
-                        onCode: (res) {
-                          setState(() {
-                            if (res is String && res != '') {
-                              _scanBarcodeResult = res;
-                              if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                                _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
-                                _saveBarcodeList();
-                              }
-                              else{
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Barcode Already Scanned!'),
-                                ),
-                              );
-                              }
-                            } else if(res == "-1") {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Try again to scan a barcode.'),
-                                ),
-                              );
-                            }
-                          });
-                          
-                        });
-                  },
+                  onPressed: () async {
+                     String res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ScannerScreen()));
+                      setState(() {
+                        if (res is String && res != '') {
+                          _scanBarcodeResult = res;
+                          if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+                            _saveBarcodeList();
+                          }
+                          else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Barcode Already Scanned!'),
+                            ),
+                          );
+                          }
+                        } else if(res == "-1") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Try again to scan a barcode.'),
+                            ),
+                          );
+                        }
+                      });
+                    },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,
                   btnText: Colors.white,
