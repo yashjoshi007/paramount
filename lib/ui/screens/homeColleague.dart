@@ -189,6 +189,39 @@ class _MyHomePageState extends State<HomePageColleague> {
     }
   }
 
+  Widget _buildUnitDropdown(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          ' Unit', // Add a label above the dropdown
+          style: GoogleFonts.poppins(
+              color: Colors.black87,
+              fontSize: 10
+          ),
+        ),
+        SizedBox(height: 8), // Add some space between the label and the dropdown
+        DropdownButton<String>(
+          value: _barcodeList[index]['unit'], // Set initial value to the existing unit, if any
+          onChanged: (String? newValue) {
+            setState(() {
+              _barcodeList[index]['unit'] = newValue!; // Update unit for this barcode
+              _saveBarcodeList();
+
+            });
+          },
+          items: <String>['M', 'Y', 'Hanger', 'Head']
+              .map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
   void _fetchArticleDetails(String barcode) async {
     bool snackbarShown = false; // Flag to track whether a Snackbar is shown
 
@@ -364,7 +397,7 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString()});
+      _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
       _saveBarcodeList();
     });
   }
@@ -889,6 +922,9 @@ class _MyHomePageState extends State<HomePageColleague> {
                                         ),
                                       ),
                                     ),
+                                    Expanded(
+                                      child: _buildUnitDropdown(index),
+                                    ),
                                     // Display delete icon
                                     IconButton(
                                       icon: Image.asset(
@@ -942,7 +978,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                         if (res != '') {
                           _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
                             _saveBarcodeList();
                           }
                           else{

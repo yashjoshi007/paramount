@@ -94,8 +94,8 @@ class _DelayedEditableTextFieldState extends State<DelayedEditableTextField> {
       onEditingComplete: widget.onEditingComplete,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
-        labelText: 'Unit',
-        labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.normal),
+        labelText: 'Quantity',
+        labelStyle: GoogleFonts.poppins(fontSize: 6,fontWeight: FontWeight.normal),
         border: OutlineInputBorder(),
       ),
     );

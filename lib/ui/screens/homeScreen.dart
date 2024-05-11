@@ -57,6 +57,41 @@ class _MyHomePageState extends State<HomePageClient> {
     await prefs.remove('barcodeList');
   }
 
+  Widget _buildUnitDropdown(int
+  index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          ' Unit', // Add a label above the dropdown
+          style: GoogleFonts.poppins(
+            color: Colors.black87,
+            fontSize: 10
+          ),
+        ),
+        SizedBox(height: 8), // Add some space between the label and the dropdown
+        DropdownButton<String>(
+          value: _barcodeList[index]['unit'], // Set initial value to the existing unit, if any
+          onChanged: (String? newValue) {
+            setState(() {
+              _barcodeList[index]['unit'] = newValue!; // Update unit for this barcode
+                _saveBarcodeList();
+
+            });
+          },
+          items: <String>['M', 'Y', 'Hanger', 'Head']
+              .map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+
   void showAddArticleDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -173,7 +208,7 @@ class _MyHomePageState extends State<HomePageClient> {
         _barcodeList = barcodeListString.map<Map<String, String>>((item) => Map<String, String>.from(json.decode(item))).toList();
       });
       _barcodeList.forEach((barcode) {
-        print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}');
+        print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
         // Add other properties if available
       });
     }
@@ -256,7 +291,7 @@ class _MyHomePageState extends State<HomePageClient> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString()});
+      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':''});
       _saveBarcodeList();
     });
   }
@@ -266,18 +301,21 @@ class _MyHomePageState extends State<HomePageClient> {
     setState(() {
       if (res is String && res != '') {
         _scanBarcodeResult = res;
-        if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-          _barcodeList.add({'barcode': _scanBarcodeResult, 'quantity': '1'});
+        if (!_barcodeList.any((item) => item['barcode'] == _scanBarcodeResult)) {
+          _barcodeList.add({
+            'barcode': _scanBarcodeResult,
+            'quantity': '1',
+            'unit': 'A', // Set default unit to 'A'
+          });
           _saveBarcodeList();
-        }
-        else{
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Barcode Already Scanned!'),
-          ),
-        );
+            const SnackBar(
+              content: Text('Barcode Already Scanned!'),
+            ),
+          );
         }
-      } else if(res == "-1") {
+      } else if (res == "-1") {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Try again to scan a barcode.'),
@@ -286,6 +324,7 @@ class _MyHomePageState extends State<HomePageClient> {
       }
     });
   }
+
 
   // Future<void> scanBarcodeNormal() async {
   //   String barcodeScanRes;
@@ -608,7 +647,7 @@ class _MyHomePageState extends State<HomePageClient> {
               child: _barcodeList.length != 0
                   ? Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
-                    child: ListView.builder(
+                    child:ListView.builder(
                       itemCount: _barcodeList.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
@@ -654,8 +693,11 @@ class _MyHomePageState extends State<HomePageClient> {
                                           });
                                         },
                                       ),
-
                                     ),
+                                  ),
+                                  // Display unit dropdown button
+                                  Expanded(
+                                    child: _buildUnitDropdown(index),
                                   ),
                                   // Display delete icon
                                   Expanded(
@@ -733,7 +775,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         if (res != '') {
                           _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1'});
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
                             _saveBarcodeList();
                           }
                           else{

@@ -43,7 +43,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
               .toList();
         });
         _barcodeList.forEach((barcode) {
-          print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}');
+          print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}, Unit: ${barcode['unit']}');
           print(widget.userRole);
           // Add other properties if available
         });
