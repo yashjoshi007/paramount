@@ -207,7 +207,6 @@ class _MyHomePageState extends State<HomePageColleague> {
             setState(() {
               _barcodeList[index]['unit'] = newValue!; // Update unit for this barcode
               _saveBarcodeList();
-
             });
           },
           items: <String>['M', 'Y', 'Hanger', 'Head']
@@ -397,7 +396,7 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
+      _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'M',});
       _saveBarcodeList();
     });
   }
@@ -978,7 +977,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                         if (res != '') {
                           _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'M',});
                             _saveBarcodeList();
                           }
                           else{

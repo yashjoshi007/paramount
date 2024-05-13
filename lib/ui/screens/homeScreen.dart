@@ -291,7 +291,7 @@ class _MyHomePageState extends State<HomePageClient> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':''});
+      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':'M'});
       _saveBarcodeList();
     });
   }
@@ -305,7 +305,7 @@ class _MyHomePageState extends State<HomePageClient> {
           _barcodeList.add({
             'barcode': _scanBarcodeResult,
             'quantity': '1',
-            'unit': 'A', // Set default unit to 'A'
+            'unit': 'M', // Set default unit to 'A'
           });
           _saveBarcodeList();
         } else {
@@ -775,7 +775,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         if (res != '') {
                           _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': '',});
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'M',});
                             _saveBarcodeList();
                           }
                           else{
