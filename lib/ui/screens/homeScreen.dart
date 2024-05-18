@@ -584,6 +584,57 @@ class _MyHomePageState extends State<HomePageClient> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              color: Colors.grey[200],
+              height: 60.0, // Adjust height as needed
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // First TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
+                    ),
+                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Second TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
+                    ),
+                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Third TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
+                    ),
+                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                ],
+              ),
+            ),
             Row(
               children: [
                 Padding(

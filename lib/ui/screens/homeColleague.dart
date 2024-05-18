@@ -663,289 +663,347 @@ class _MyHomePageState extends State<HomePageColleague> {
         ),
       ),
       body: SafeArea(
-        child: FutureBuilder<Map<String, dynamic>>(
-          future: loadUserDetails(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CupertinoActivityIndicator(
-                color: Colors.red,
-                radius: 20,
-                animating: true,
-              ),);
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              Map<String, dynamic> userDetails = snapshot.data ?? {};
-              bool userDetailsAvailable = userDetails.isNotEmpty;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            Container(
+              color: Colors.grey[200],
+              height: 60.0, // Adjust height as needed
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (!userDetailsAvailable) ...[
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        languageProvider.translate('details'),
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
+                  // First TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    backgroundColor: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    elevation: 0,
+                    // shadowColor: Colors.black.withOpacity(0.7),
+                  ),
+                    child: Text('All Samples', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Second TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
                       ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
                     ),
-                    Row(
+                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Third TextButton
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
+                    ),
+                    child: Text('All Sitting', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: loadUserDetails(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CupertinoActivityIndicator(
+                      color: Colors.red,
+                      radius: 20,
+                      animating: true,
+                    ),);
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    Map<String, dynamic> userDetails = snapshot.data ?? {};
+                    bool userDetailsAvailable = userDetails.isNotEmpty;
+              
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _nameController,
-                              decoration: InputDecoration(
-                                labelText: languageProvider.translate('name'),
-                                labelStyle: GoogleFonts.poppins(),
-                                border: OutlineInputBorder(),
+                        if (!userDetailsAvailable) ...[
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              languageProvider.translate('details'),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _companyNameController,
-                              decoration: InputDecoration(
-                                labelText: languageProvider.translate('comp_name'),
-                                labelStyle: GoogleFonts.poppins(),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                labelText: languageProvider.translate('email'),
-                                labelStyle: GoogleFonts.poppins(),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: RectangularICBtn(
-                            onPressed: () async {
-                              String name = _nameController.text;
-                              String companyName = _companyNameController.text;
-                              String email = _emailController.text;
-            
-                              if (name.isEmpty || companyName.isEmpty || email.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Please fill in all the details',style: GoogleFonts.poppins(),), // Prompt error message
-                                  ),
-                                );
-                              } else {
-                                await saveUserDetails(name, companyName, email);
-                                setState(() {
-                                  showBottom = true;
-                                });
-                              }
-                            }, text: 'Add', iconAssetPath: "assets/plus.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                  if (userDetailsAvailable) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        languageProvider.translate('customer_det'),
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: _nameController,
+                                    decoration: InputDecoration(
+                                      labelText: languageProvider.translate('name'),
+                                      labelStyle: GoogleFonts.poppins(),
+                                      border: OutlineInputBorder(),
                                     ),
                                   ),
-            
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 0.0),
-                                    child: RectangularICBtn(
-                                      onPressed: () async {
-                                      bool refresh = await  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ConfirmPage2(
-                                                  description: 'Click "Send" and you will be redirected to your email app with automatically generated email.',
-                                                  btnText: 'Send',
-                                                  userRole: widget.userRole,
-                                                  Email: '${userDetails['email']}',),
-                                          ),
-                                        );
-                                      if(refresh==true)
-                                        {
-                                          setState(() {
-                                            _barcodeList = [];
-                                          });
-
-                                        }
-                                      }, text: languageProvider.translate('Save List'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: _companyNameController,
+                                    decoration: InputDecoration(
+                                      labelText: languageProvider.translate('comp_name'),
+                                      labelStyle: GoogleFonts.poppins(),
+                                      border: OutlineInputBorder(),
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16,10,0,5),
-                                child: Text(
-                                  '${languageProvider.translate('name')}: ${userDetails['name']}',
-                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16,10,0,10),
-                                child: Text(
-                                  '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16,10,0,10),
-                                child: Text(
-                                  '${languageProvider.translate('email')}: ${userDetails['email']}',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              SizedBox(height: 20),
                             ],
                           ),
-                        ),
-                        IconButton(
-                          icon: Image.asset(
-                            'assets/delete.png',
-                            color: Colors.red,
-                          ), // Add delete icon
-                          onPressed: () async {
-                            setState(() {
-                              _nameController.text = ''; // Clear text fields
-                              _companyNameController.text = '';
-                              _emailController.text = '';
-                              showBottom = false;
-                            });
-                            //await _clearBarcodeList();
-                            await _clearUserDetails();
-
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (userDetailsAvailable)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        languageProvider.translate('Selected Samples'),
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  // Display sample list here
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
-                      child: ListView.builder(
-                        itemCount: _barcodeList.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              // Handle tap on the list tile
-                              _fetchArticleDetails(_barcodeList[index]['barcode']!);
-                            },
-                            child: Card(
-                              elevation: 0.0,
-                              color: Color(0xFFF4F1F1),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: _emailController,
+                                    decoration: InputDecoration(
+                                      labelText: languageProvider.translate('email'),
+                                      labelStyle: GoogleFonts.poppins(),
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: RectangularICBtn(
+                                  onPressed: () async {
+                                    String name = _nameController.text;
+                                    String companyName = _companyNameController.text;
+                                    String email = _emailController.text;
+              
+                                    if (name.isEmpty || companyName.isEmpty || email.isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Please fill in all the details',style: GoogleFonts.poppins(),), // Prompt error message
+                                        ),
+                                      );
+                                    } else {
+                                      await saveUserDetails(name, companyName, email);
+                                      setState(() {
+                                        showBottom = true;
+                                      });
+                                    }
+                                  }, text: 'Add', iconAssetPath: "assets/plus.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                        if (userDetailsAvailable) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Display barcode and leading icon
-                                    Expanded(
-                                      flex: 2,
-                                      child: ListTile(
-                                        leading: Icon(Icons.qr_code),
-                                        title: Text(
-                                          '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                          style: GoogleFonts.poppins(),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Text(
+                                              languageProvider.translate('customer_det'),
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    // Display quantity input field
-                                    Expanded(
-                                      child: SizedBox(
-                                        width: double.infinity, // Set width to occupy available space
-                                        child: DelayedEditableTextField(
-                                          value: _barcodeList[index]['quantity'].toString(),
-                                          onChanged: (value) {
-                                            _barcodeList[index]['quantity'] = value;
-                                          },
-                                          onEditingComplete: () {
-                                            FocusScope.of(context).unfocus();
-                                            // Save the updated list after a delay when editing is complete
-                                            Future.delayed(Duration(milliseconds: 500), () {
-                                              setState(() {
-                                                _saveBarcodeList(); // Save the updated list
-                                              });
-                                            });
-                                          },
+              
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0),
+                                          child: RectangularICBtn(
+                                            onPressed: () async {
+                                            bool refresh = await  Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ConfirmPage2(
+                                                        description: 'Click "Send" and you will be redirected to your email app with automatically generated email.',
+                                                        btnText: 'Send',
+                                                        userRole: widget.userRole,
+                                                        Email: '${userDetails['email']}',),
+                                                ),
+                                              );
+                                            if(refresh==true)
+                                              {
+                                                setState(() {
+                                                  _barcodeList = [];
+                                                });
+              
+                                              }
+                                            }, text: languageProvider.translate('Save List'), iconAssetPath: "assets/mbox.png", color: Color(0xFFF4F1F1), btnText: Colors.black87,
+                                          ),
                                         ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16,10,0,5),
+                                      child: Text(
+                                        '${languageProvider.translate('name')}: ${userDetails['name']}',
+                                        style: GoogleFonts.poppins(),
                                       ),
                                     ),
-                                    Expanded(
-                                      child: _buildUnitDropdown(index),
-                                    ),
-                                    // Display delete icon
-                                    IconButton(
-                                      icon: Image.asset(
-                                        'assets/delete.png',
-                                        color: Colors.red,
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16,10,0,10),
+                                      child: Text(
+                                        '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
+                                        style: GoogleFonts.poppins(),
                                       ),
-                                      onPressed: () => removeBarcode(index),
                                     ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16,10,0,10),
+                                      child: Text(
+                                        '${languageProvider.translate('email')}: ${userDetails['email']}',
+                                        style: GoogleFonts.poppins(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
                                   ],
                                 ),
                               ),
+                              IconButton(
+                                icon: Image.asset(
+                                  'assets/delete.png',
+                                  color: Colors.red,
+                                ), // Add delete icon
+                                onPressed: () async {
+                                  setState(() {
+                                    _nameController.text = ''; // Clear text fields
+                                    _companyNameController.text = '';
+                                    _emailController.text = '';
+                                    showBottom = false;
+                                  });
+                                  //await _clearBarcodeList();
+                                  await _clearUserDetails();
+              
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                        if (userDetailsAvailable)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              languageProvider.translate('Selected Samples'),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-            
-                ],
-              );
-            }
-          },
+                          ),
+                        // Display sample list here
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
+                            child: ListView.builder(
+                              itemCount: _barcodeList.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Handle tap on the list tile
+                                    _fetchArticleDetails(_barcodeList[index]['barcode']!);
+                                  },
+                                  child: Card(
+                                    elevation: 0.0,
+                                    color: Color(0xFFF4F1F1),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          // Display barcode and leading icon
+                                          Expanded(
+                                            flex: 2,
+                                            child: ListTile(
+                                              leading: Icon(Icons.qr_code),
+                                              title: Text(
+                                                '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                                style: GoogleFonts.poppins(),
+                                              ),
+                                            ),
+                                          ),
+                                          // Display quantity input field
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: double.infinity, // Set width to occupy available space
+                                              child: DelayedEditableTextField(
+                                                value: _barcodeList[index]['quantity'].toString(),
+                                                onChanged: (value) {
+                                                  _barcodeList[index]['quantity'] = value;
+                                                },
+                                                onEditingComplete: () {
+                                                  FocusScope.of(context).unfocus();
+                                                  // Save the updated list after a delay when editing is complete
+                                                  Future.delayed(Duration(milliseconds: 500), () {
+                                                    setState(() {
+                                                      _saveBarcodeList(); // Save the updated list
+                                                    });
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: _buildUnitDropdown(index),
+                                          ),
+                                          // Display delete icon
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/delete.png',
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () => removeBarcode(index),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        )
+              
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: Visibility(
