@@ -39,12 +39,18 @@ class _MyHomePageState extends State<HomePageClient> {
   String _scanBarcodeResult = "";
   String Email = '';
   String? res;
+  var articleInfo;
+  var exhibitInfo;
+  var sittingInfo;
 
 
   @override
   void initState() {
     super.initState();
     _loadBarcodeList();
+    _getAllArticle();
+    _getAllExhibit();
+    _getAllSitting();
   }
 
   Future<void> signOutGoogle() async {
@@ -198,6 +204,124 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
       ],
     );
+  }
+
+  void _showPopupAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(Duration(seconds: 5), () {
+          Navigator.of(context).pop(true);
+        });
+        return AlertDialog(
+          title: Text('Alert', style: GoogleFonts.poppins()),
+          content: Text(message, style: GoogleFonts.poppins()),
+        );
+      }
+    );
+  }
+
+  void _getAllArticle() async{
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getArticleAll';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        articleInfo = data['data'];
+        if (articleInfo.isEmpty) {
+          _showPopupAlert('No data found');
+        } 
+        //else {
+        //   print("Articles Loaded");
+        //   // _showPopupAlert('Data loaded');
+        // }
+      } 
+      
+      else {
+        _showPopupAlert('Failed to load article details, Restart app');
+      }
+    } catch (error) {
+      // print('Error fetching article details: $error');
+      _showPopupAlert('Error fetching article details');
+    }
+  }
+
+  void _fetchArticle(String barcode) {
+    if (articleInfo != null && articleInfo.isNotEmpty) {
+      var articleDetails = articleInfo[barcode];
+      var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
+      var sittingDetails = sittingInfo[barcode]?? <String, dynamic>{};
+      if (articleDetails != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ArticleDetailsPage(
+              articleDetails: articleDetails,
+              exhibitDetails: exhibitDetails,
+              sittingDetails: sittingDetails,
+              userRole: widget.userRole,
+              barcode: barcode,
+            ),
+          ),
+        );
+        return;
+      }else{
+        _showPopupAlert('No data found');
+      }
+    }
+    else {
+        _showPopupAlert('Failed! Try again...');
+    }
+  }
+
+  void _getAllExhibit() async{
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getExhibitAll';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        exhibitInfo = data['data'];
+        if (exhibitInfo.isEmpty) {
+          _showPopupAlert('No data found');
+        }
+      } 
+      else {
+        _showPopupAlert('Failed to load exhibit data, Restart App');
+      }
+    } catch (error) {
+      // print('Error fetching article details: $error');
+      _showPopupAlert('Error fetching article details');
+    }
+  }
+
+  void _getAllSitting() async{
+    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getSittingAll';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        sittingInfo = data['data'];
+        if (sittingInfo.isEmpty) {
+          _showPopupAlert('No data found');
+        } 
+      } 
+      
+      else {
+        _showPopupAlert('Failed to load sitting data, Restart App');
+      }
+    } catch (error) {
+      // print('Error fetching Sitting details: $error');
+      _showPopupAlert('Error fetching Sitting details');
+    }
   }
 
   _loadBarcodeList() async {
@@ -360,94 +484,94 @@ class _MyHomePageState extends State<HomePageClient> {
   //   }
   // }
 
-  void _fetchArticleDetails(String barcode) async {
-    bool snackbarShown = false; // Flag to track whether a Snackbar is shown
+  // void _fetchArticleDetails(String barcode) async {
+  //   bool snackbarShown = false; // Flag to track whether a Snackbar is shown
 
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dialog from closing when tapping outside
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: CupertinoActivityIndicator(
-                  color: Colors.red,
-                  radius: 20,
-                  animating: true,
-                ),
-              ),
-              SizedBox(height: 50), // Add some space between CircularProgressIndicator and the text
-              Text(
-                'Loading Article Details...', // Add your desired text here
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-   //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
-    // Replace this URL with your actual Google Sheets API endpoint
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getArticleColleague&articleNumber=$barcode';
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false, // Prevent dialog from closing when tapping outside
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+  //         ),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Center(
+  //               child: CupertinoActivityIndicator(
+  //                 color: Colors.red,
+  //                 radius: 20,
+  //                 animating: true,
+  //               ),
+  //             ),
+  //             SizedBox(height: 50), // Add some space between CircularProgressIndicator and the text
+  //             Text(
+  //               'Loading Article Details...', // Add your desired text here
+  //               style: GoogleFonts.poppins(
+  //                 fontSize: 16,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  //  //  String apiUrl = 'https://script.googleusercontent.com/macros/echo?user_content_key=TDlb7rLM_rqiKYr72gebRVN0s-zVy74koY7tSPXgNt9y7MfOFmAsNEyqmemyJ-W35pPtyav9mVDiUy6QNPb9KChUStuwIoOim5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnHJ5yWFXmy7bGcFeDpHjdWgQ9vetL1X7__qJJSutHRKFd77SxtRRlYq3GttY1ADGP43MM7kX-KfDHzPnPB8uoh1aDoUU23LwIQ&lib=MIc7FXjH6n7WaW-Iw0K14H0X2Nb-b482m';
+  //   // Replace this URL with your actual Google Sheets API endpoint
+  //   String apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getArticleColleague&articleNumber=$barcode';
 
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        var article = data['data'];
-        if (article != null && article.isNotEmpty) {
-          var articleDetails = article[barcode];
-          if (articleDetails != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ArticleDetailsPage(
-                  articleDetails: articleDetails,
-                  userRole: widget.userRole,
-                  barcode: barcode,
-                ),
-              ),
-            ).then((_) {
-              if (!snackbarShown) {
-                Navigator.pop(context);
-              }
-            });
-            return;
-          }
-        }
+  //   try {
+  //     final response = await http.get(Uri.parse(apiUrl));
+  //     print(response.statusCode);
+  //     if (response.statusCode == 200) {
+  //       var data = json.decode(response.body);
+  //       var article = data['data'];
+  //       if (article != null && article.isNotEmpty) {
+  //         var articleDetails = article[barcode];
+  //         if (articleDetails != null) {
+  //           Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) => ArticleDetailsPage(
+  //                 articleDetails: articleDetails,
+  //                 userRole: widget.userRole,
+  //                 barcode: barcode,
+  //               ),
+  //             ),
+  //           ).then((_) {
+  //             if (!snackbarShown) {
+  //               Navigator.pop(context);
+  //             }
+  //           });
+  //           return;
+  //         }
+  //       }
 
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Article not found',
-            style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
-          ),
-        ),
-      );
-      snackbarShown = true;
-      Navigator.pop(context);
-    } else {
-        // If the server returns an error response, show an error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
-        snackbarShown = true;
-        Navigator.pop(context);
-      }
-    } catch (error) {
-      print('Error fetching article details: $error');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
-      snackbarShown = true;
-      Navigator.pop(context);
-    }
-  }
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Article not found',
+  //           style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
+  //         ),
+  //       ),
+  //     );
+  //     snackbarShown = true;
+  //     Navigator.pop(context);
+  //   } else {
+  //       // If the server returns an error response, show an error message
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
+  //       snackbarShown = true;
+  //       Navigator.pop(context);
+  //     }
+  //   } catch (error) {
+  //     print('Error fetching article details: $error');
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
+  //     snackbarShown = true;
+  //     Navigator.pop(context);
+  //   }
+  // }
 
 
   void removeBarcode(int index) {
@@ -521,6 +645,44 @@ class _MyHomePageState extends State<HomePageClient> {
             ],
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(48.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Button 1 action
+                      },
+                      child: Text('Button 1'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Button 2 action
+                      },
+                      child: Text('Button 2'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Button 3 action
+                      },
+                      child: Text('Button 3'),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 1,
+                thickness: 1,
+                color: Colors.grey,
+              ),
+            ],
+          ),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -646,77 +808,97 @@ class _MyHomePageState extends State<HomePageClient> {
             Expanded(
               child: _barcodeList.length != 0
                   ? Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0), // Add padding from left and right
-                    child:ListView.builder(
-                      itemCount: _barcodeList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            // Handle tap on the list tile
-                            _fetchArticleDetails(_barcodeList[index]['barcode']!);
-                          },
-                          child: Card(
-                            elevation: 0.0,
-                            color: Color(0xFFF4F1F1),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  // Display barcode and leading icon
-                                  Expanded(
-                                    flex: 2,
-                                    child: ListTile(
-                                      leading: Icon(Icons.qr_code),
-                                      title: Text(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0), // Add padding from left and right
+                    child: ListView.builder(
+                        itemCount: _barcodeList.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              _fetchArticle(
+                                  _barcodeList[index]['barcode']!);
+                            },
+                            child: Card(
+                              elevation: 0.0,
+                              color: Color(0xFFF4F1F1),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  // mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    // Display barcode and leading icon
+                                    Container(
+                                      width: 125,
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.qr_code),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text(
                                         '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                        style: GoogleFonts.poppins(),
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                        
+                                      ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  // Display quantity input field
-                                  Expanded(
-                                    child: SizedBox(
-                                      width: 30,
-                                      child: DelayedEditableTextField(
-                                        // Set the value dynamically based on _barcodeList
-                                        value: _barcodeList[index]['quantity'].toString(),
-                                        onChanged: (value) {
-                                          _barcodeList[index]['quantity'] = value;
-                                        },
-                                        onEditingComplete: () {
-                                          FocusScope.of(context).unfocus();
-                                          // Save the updated list after a delay when editing is complete
-                                          Future.delayed(Duration(milliseconds: 500), () {
-                                            setState(() {
-                                              _saveBarcodeList();
+                                    // Display quantity input field
+                                    SizedBox(
+                                      width: 70,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                            labelText: 'Qty',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          controller: TextEditingController(
+                                            text: _barcodeList[index]
+                                                ['quantity'],
+                                          ),
+                                          onChanged: (value) {
+                                            _barcodeList[index]['quantity'] =
+                                                value;
+                                          },
+                                          onEditingComplete: () {
+                                            FocusScope.of(context).unfocus();
+                                            Future.delayed(
+                                                Duration(milliseconds: 500),
+                                                () {
+                                              setState(() {
+                                                _saveBarcodeList();
+                                              });
                                             });
-                                          });
-                                        },
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // Display unit dropdown button
-                                  Expanded(
-                                    child: _buildUnitDropdown(index),
-                                  ),
-                                  // Display delete icon
-                                  Expanded(
-                                    flex: 0, // Prevent delete icon from expanding
-                                    child: IconButton(
+                                    // Display unit dropdown button
+                                    Flexible(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: _buildUnitDropdown(index),
+                                      ),
+                                    ),
+                                    // Display delete icon
+                                    IconButton(
                                       icon: Image.asset(
                                         'assets/delete.png',
                                         color: Colors.red,
                                       ),
                                       onPressed: () => removeBarcode(index),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
                   )
             
                   : Align(
@@ -808,5 +990,5 @@ class _MyHomePageState extends State<HomePageClient> {
     
     );
   }
-}
 
+}

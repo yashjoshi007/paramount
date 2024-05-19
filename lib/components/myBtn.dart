@@ -26,7 +26,8 @@ class RectangularButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5), // Increased border radius
         ),
-        elevation: 0.0, // Increased elevation
+        elevation: 0.0, // Increased elevation 
+        // minimumSize: Size(MediaQuery.of(context).size.width * 0.28, MediaQuery.of(context).size.width * 0.25),
         // shadowColor: Colors.black.withOpacity(0.7), // Increased shadow opacity
       ),
       child: Text(
