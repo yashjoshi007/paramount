@@ -10,6 +10,11 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
 import 'package:paramount/models/user_model.dart';
+import 'package:paramount/ui/screens/allArticlleScreen.dart';
+import 'package:paramount/ui/screens/allExhibitScreen.dart';
+import 'package:paramount/ui/screens/allSiittingScreen.dart';
+import 'package:paramount/ui/screens/exhibitDetailScreen.dart';
+import 'package:paramount/ui/screens/sittingDetailScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,9 +44,9 @@ class _MyHomePageState extends State<HomePageClient> {
   String _scanBarcodeResult = "";
   String Email = '';
   String? res;
-  var articleInfo;
-  var exhibitInfo;
-  var sittingInfo;
+  late Map<String, Map<String, dynamic>> articleInfo = {};
+  late Map<String, Map<String, dynamic>> exhibitInfo = {};
+  late Map<String, Map<String, dynamic>> sittingInfo = {};
 
 
   @override
@@ -85,7 +90,7 @@ class _MyHomePageState extends State<HomePageClient> {
 
             });
           },
-          items: <String>['M', 'Y', 'Hanger', 'Head']
+          items: <String>['M', 'Y', 'Hanger', 'Header', '-NA-']
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -230,15 +235,14 @@ class _MyHomePageState extends State<HomePageClient> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        articleInfo = data['data'];
+        var articles = data['data'] as Map<String, dynamic>;
+        setState(() {
+          articleInfo = articles.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+        });
         if (articleInfo.isEmpty) {
           _showPopupAlert('No data found');
-        } 
-        //else {
-        //   print("Articles Loaded");
-        //   // _showPopupAlert('Data loaded');
-        // }
-      } 
+        }
+      }
       
       else {
         _showPopupAlert('Failed to load article details, Restart app');
@@ -277,7 +281,7 @@ class _MyHomePageState extends State<HomePageClient> {
     }
   }
 
-  void _getAllExhibit() async{
+  void _getAllExhibit() async {
     String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getExhibitAll';
 
     try {
@@ -286,17 +290,19 @@ class _MyHomePageState extends State<HomePageClient> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        exhibitInfo = data['data'];
+        var exhibits = data['data'] as Map<String, dynamic>;
+        // print(exhibits);
+        setState(() {
+          exhibitInfo = exhibits.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+        });
         if (exhibitInfo.isEmpty) {
           _showPopupAlert('No data found');
         }
-      } 
-      else {
+      } else {
         _showPopupAlert('Failed to load exhibit data, Restart App');
       }
     } catch (error) {
-      // print('Error fetching article details: $error');
-      _showPopupAlert('Error fetching article details');
+      _showPopupAlert('Error fetching exhibit details');
     }
   }
 
@@ -309,12 +315,15 @@ class _MyHomePageState extends State<HomePageClient> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        sittingInfo = data['data'];
+        var sittings = data['data'] as Map<String, dynamic>;
+        // print(sittings);
+        setState(() {
+          sittingInfo = sittings.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+        });
         if (sittingInfo.isEmpty) {
           _showPopupAlert('No data found');
-        } 
-      } 
-      
+        }
+      }
       else {
         _showPopupAlert('Failed to load sitting data, Restart App');
       }
@@ -415,7 +424,7 @@ class _MyHomePageState extends State<HomePageClient> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':'M'});
+      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':'Header'});
       _saveBarcodeList();
     });
   }
@@ -429,7 +438,7 @@ class _MyHomePageState extends State<HomePageClient> {
           _barcodeList.add({
             'barcode': _scanBarcodeResult,
             'quantity': '1',
-            'unit': 'M', // Set default unit to 'A'
+            'unit': 'Header', // Set default unit to 'A'
           });
           _saveBarcodeList();
         } else {
@@ -646,42 +655,104 @@ class _MyHomePageState extends State<HomePageClient> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(48.0),
+          preferredSize: Size.fromHeight(56.0),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 1 action
-                      },
-                      child: Text('Button 1'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 2 action
-                      },
-                      child: Text('Button 2'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 3 action
-                      },
-                      child: Text('Button 3'),
-                    ),
-                  ],
-                ),
+              const SizedBox(
+                height: 8,
               ),
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: Colors.grey,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                        if(articleInfo != null){
+                          Navigator.push(
+                          context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AllArticlePage(
+                                    articleDetails: articleInfo, userRole: widget.userRole,
+                                  ),
+                            ),
+                          );
+                        }
+                      },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Color(0xFFF4F1F1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text('All Articles', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Second TextButton
+                  ElevatedButton(
+                    onPressed: () {
+                        if(exhibitInfo != null){
+                          Navigator.push(
+                          context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AllExhibitPage(
+                                    articleDetails: exhibitInfo, userRole: widget.userRole,
+                                  ),
+                            ),
+                          );
+                        }
+                      },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Color(0xFFF4F1F1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                  // Third TextButton
+                  ElevatedButton(
+                    onPressed: () {
+                        if(sittingInfo != null){
+                          Navigator.push(
+                          context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AllSittingPage(
+                                    articleDetails: sittingInfo, userRole: widget.userRole,
+                                  ),
+                            ),
+                          );
+                        }
+                      },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      backgroundColor: Color(0xFFF4F1F1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      elevation: 0,
+                      // shadowColor: Colors.black.withOpacity(0.7),
+                    ),
+                    child: Text('All Sitting', style: GoogleFonts.poppins(color: Colors.black)),
+                  ),
+                ],
+              ),
+              
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color.fromARGB(255, 230, 227, 227),
+                ),
               ),
             ],
           ),
+            
         ),
       ),
       drawer: Drawer(
@@ -746,6 +817,7 @@ class _MyHomePageState extends State<HomePageClient> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
             Row(
               children: [
                 Padding(
@@ -957,7 +1029,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         if (res != '') {
                           _scanBarcodeResult = res;
                           if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'M',});
+                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'Header',});
                             _saveBarcodeList();
                           }
                           else{
