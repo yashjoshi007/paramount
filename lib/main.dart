@@ -10,7 +10,6 @@ import 'package:paramount/ui/login/login.dart';
 import 'package:paramount/ui/screens/homeColleague.dart';
 import 'package:paramount/ui/screens/homeScreen.dart';
 import 'package:provider/provider.dart';
-
 import 'localization/language_provider.dart';
 
 Future<void> main() async {
