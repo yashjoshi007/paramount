@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Sample Selector',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
 

@@ -4,11 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:paramount/ui/screens/homeScreen.dart';
+// import 'package:paramount/ui/screens/homeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../ui/login/login.dart';
-import '../ui/screens/homeColleague.dart';
+// import '../ui/login/login.dart';
+// import '../ui/screens/homeColleague.dart';
 
 class ConfirmPage2 extends StatefulWidget {
   final String description;
@@ -84,6 +84,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
         String email = userData['email'];
         String name = userData['name'];
         String companyName = userData['companyName'];
+        // ignore: unused_local_variable
         String role = userData['role'];
         Email = email;
 
@@ -177,11 +178,14 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
 
   void sendEmails(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
     // Construct the email body
-    String body = 'Your order is -\n';
+    String body = '''
+      Your order is -\n
+      Barcode          Unit     Quantity\n
+    ''';
 
     // Append each barcode to the body
     barcodeList.forEach((barcode) {
-      body += 'Barcode: ${barcode['barcode']}, Unit: ${barcode['quantity']}\n';
+      body += '${barcode['barcode']} ${barcode['quantity']}\n';
       // Add other properties if available
     });
 
@@ -261,16 +265,15 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
             ElevatedButton(
               onPressed: () async {
                 if (_barcodeList.length != 0) {
-                  print("exed");
+                  // print("exed");
                   if(widget.userRole=="customer") {
                     doPostRequestCustomer(context);
                   }else if(widget.userRole=="colleague"){
                     doPostRequestColleague(context);
-
                   }
-                  print(widget.Email);
-                  sendEmails('yashjoshi1105@gmail.com', 'HI', _barcodeList,
-                      cc: [widget.Email]);
+                  // print(widget.Email);
+                  sendEmails('patricktse100@gmail.com', 'Selected Samples List', _barcodeList,
+                      cc: [Email]);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

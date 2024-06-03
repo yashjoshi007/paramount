@@ -3,22 +3,22 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter/widgets.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
 import 'package:paramount/ui/screens/allArticlleScreen.dart';
 import 'package:paramount/ui/screens/allExhibitScreen.dart';
 import 'package:paramount/ui/screens/allSiittingScreen.dart';
-import 'package:paramount/ui/screens/exhibitDetailScreen.dart';
-import 'package:paramount/ui/screens/sittingDetailScreen.dart';
+// import 'package:paramount/ui/screens/exhibitDetailScreen.dart';
+// import 'package:paramount/ui/screens/sittingDetailScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart';
 import '../../components/confirmation_page.dart';
 import '../../components/confirmpage2.dart';
-import '../../components/textField.dart';
+// import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
 import '../login/login.dart';
 import 'articleDetailScreen.dart';
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
   void _fetchArticle(String barcode) {
-    if (articleInfo != null && articleInfo.isNotEmpty) {
+    if (articleInfo.isNotEmpty) {
       var articleDetails = articleInfo[barcode];
       var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
       var sittingDetails = sittingInfo[barcode]?? <String, dynamic>{};
@@ -147,7 +147,6 @@ class _MyHomePageState extends State<HomePageColleague> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         var exhibits = data['data'] as Map<String, dynamic>;
-        print(exhibits);
         setState(() {
           exhibitInfo = exhibits.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
         });
@@ -764,7 +763,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                        if(articleInfo != null){
+                        if(articleInfo.isNotEmpty){
                           Navigator.push(
                           context,
                             MaterialPageRoute(
@@ -789,7 +788,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                   // Second TextButton
                   ElevatedButton(
                     onPressed: () {
-                        if(exhibitInfo != null){
+                        if(exhibitInfo.isNotEmpty){
                           Navigator.push(
                           context,
                             MaterialPageRoute(
@@ -814,7 +813,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                   // Third TextButton
                   ElevatedButton(
                     onPressed: () {
-                        if(sittingInfo != null){
+                        if(sittingInfo.isNotEmpty){
                           Navigator.push(
                           context,
                             MaterialPageRoute(
@@ -1158,77 +1157,79 @@ class _MyHomePageState extends State<HomePageColleague> {
                               color: Color(0xFFF4F1F1),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  // mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    // Display barcode and leading icon
-                                    Container(
-                                      width: 125,
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.qr_code),
-                                          SizedBox(width: 8),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Text(
-                                        '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                        style: const TextStyle(fontWeight: FontWeight.bold),
-                                        
-                                      ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Display quantity input field
-                                    SizedBox(
-                                      width: 70,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            labelText: 'Qty',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          controller: TextEditingController(
-                                            text: _barcodeList[index]
-                                                ['quantity'],
-                                          ),
-                                          onChanged: (value) {
-                                            _barcodeList[index]['quantity'] =
-                                                value;
-                                          },
-                                          onEditingComplete: () {
-                                            FocusScope.of(context).unfocus();
-                                            Future.delayed(
-                                                Duration(milliseconds: 500),
-                                                () {
-                                              setState(() {
-                                                _saveBarcodeList();
-                                              });
-                                            });
-                                          },
+                                child: Expanded(
+                                  child: Row(
+                                    // mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      // Display barcode and leading icon
+                                      Container(
+                                        width: 125,
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.qr_code),
+                                            SizedBox(width: 8),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Text(
+                                          '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                          
+                                        ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                    // Display unit dropdown button
-                                    Flexible(
-                                      flex: 1,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: _buildUnitDropdown(index),
+                                      // Display quantity input field
+                                      SizedBox(
+                                        width: 70,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: TextField(
+                                            decoration: InputDecoration(
+                                              labelText: 'Qty',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            controller: TextEditingController(
+                                              text: _barcodeList[index]
+                                                  ['quantity'],
+                                            ),
+                                            onChanged: (value) {
+                                              _barcodeList[index]['quantity'] =
+                                                  value;
+                                            },
+                                            onEditingComplete: () {
+                                              FocusScope.of(context).unfocus();
+                                              Future.delayed(
+                                                  Duration(milliseconds: 500),
+                                                  () {
+                                                setState(() {
+                                                  _saveBarcodeList();
+                                                });
+                                              });
+                                            },
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    // Display delete icon
-                                    IconButton(
-                                      icon: Image.asset(
-                                        'assets/delete.png',
-                                        color: Colors.red,
+                                      // Display unit dropdown button
+                                      Flexible(
+                                        flex: 1,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: _buildUnitDropdown(index),
+                                        ),
                                       ),
-                                      onPressed: () => removeBarcode(index),
-                                    ),
-                                  ],
+                                      // Display delete icon
+                                      IconButton(
+                                        icon: Image.asset(
+                                          'assets/delete.png',
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () => removeBarcode(index),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

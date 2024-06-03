@@ -1,14 +1,15 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/ui/screens/sittingDetailScreen.dart';
 import '../../components/myBtn.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 import 'exhibitDetailScreen.dart';
 
+// ignore: must_be_immutable
 class ArticleDetailsPage extends StatelessWidget {
   final Map<String, dynamic> articleDetails;
   Map<String, dynamic> exhibitDetails;

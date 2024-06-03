@@ -45,27 +45,30 @@ class _AllArticlePageState extends State<AllArticlePage> {
       appBar: AppBar(
         title: const Text('Article Data Table'),
       ),
-      body: Column(
-        children: [
-          TextField(
-            onChanged: (value) => _searchFunc(value),
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 15),
-              hintText: "Search Article",
-              hintStyle: GoogleFonts.poppins(
-                color: Colors.grey,
-                fontStyle: FontStyle.normal,
-                fontSize: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                onChanged: (value) => _searchFunc(value),
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 15),
+                  hintText: "Search Article",
+                  hintStyle: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontStyle: FontStyle.normal,
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
             ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: DataTable(
                 columns: const [
                   DataColumn(label: Text('Article No')),
@@ -97,8 +100,8 @@ class _AllArticlePageState extends State<AllArticlePage> {
                 }).toList(),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
