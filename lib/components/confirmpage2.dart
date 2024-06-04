@@ -43,7 +43,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
               .toList();
         });
         _barcodeList.forEach((barcode) {
-          print('Barcode: ${barcode['barcode']}, Name: ${barcode['quantity']}, Unit: ${barcode['unit']}');
+          print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
           print(widget.userRole);
           // Add other properties if available
         });
@@ -178,15 +178,11 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
 
   void sendEmails(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
     // Construct the email body
-    String body = '''
-      Your order is -\n
-      Barcode          Unit     Quantity\n
-    ''';
+      String body = 'Your order is -\n';
 
     // Append each barcode to the body
     barcodeList.forEach((barcode) {
-      body += '${barcode['barcode']} ${barcode['quantity']}\n';
-      // Add other properties if available
+      body += 'Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity'] },  Unit: ${barcode['unit']}\n';
     });
 
     // Construct the email URI

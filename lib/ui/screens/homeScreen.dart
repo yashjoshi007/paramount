@@ -94,7 +94,7 @@ class _MyHomePageState extends State<HomePageClient> {
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value),
+              child: Text(value,style: GoogleFonts.poppins(),),
             );
           }).toList(),
         ),
@@ -910,7 +910,7 @@ class _MyHomePageState extends State<HomePageClient> {
                                               flex: 1,
                                               child: Text(
                                           '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                          style:  GoogleFonts.poppins(fontWeight: FontWeight.bold),
                                           
                                         ),
                                             ),
