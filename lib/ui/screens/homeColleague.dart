@@ -783,7 +783,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                       ),
                       elevation: 0,
                     ),
-                    child: Text('All Articles', style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_articles'), style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Second TextButton
                   ElevatedButton(
@@ -808,7 +808,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                       ),
                       elevation: 0,
                     ),
-                    child: Text('All Exhibit', style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_exhibit'), style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Third TextButton
                   ElevatedButton(
@@ -834,7 +834,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                       elevation: 0,
                       // shadowColor: Colors.black.withOpacity(0.7),
                     ),
-                    child: Text('All Sitting', style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_sitting'), style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                 ],
               ),
@@ -1059,7 +1059,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                           MaterialPageRoute(
                                             builder: (context) => ConfirmPage2(
                                               description:
-                                                  'Click "Send" and you will be redirected to your email app with automatically generated email.',
+                                                  languageProvider.translate('end_desc'),
                                               btnText: 'Send',
                                               userRole: widget.userRole,
                                               Email: '${userDetails['email']}',

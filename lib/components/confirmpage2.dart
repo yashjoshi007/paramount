@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 // import 'package:paramount/ui/screens/homeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import '../../localization/language_provider.dart';
 // import '../ui/login/login.dart';
 // import '../ui/screens/homeColleague.dart';
 
@@ -206,6 +208,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -237,7 +240,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
               ),
               SizedBox(height: 25),
               Text(
-                'Want to send this list by email?',
+                languageProvider.translate('want_email'),
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,

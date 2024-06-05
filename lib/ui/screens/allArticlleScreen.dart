@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../localization/language_provider.dart';
+import 'package:provider/provider.dart';
+
 class AllArticlePage extends StatefulWidget {
   final Map<String, Map<String, dynamic>> articleDetails;
   final String userRole; // Assuming user role is passed to this widget
@@ -41,6 +44,7 @@ class _AllArticlePageState extends State<AllArticlePage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Article Data Table'),
@@ -70,16 +74,16 @@ class _AllArticlePageState extends State<AllArticlePage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Article No')),
-                  DataColumn(label: Text('Composition')),
-                  DataColumn(label: Text('Texture')),
-                  DataColumn(label: Text('Finish')),
-                  DataColumn(label: Text('Density')),
-                  DataColumn(label: Text('Yarn_Count')),
-                  DataColumn(label: Text('Weight')),
-                  DataColumn(label: Text('Price.USD (\$)')),
-                  DataColumn(label: Text('Price.Yen (¥)')),
+                columns:  [
+                 DataColumn(label: Text(languageProvider.translate('article_no'))),
+                 DataColumn(label: Text(languageProvider.translate('composition'))),
+                 DataColumn(label: Text(languageProvider.translate('texture'))),
+                 DataColumn(label: Text(languageProvider.translate('finish'))),
+                 DataColumn(label: Text(languageProvider.translate('density'))),
+                 DataColumn(label: Text(languageProvider.translate('yarn_count'))),
+                 DataColumn(label: Text(languageProvider.translate('weight'))),
+                 DataColumn(label: Text(languageProvider.translate('price_usd'))),
+                 DataColumn(label: Text(languageProvider.translate('price_yen'))),
                 ],
                 rows: _foundDetails.entries.map((entry) {
                   String key = entry.key;

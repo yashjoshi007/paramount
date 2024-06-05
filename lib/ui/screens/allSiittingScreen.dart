@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../localization/language_provider.dart';
+import 'package:provider/provider.dart';
 
 class AllSittingPage extends StatefulWidget {
   final Map<String, Map<String, dynamic>> articleDetails;
@@ -41,6 +43,7 @@ class _AllSittingPageState extends State<AllSittingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sitting Data Table'),
@@ -70,20 +73,20 @@ class _AllSittingPageState extends State<AllSittingPage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columns: const[
-                  DataColumn(label: Text('Article No')),
-                  DataColumn(label: Text('Similar')),
-                  DataColumn(label: Text('Composition')),
-                  DataColumn(label: Text('Texture')),
-                  DataColumn(label: Text('Finish')),
-                  DataColumn(label: Text('UsedWT')),
-                  DataColumn(label: Text('Width')),
-                  DataColumn(label: Text('ColorCode')),
-                  DataColumn(label: Text('E_Color')),
-                  DataColumn(label: Text('Quantity')),
-                  DataColumn(label: Text('Unit')),
-                  DataColumn(label: Text('L1')),
-                  DataColumn(label: Text('Remark')),
+                columns: [
+                 DataColumn(label: Text(languageProvider.translate('article_no'))),
+                 DataColumn(label: Text(languageProvider.translate('similar'))),
+                 DataColumn(label: Text(languageProvider.translate('composition'))),
+                 DataColumn(label: Text(languageProvider.translate('texture'))),
+                 DataColumn(label: Text(languageProvider.translate('finish'))),
+                 DataColumn(label: Text(languageProvider.translate('usedwt'))),
+                 DataColumn(label: Text(languageProvider.translate('width'))),
+                 DataColumn(label: Text(languageProvider.translate('color_code'))),
+                 DataColumn(label: Text(languageProvider.translate('e_color'))),
+                 DataColumn(label: Text(languageProvider.translate('quantity'))),
+                 DataColumn(label: Text(languageProvider.translate('unit'))),
+                 DataColumn(label: Text(languageProvider.translate('l1'))),
+                 DataColumn(label: Text(languageProvider.translate('remark'))),
                 ],
                 rows: _foundDetails.entries.map((entry) {
                   String key = entry.key;
