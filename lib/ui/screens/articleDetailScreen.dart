@@ -12,8 +12,8 @@ import 'exhibitDetailScreen.dart';
 // ignore: must_be_immutable
 class ArticleDetailsPage extends StatelessWidget {
   final Map<String, dynamic> articleDetails;
-  Map<String, dynamic> exhibitDetails;
-  Map<String, dynamic> sittingDetails;
+  List<Map<String, dynamic>> exhibitDetails;
+  List<Map<String, dynamic>> sittingDetails;
   final String userRole;
   final String barcode;// Assuming user role is passed to this widget
   String btnPressed = '';
@@ -78,7 +78,7 @@ class ArticleDetailsPage extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) =>
                 ExhibitDetailsPage(
-                  articleDetails: exhibitDetails, userRole: userRole,
+                  articleDetails: exhibitDetails, userRole: userRole, barcode: barcode,
                 ),
           ),
         );
@@ -96,7 +96,7 @@ class ArticleDetailsPage extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) =>
                 SittingDetailsPage(
-                  articleDetails: sittingDetails, userRole: userRole,
+                  articleDetails: sittingDetails, userRole: userRole, barcode: barcode,
                 ),
           ),
         );
@@ -198,8 +198,18 @@ class ArticleDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
+            (userRole == 'Customer' || userRole == 'customer') ?
+                  RectangularButton(
+                    onPressed: () {
+                      btnPressed = 'Sitting';
+                      _fetchArticleDetails(context,barcode);
+                    }, text: 'Sitting Samples', color: Color(0xFFF4F1F1), btnText: Colors.black,
+                  )
+                  :
             Row(
               children: [
+                
                 RectangularButton(
                   onPressed: () {
                     btnPressed = 'Exhibit';
@@ -227,15 +237,16 @@ class ArticleDetailsPage extends StatelessWidget {
                   DataColumn(label: Text('Value', style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
                 ],
                 rows: [
-                  _buildDetailRow('Article No', '${barcode}'),
+                  _buildDetailRow('Article No', barcode),
                   _buildDetailRow('Composition', '${articleDetails['Compo']}'),
                   _buildDetailRow('Texture', '${articleDetails['Texture']}'),
                   _buildDetailRow('Finish', '${articleDetails['Finish']}'),
                   if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Density', '${articleDetails['Density']}'),
                   if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Yarn Count', '${articleDetails['Yarn_Count']}'),
+                  _buildDetailRow('Full Width', '${articleDetails['Width']}'),
                   _buildDetailRow('Weight', '${articleDetails['Weight']}'),
-                  _buildDetailRow('Price.USD (\$)', '${articleDetails['Price_D']}'),
-                  _buildDetailRow('Price.Yen (¥)', '${articleDetails['Price_Y']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Price.USD (\$)', '${articleDetails['Price_D']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Price.Yen (¥)', '${articleDetails['Price_Y']}'),
                 ],
               ),
             ),

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/confirmation_page.dart';
-import 'package:paramount/components/myBtn.dart';
+// import 'package:paramount/components/myBtn.dart';
 
 import '../../components/textField.dart';
 

@@ -48,13 +48,10 @@ class _AllArticlePageState extends State<AllArticlePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Article Data Table'),
-      ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(56.0),
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: TextField(
                 onChanged: (value) => _searchFunc(value),
                 decoration: InputDecoration(
@@ -71,41 +68,36 @@ class _AllArticlePageState extends State<AllArticlePage> {
                 ),
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns:  [
-                 DataColumn(label: Text(languageProvider.translate('article_no'))),
-                 DataColumn(label: Text(languageProvider.translate('composition'))),
-                 DataColumn(label: Text(languageProvider.translate('texture'))),
-                 DataColumn(label: Text(languageProvider.translate('finish'))),
-                 DataColumn(label: Text(languageProvider.translate('density'))),
-                 DataColumn(label: Text(languageProvider.translate('yarn_count'))),
-                 DataColumn(label: Text(languageProvider.translate('weight'))),
-                 DataColumn(label: Text(languageProvider.translate('price_usd'))),
-                 DataColumn(label: Text(languageProvider.translate('price_yen'))),
+      ),
+      ),
+      body: ListView.builder(
+        itemCount: _foundDetails.length,
+        itemBuilder: (context, index) {
+          String key = _foundDetails.keys.elementAt(index);
+          Map<String, dynamic> value = _foundDetails[key]!;
+          return Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${languageProvider.translate('article_no')}: $key', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('${languageProvider.translate('composition')}: ${value["Compo"]?.toString() ?? "NA"}'),
+                  Text('${languageProvider.translate('texture')}: ${value["Texture"]?.toString() ?? "NA"}'),
+                  Text('${languageProvider.translate('finish')}: ${value["Finish"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('density')}: ${value["Density"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('yarn_count')}: ${value["Yarn_Count"]?.toString() ?? "NA"}'),
+                  Text('${languageProvider.translate('full_width')}: ${value["Width"]?.toString() ?? "NA"}'),
+                  Text('${languageProvider.translate('weight')}: ${value["Weight"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('price_usd')}: ${value["Price_D"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('price_yen')}: ${value["Price_Y"]?.toString() ?? "NA"}'),
                 ],
-                rows: _foundDetails.entries.map((entry) {
-                  String key = entry.key;
-                  Map<String, dynamic> value = entry.value;
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(key)),
-                      DataCell(Text(value["Compo"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Texture"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Finish"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Density"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Yarn_Count"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Weight"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Price_D"]?.toString() ?? "NA")),
-                      DataCell(Text(value["Price_Y"]?.toString() ?? "NA")),
-                    ],
-                  );
-                }).toList(),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

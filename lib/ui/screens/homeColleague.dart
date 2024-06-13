@@ -3,6 +3,7 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 // import 'package:flutter/services.dart';
 // import 'package:flutter/widgets.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -42,8 +43,9 @@ class _MyHomePageState extends State<HomePageColleague> {
   String _scanBarcodeResult = "";
   bool showBottom = false;
   late Map<String, Map<String, dynamic>> articleInfo = {};
-  late Map<String, Map<String, dynamic>> exhibitInfo = {};
-  late Map<String, Map<String, dynamic>> sittingInfo = {};
+  late List<Map<String, dynamic>> exhibitInfo = [];
+  late List<Map<String, dynamic>> sittingInfo = [];
+  final String _getAPIkey = "https://script.google.com/macros/s/AKfycbx47O1vYubkQMZ989ER5SEttuOILkb_t8O7xBXEPxVix_yIIqKGEkitwvP5gxOxJecJ/exec";
 
   Future<void> signOutGoogle() async {
     await _clearUserDetails();
@@ -69,21 +71,20 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _showPopupAlert(String message) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        Future.delayed(Duration(seconds: 5), () {
-          Navigator.of(context).pop(true);
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 5), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(
+            title: Text('Alert', style: GoogleFonts.poppins()),
+            content: Text(message, style: GoogleFonts.poppins()),
+          );
         });
-        return AlertDialog(
-          title: Text('Alert', style: GoogleFonts.poppins()),
-          content: Text(message, style: GoogleFonts.poppins()),
-        );
-      }
-    );
   }
 
-  void _getAllArticle() async{
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getArticleAll';
+  void _getAllArticle() async {
+    String apiUrl ='$_getAPIkey?action=getArticleAll';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -93,14 +94,14 @@ class _MyHomePageState extends State<HomePageColleague> {
         var data = json.decode(response.body);
         var articles = data['data'] as Map<String, dynamic>;
         setState(() {
-          articleInfo = articles.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          articleInfo = articles.map(
+              (key, value) => MapEntry(key, value as Map<String, dynamic>));
+          print(articleInfo.length);
         });
         if (articleInfo.isEmpty) {
           _showPopupAlert('No data found');
         }
-      }
-      
-      else {
+      } else {
         _showPopupAlert('Failed to load article details, Restart app');
       }
     } catch (error) {
@@ -112,8 +113,15 @@ class _MyHomePageState extends State<HomePageColleague> {
   void _fetchArticle(String barcode) {
     if (articleInfo.isNotEmpty) {
       var articleDetails = articleInfo[barcode];
-      var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
-      var sittingDetails = sittingInfo[barcode]?? <String, dynamic>{};
+      // var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
+      List<Map<String, dynamic>> exhibitDetails = [];
+      if(exhibitInfo.any((element) => element['article_number'] == barcode)){
+        exhibitDetails = exhibitInfo.where((element) => element['article_number'] == barcode).toList();
+      }
+      List<Map<String, dynamic>> sittingDetails = [];
+      if(sittingInfo.any((element) => element['article_number'] == barcode)){
+        sittingDetails = sittingInfo.where((element) => element['article_number'] == barcode).toList();
+      }
       if (articleDetails != null) {
         Navigator.push(
           context,
@@ -128,17 +136,16 @@ class _MyHomePageState extends State<HomePageColleague> {
           ),
         );
         return;
-      }else{
+      } else {
         _showPopupAlert('No data found');
       }
-    }
-    else {
-        _showPopupAlert('Failed! Try again...');
+    } else {
+      _showPopupAlert('Failed! Try again...');
     }
   }
 
   void _getAllExhibit() async {
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getExhibitAll';
+    String apiUrl ='$_getAPIkey?action=getExhibitAll';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -146,9 +153,11 @@ class _MyHomePageState extends State<HomePageColleague> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var exhibits = data['data'] as Map<String, dynamic>;
+        var tempList= data['data'] as List;
+        List<Map<String, dynamic>> exhibits = tempList.map((e) => e as Map<String, dynamic>).toList();
         setState(() {
-          exhibitInfo = exhibits.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          exhibitInfo = exhibits;
+          // print("Exhibit " + exhibitInfo.length.toString());
         });
         if (exhibitInfo.isEmpty) {
           _showPopupAlert('No data found');
@@ -161,8 +170,8 @@ class _MyHomePageState extends State<HomePageColleague> {
     }
   }
 
-  void _getAllSitting() async{
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getSittingAll';
+  void _getAllSitting() async {
+    String apiUrl = '$_getAPIkey?action=getSittingAll';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -170,16 +179,16 @@ class _MyHomePageState extends State<HomePageColleague> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var sittings = data['data'] as Map<String, dynamic>;
-        // print(sittings);
+        var tempList = data['data'] as List;
+        List<Map<String, dynamic>> sittings = tempList.map((e) => e as Map<String, dynamic>).toList();
         setState(() {
-          sittingInfo = sittings.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          sittingInfo = sittings;
+          // print("Sitting " + sittingInfo.length.toString());
         });
         if (sittingInfo.isEmpty) {
           _showPopupAlert('No data found');
         }
-      }
-      else {
+      } else {
         _showPopupAlert('Failed to load sitting data, Restart App');
       }
     } catch (error) {
@@ -540,7 +549,11 @@ class _MyHomePageState extends State<HomePageColleague> {
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':'Header'});
+      _barcodeList.insert(0, {
+        'barcode': articleNo,
+        'quantity': quantity.toString(),
+        'unit': 'Header'
+      });
       _saveBarcodeList();
     });
   }
@@ -763,70 +776,75 @@ class _MyHomePageState extends State<HomePageColleague> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                        if(articleInfo.isNotEmpty){
-                          Navigator.push(
+                      if (articleInfo.isNotEmpty) {
+                        Navigator.push(
                           context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllArticlePage(
-                                    articleDetails: articleInfo, userRole: widget.userRole,
-                                  ),
+                          MaterialPageRoute(
+                            builder: (context) => AllArticlePage(
+                              articleDetails: articleInfo,
+                              userRole: widget.userRole,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
                       elevation: 0,
                     ),
-                    child: Text(languageProvider.translate('all_articles'), style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_articles'),
+                        style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Second TextButton
                   ElevatedButton(
                     onPressed: () {
-                        if(exhibitInfo.isNotEmpty){
-                          Navigator.push(
+                      if (exhibitInfo.isNotEmpty) {
+                        Navigator.push(
                           context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllExhibitPage(
-                                    articleDetails: exhibitInfo, userRole: widget.userRole,
-                                  ),
+                          MaterialPageRoute(
+                            builder: (context) => AllExhibitPage(
+                              articleDetails: exhibitInfo,
+                              userRole: widget.userRole,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
                       elevation: 0,
                     ),
-                    child: Text(languageProvider.translate('all_exhibit'), style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_exhibit'),
+                        style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Third TextButton
                   ElevatedButton(
                     onPressed: () {
-                        if(sittingInfo.isNotEmpty){
-                          Navigator.push(
+                      if (sittingInfo.isNotEmpty) {
+                        Navigator.push(
                           context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllSittingPage(
-                                    articleDetails: sittingInfo, userRole: widget.userRole,
-                                  ),
+                          MaterialPageRoute(
+                            builder: (context) => AllSittingPage(
+                              articleDetails: sittingInfo,
+                              userRole: widget.userRole,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -834,11 +852,11 @@ class _MyHomePageState extends State<HomePageColleague> {
                       elevation: 0,
                       // shadowColor: Colors.black.withOpacity(0.7),
                     ),
-                    child: Text(languageProvider.translate('all_sitting'), style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text(languageProvider.translate('all_sitting'),
+                        style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                 ],
               ),
-              
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: Divider(
@@ -849,7 +867,6 @@ class _MyHomePageState extends State<HomePageColleague> {
               ),
             ],
           ),
-            
         ),
       ),
       drawer: Drawer(
@@ -1029,116 +1046,111 @@ class _MyHomePageState extends State<HomePageColleague> {
                     SizedBox(height: 20),
                   ],
                   if (userDetailsAvailable) ...[
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            languageProvider.translate('customer_det'),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        languageProvider
-                                            .translate('customer_det'),
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
+                                  Text(
+                                    '${languageProvider.translate('name')}: ${userDetails['name']}',
+                                    style: GoogleFonts.poppins(),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 0.0),
-                                    child: RectangularICBtn(
-                                      onPressed: () async {
-                                        bool refresh = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ConfirmPage2(
-                                              description:
-                                                  languageProvider.translate('end_desc'),
-                                              btnText: 'Send',
-                                              userRole: widget.userRole,
-                                              Email: '${userDetails['email']}',
-                                            ),
-                                          ),
-                                        );
-                                        if (refresh == true) {
-                                          setState(() {
-                                            _barcodeList = [];
-                                          });
-                                        }
-                                      },
-                                      text: languageProvider
-                                          .translate('Save List'),
-                                      iconAssetPath: "assets/mbox.png",
-                                      color: Color(0xFFF4F1F1),
-                                      btnText: Colors.black87,
-                                    ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    '${languageProvider.translate('email')}: ${userDetails['email']}',
+                                    style: GoogleFonts.poppins(),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 10, 0, 5),
-                                child: Text(
-                                  '${languageProvider.translate('name')}: ${userDetails['name']}',
-                                  style: GoogleFonts.poppins(),
-                                ),
+                              IconButton(
+                                icon: Image.asset(
+                                  'assets/delete.png',
+                                  color: Colors.red,
+                                ), // Add delete icon
+                                onPressed: () async {
+                                  setState(() {
+                                    _nameController.text =
+                                        ''; // Clear text fields
+                                    _companyNameController.text = '';
+                                    _emailController.text = '';
+                                    showBottom = false;
+                                  });
+                                  //await _clearBarcodeList();
+                                  await _clearUserDetails();
+                                },
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 10, 0, 10),
-                                child: Text(
-                                  '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 10, 0, 10),
-                                child: Text(
-                                  '${languageProvider.translate('email')}: ${userDetails['email']}',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: Image.asset(
-                            'assets/delete.png',
-                            color: Colors.red,
-                          ), // Add delete icon
-                          onPressed: () async {
-                            setState(() {
-                              _nameController.text = ''; // Clear text fields
-                              _companyNameController.text = '';
-                              _emailController.text = '';
-                              showBottom = false;
-                            });
-                            //await _clearBarcodeList();
-                            await _clearUserDetails();
-                          },
-                        ),
+                        SizedBox(height: 20),
                       ],
                     ),
                   ],
                   if (userDetailsAvailable)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        languageProvider.translate('Selected Samples'),
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
+                          child: Text(
+                            languageProvider.translate('Selected Samples'),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                      ),
+                        Spacer(), // This will push the button to the extreme right
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: RectangularICBtn(
+                            onPressed: () async {
+                              bool refresh = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ConfirmPage2(
+                                    description:
+                                        languageProvider.translate('send_desc'),
+                                    btnText: 'Send',
+                                    userRole: widget.userRole,
+                                    Email: '${userDetails['email']}',
+                                  ),
+                                ),
+                              );
+                              if (refresh == true) {
+                                setState(() {
+                                  _barcodeList = [];
+                                });
+                              }
+                            },
+                            text: languageProvider.translate('Save List @ PMT'),
+                            iconAssetPath: "assets/mbox.png",
+                            color: Color(0xFFF4F1F1),
+                            btnText: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
                   // Display sample list here
                   Expanded(
@@ -1149,87 +1161,83 @@ class _MyHomePageState extends State<HomePageColleague> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              _fetchArticle(
-                                  _barcodeList[index]['barcode']!);
+                              _fetchArticle(_barcodeList[index]['barcode']!);
                             },
                             child: Card(
                               elevation: 0.0,
                               color: Color(0xFFF4F1F1),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Expanded(
-                                  child: Row(
-                                    // mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      // Display barcode and leading icon
-                                      Container(
-                                        width: 125,
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.qr_code),
-                                            SizedBox(width: 8),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Text(
-                                          '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
-                                          
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Display barcode and leading icon
+                                    Row(
+                                      children: [
+                                        Icon(Icons.qr_code),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          '${languageProvider.translate('barcode')}:\n${_barcodeList[index]['barcode']}',
+                                          style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // Display quantity input field
-                                      SizedBox(
-                                        width: 70,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              labelText: 'Qty',
-                                              border: OutlineInputBorder(),
-                                            ),
-                                            controller: TextEditingController(
-                                              text: _barcodeList[index]
-                                                  ['quantity'],
-                                            ),
-                                            onChanged: (value) {
-                                              _barcodeList[index]['quantity'] =
-                                                  value;
-                                            },
-                                            onEditingComplete: () {
-                                              FocusScope.of(context).unfocus();
-                                              Future.delayed(
-                                                  Duration(milliseconds: 500),
-                                                  () {
-                                                setState(() {
-                                                  _saveBarcodeList();
+                                      ],
+                                    ),
+                                    // Display quantity input field
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: 64,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                labelText: 'Qty',
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              controller: TextEditingController(
+                                                text: _barcodeList[index]
+                                                    ['quantity'],
+                                              ),
+                                              onChanged: (value) {
+                                                _barcodeList[index]
+                                                    ['quantity'] = value;
+                                              },
+                                              onEditingComplete: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                Future.delayed(
+                                                    Duration(milliseconds: 500),
+                                                    () {
+                                                  setState(() {
+                                                    _saveBarcodeList();
+                                                  });
                                                 });
-                                              });
-                                            },
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      // Display unit dropdown button
-                                      Flexible(
-                                        flex: 1,
-                                        child: Padding(
+                                        // Display unit dropdown button
+                                        Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
                                           child: _buildUnitDropdown(index),
                                         ),
-                                      ),
-                                      // Display delete icon
-                                      IconButton(
-                                        icon: Image.asset(
-                                          'assets/delete.png',
-                                          color: Colors.red,
+                                        // Display delete icon
+                                        IconButton(
+                                          icon: Image.asset(
+                                            'assets/delete.png',
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () => removeBarcode(index),
                                         ),
-                                        onPressed: () => removeBarcode(index),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

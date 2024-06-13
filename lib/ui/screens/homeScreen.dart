@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
@@ -45,8 +46,10 @@ class _MyHomePageState extends State<HomePageClient> {
   String Email = '';
   String? res;
   late Map<String, Map<String, dynamic>> articleInfo = {};
-  late Map<String, Map<String, dynamic>> exhibitInfo = {};
-  late Map<String, Map<String, dynamic>> sittingInfo = {};
+  late List<Map<String, dynamic>> exhibitInfo = [];
+  late List<Map<String, dynamic>> sittingInfo = [];
+  final String _getAPIkey = "https://script.google.com/macros/s/AKfycbx47O1vYubkQMZ989ER5SEttuOILkb_t8O7xBXEPxVix_yIIqKGEkitwvP5gxOxJecJ/exec";
+  // late Map<String, Map<String, dynamic>> sittingInfo = {};
 
 
   @override
@@ -54,7 +57,7 @@ class _MyHomePageState extends State<HomePageClient> {
     super.initState();
     _loadBarcodeList();
     _getAllArticle();
-    _getAllExhibit();
+    // _getAllExhibit();
     _getAllSitting();
   }
 
@@ -227,7 +230,7 @@ class _MyHomePageState extends State<HomePageClient> {
   }
 
   void _getAllArticle() async{
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getArticleAll';
+    String apiUrl = '$_getAPIkey?action=getArticleAll';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -238,6 +241,7 @@ class _MyHomePageState extends State<HomePageClient> {
         var articles = data['data'] as Map<String, dynamic>;
         setState(() {
           articleInfo = articles.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          // print("Art " + articleInfo.length.toString());
         });
         if (articleInfo.isEmpty) {
           _showPopupAlert('No data found');
@@ -256,8 +260,16 @@ class _MyHomePageState extends State<HomePageClient> {
   void _fetchArticle(String barcode) {
     if (articleInfo.isNotEmpty) {
       var articleDetails = articleInfo[barcode];
-      var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
-      var sittingDetails = sittingInfo[barcode]?? <String, dynamic>{};
+      // var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
+      List<Map<String, dynamic>> exhibitDetails = [];
+      if(exhibitInfo.any((element) => element['article_number'] == barcode)){
+        exhibitDetails = exhibitInfo.where((element) => element['article_number'] == barcode).toList();
+      }
+      List<Map<String, dynamic>> sittingDetails = [];
+      if(sittingInfo.any((element) => element['article_number'] == barcode)){
+        sittingDetails = sittingInfo.where((element) => element['article_number'] == barcode).toList();
+      }
+      // var sittingDetails = sittingInfo.where((element) => element['article_number'] == barcode) ?? <String, dynamic>{};
       if (articleDetails != null) {
         Navigator.push(
           context,
@@ -281,33 +293,36 @@ class _MyHomePageState extends State<HomePageClient> {
     }
   }
 
-  void _getAllExhibit() async {
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getExhibitAll';
 
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
-      print(response.statusCode);
+///////--------Not Needed in Customer Interface--------/////////
+  // void _getAllExhibit() async {
+  //   String apiUrl = 'https://script.google.com/macros/s/AKfycbwlfRxY91iDaP_bXC1DozDB_FlJ3HF1j7qLO6zwuePAbTAcldwxO59m75uY1VvaWZwG/exec?action=getExhibitAll';
 
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        var exhibits = data['data'] as Map<String, dynamic>;
-        // print(exhibits);
-        setState(() {
-          exhibitInfo = exhibits.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
-        });
-        if (exhibitInfo.isEmpty) {
-          _showPopupAlert('No data found');
-        }
-      } else {
-        _showPopupAlert('Failed to load exhibit data, Restart App');
-      }
-    } catch (error) {
-      _showPopupAlert('Error fetching exhibit details');
-    }
-  }
+  //   try {
+  //     final response = await http.get(Uri.parse(apiUrl));
+  //     print(response.statusCode);
+
+  //     if (response.statusCode == 200) {
+  //       var data = json.decode(response.body);
+  //       var tempList= data['data'] as List;
+  //       List<Map<String, dynamic>> exhibits = tempList.map((e) => e as Map<String, dynamic>).toList();
+  //       setState(() {
+  //         exhibitInfo = exhibits;
+  //         // print("Exhibit " + exhibitInfo.length.toString());
+  //       });
+  //       if (exhibitInfo.isEmpty) {
+  //         _showPopupAlert('No data found');
+  //       }
+  //     } else {
+  //       _showPopupAlert('Failed to load exhibit data, Restart App');
+  //     }
+  //   } catch (error) {
+  //     _showPopupAlert('Error fetching exhibit details');
+  //   }
+  // }
 
   void _getAllSitting() async{
-    String apiUrl = 'https://script.google.com/macros/s/AKfycbypKh-wJfJHOiaDAIDKXs7yo_FFDyEybfKuO80DQ2-Il9Toc-bUAblWm_uCjl_HiRCc/exec?action=getSittingAll';
+    String apiUrl = '$_getAPIkey?action=getSittingAll';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -315,10 +330,11 @@ class _MyHomePageState extends State<HomePageClient> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        var sittings = data['data'] as Map<String, dynamic>;
-        // print(sittings);
+        var tempList = data['data'] as List;
+        List<Map<String, dynamic>> sittings = tempList.map((e) => e as Map<String, dynamic>).toList();
         setState(() {
-          sittingInfo = sittings.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          sittingInfo = sittings;
+          // print("Sitting " + sittingInfo.length.toString());
         });
         if (sittingInfo.isEmpty) {
           _showPopupAlert('No data found');
@@ -328,7 +344,7 @@ class _MyHomePageState extends State<HomePageClient> {
         _showPopupAlert('Failed to load sitting data, Restart App');
       }
     } catch (error) {
-      // print('Error fetching Sitting details: $error');
+      print('Error fetching Sitting details: $error');
       _showPopupAlert('Error fetching Sitting details');
     }
   }
@@ -680,7 +696,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         }
                       },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -690,30 +706,30 @@ class _MyHomePageState extends State<HomePageClient> {
                     child: Text(languageProvider.translate('all_articles'), style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Second TextButton
-                  ElevatedButton(
-                    onPressed: () {
-                        if(exhibitInfo.isNotEmpty){
-                          Navigator.push(
-                          context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllExhibitPage(
-                                    articleDetails: exhibitInfo, userRole: widget.userRole,
-                                  ),
-                            ),
-                          );
-                        }
-                      },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      backgroundColor: Color(0xFFF4F1F1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(languageProvider.translate('all_exhibit'), style: GoogleFonts.poppins(color: Colors.black)),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //       if(exhibitInfo.isNotEmpty){
+                  //         Navigator.push(
+                  //         context,
+                  //           MaterialPageRoute(
+                  //             builder: (context) =>
+                  //                 AllExhibitPage(
+                  //                   articleDetails: exhibitInfo, userRole: widget.userRole,
+                  //                 ),
+                  //           ),
+                  //         );
+                  //       }
+                  //     },
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  //     backgroundColor: Color(0xFFF4F1F1),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(5),
+                  //     ),
+                  //     elevation: 0,
+                  //   ),
+                  //   child: Text(languageProvider.translate('all_exhibit'), style: GoogleFonts.poppins(color: Colors.black)),
+                  // ),
                   // Third TextButton
                   ElevatedButton(
                     onPressed: () {
@@ -730,7 +746,7 @@ class _MyHomePageState extends State<HomePageClient> {
                         }
                       },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -827,7 +843,7 @@ class _MyHomePageState extends State<HomePageClient> {
                     languageProvider.translate('Selected Samples'),
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -836,19 +852,6 @@ class _MyHomePageState extends State<HomePageClient> {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
                     onPressed: () async{
-                      // if(_barcodeList.length != 0){
-                      //   print("exed");
-                      //   doPostRequest(context);
-                      //   print("esec");
-                      //   sendEmails('yashjoshi1105@gmail.com', 'HI', _barcodeList, cc: ['yj8379@srmist.edu.in']);
-                      // }else{
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(
-                      //       content: Text('No barcodes are available.'),
-                      //     ),
-                      //   );
-                      // }
-                      //showAddArticleDialog(context);
                     bool refresh = await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -865,10 +868,9 @@ class _MyHomePageState extends State<HomePageClient> {
                         setState(() {
                           _barcodeList = [];
                         });
-
                       }
                     },
-                    text: languageProvider.translate('Save List'),
+                    text: languageProvider.translate('Save List @PMT'),
                     color: Color(0xFFF4F1F1),
                     btnText: Colors.black,
                     iconAssetPath: "assets/mbox.png",
@@ -895,79 +897,73 @@ class _MyHomePageState extends State<HomePageClient> {
                               color: Color(0xFFF4F1F1),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Expanded(
-                                  child: Row(
-                                    // mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      // Display barcode and leading icon
-                                      Container(
-                                        width: 125,
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.qr_code),
-                                            SizedBox(width: 8),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Text(
-                                          '${languageProvider.translate('barcode')}: ${_barcodeList[index]['barcode']}',
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Display barcode and leading icon
+                                    Row(
+                                      children: [
+                                        Icon(Icons.qr_code),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          '${languageProvider.translate('barcode')}:\n${_barcodeList[index]['barcode']}',
                                           style:  GoogleFonts.poppins(fontWeight: FontWeight.bold),
                                           
                                         ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // Display quantity input field
-                                      SizedBox(
-                                        width: 70,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              labelText: 'Qty',
-                                              border: OutlineInputBorder(),
-                                            ),
-                                            controller: TextEditingController(
-                                              text: _barcodeList[index]
-                                                  ['quantity'],
-                                            ),
-                                            onChanged: (value) {
-                                              _barcodeList[index]['quantity'] =
-                                                  value;
-                                            },
-                                            onEditingComplete: () {
-                                              FocusScope.of(context).unfocus();
-                                              Future.delayed(
-                                                  Duration(milliseconds: 500),
-                                                  () {
-                                                setState(() {
-                                                  _saveBarcodeList();
+                                      ],
+                                    ),
+                                    // Display quantity input field
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: 70,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                labelText: 'Qty',
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              controller: TextEditingController(
+                                                text: _barcodeList[index]
+                                                    ['quantity'],
+                                              ),
+                                              onChanged: (value) {
+                                                _barcodeList[index]['quantity'] =
+                                                    value;
+                                              },
+                                              onEditingComplete: () {
+                                                FocusScope.of(context).unfocus();
+                                                Future.delayed(
+                                                    Duration(milliseconds: 500),
+                                                    () {
+                                                  setState(() {
+                                                    _saveBarcodeList();
+                                                  });
                                                 });
-                                              });
-                                            },
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      // Display unit dropdown button
-                                      Flexible(
-                                        flex: 1,
-                                        child: Padding(
+                                        // Display unit dropdown button
+                                        Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
                                           child: _buildUnitDropdown(index),
                                         ),
-                                      ),
-                                      // Display delete icon
-                                      IconButton(
-                                        icon: Image.asset(
-                                          'assets/delete.png',
-                                          color: Colors.red,
+                                        // Display delete icon
+                                        IconButton(
+                                          icon: Image.asset(
+                                            'assets/delete.png',
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () => removeBarcode(index),
                                         ),
-                                        onPressed: () => removeBarcode(index),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
