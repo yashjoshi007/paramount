@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:paramount/components/myBtn.dart';
 // import 'package:paramount/models/user_model.dart';
 import 'package:paramount/ui/screens/allArticlleScreen.dart';
-import 'package:paramount/ui/screens/allExhibitScreen.dart';
+// import 'package:paramount/ui/screens/allExhibitScreen.dart';
 import 'package:paramount/ui/screens/allSiittingScreen.dart';
 // import 'package:paramount/ui/screens/exhibitDetailScreen.dart';
 // import 'package:paramount/ui/screens/sittingDetailScreen.dart';
@@ -48,9 +47,10 @@ class _MyHomePageState extends State<HomePageClient> {
   late Map<String, Map<String, dynamic>> articleInfo = {};
   late List<Map<String, dynamic>> exhibitInfo = [];
   late List<Map<String, dynamic>> sittingInfo = [];
-  final String _getAPIkey = "https://script.google.com/macros/s/AKfycbx47O1vYubkQMZ989ER5SEttuOILkb_t8O7xBXEPxVix_yIIqKGEkitwvP5gxOxJecJ/exec";
+  final String _getAPIkey =
+      "https://script.google.com/macros/s/AKfycbwfWPoGmwHpRn9Y2DPWR8jPDcJZjcJVOM-EKC7aqJ9dG3smOAVTNa0uYrHne9nuPtlq/exec";
   // late Map<String, Map<String, dynamic>> sittingInfo = {};
-
+  var date_time;
 
   @override
   void initState() {
@@ -71,40 +71,40 @@ class _MyHomePageState extends State<HomePageClient> {
     await prefs.remove('barcodeList');
   }
 
-  Widget _buildUnitDropdown(int
-  index) {
+  Widget _buildUnitDropdown(int index) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           ' Unit', // Add a label above the dropdown
-          style: GoogleFonts.poppins(
-            color: Colors.black87,
-            fontSize: 10
-          ),
+          style: GoogleFonts.poppins(color: Colors.black87, fontSize: 12),
         ),
-        SizedBox(height: 8), // Add some space between the label and the dropdown
+        SizedBox(
+            height: 8), // Add some space between the label and the dropdown
         DropdownButton<String>(
-          value: _barcodeList[index]['unit'], // Set initial value to the existing unit, if any
+          value: _barcodeList[index]
+              ['unit'], // Set initial value to the existing unit, if any
           onChanged: (String? newValue) {
             setState(() {
-              _barcodeList[index]['unit'] = newValue!; // Update unit for this barcode
-                _saveBarcodeList();
-
+              _barcodeList[index]['unit'] =
+                  newValue!; // Update unit for this barcode
+              _saveBarcodeList();
             });
           },
           items: <String>['M', 'Y', 'Hanger', 'Header', '-NA-']
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value,style: GoogleFonts.poppins(),),
+              child: Text(
+                value,
+                style: GoogleFonts.poppins(),
+              ),
             );
           }).toList(),
         ),
       ],
     );
   }
-
 
   void showAddArticleDialog(BuildContext context) {
     showDialog(
@@ -122,7 +122,8 @@ class _MyHomePageState extends State<HomePageClient> {
     return AlertDialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6), // Adjust border radius as needed
+        borderRadius:
+            BorderRadius.circular(6), // Adjust border radius as needed
       ),
       title: Text(
         "Add Article Manually",
@@ -132,7 +133,8 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
       ),
       content: Container(
-        width: MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
+        width:
+            MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +163,8 @@ class _MyHomePageState extends State<HomePageClient> {
           ],
         ),
       ),
-      actionsPadding: EdgeInsets.symmetric(horizontal: 20), // Add padding to actions
+      actionsPadding:
+          EdgeInsets.symmetric(horizontal: 20), // Add padding to actions
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -170,16 +173,19 @@ class _MyHomePageState extends State<HomePageClient> {
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5), // Adjust border radius as needed
+                  borderRadius: BorderRadius.circular(
+                      5), // Adjust border radius as needed
                   color: Color(0xFFF4F1F1), // Set the background color
                 ),
                 child: TextButton(
                   onPressed: () {
-                    _addArticleManually(articleNo, int.parse(quantity)); // Add article manually
+                    _addArticleManually(
+                        articleNo, int.parse(quantity)); // Add article manually
                     Navigator.of(context).pop();
                   },
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5), // Adjust button padding
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 5), // Adjust button padding
                   ),
                   child: Text(
                     'Add',
@@ -198,7 +204,8 @@ class _MyHomePageState extends State<HomePageClient> {
                 Navigator.of(context).pop();
               },
               style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust button padding
+                padding: EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 10), // Adjust button padding
               ),
               child: Text(
                 'Cancel',
@@ -216,20 +223,19 @@ class _MyHomePageState extends State<HomePageClient> {
 
   void _showPopupAlert(String message) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        Future.delayed(Duration(seconds: 5), () {
-          Navigator.of(context).pop(true);
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 5), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(
+            title: Text('Alert', style: GoogleFonts.poppins()),
+            content: Text(message, style: GoogleFonts.poppins()),
+          );
         });
-        return AlertDialog(
-          title: Text('Alert', style: GoogleFonts.poppins()),
-          content: Text(message, style: GoogleFonts.poppins()),
-        );
-      }
-    );
   }
 
-  void _getAllArticle() async{
+  void _getAllArticle() async {
     String apiUrl = '$_getAPIkey?action=getArticleAll';
 
     try {
@@ -240,15 +246,14 @@ class _MyHomePageState extends State<HomePageClient> {
         var data = json.decode(response.body);
         var articles = data['data'] as Map<String, dynamic>;
         setState(() {
-          articleInfo = articles.map((key, value) => MapEntry(key, value as Map<String, dynamic>));
+          articleInfo = articles.map(
+              (key, value) => MapEntry(key, value as Map<String, dynamic>));
           // print("Art " + articleInfo.length.toString());
         });
         if (articleInfo.isEmpty) {
           _showPopupAlert('No data found');
         }
-      }
-      
-      else {
+      } else {
         _showPopupAlert('Failed to load article details, Restart app');
       }
     } catch (error) {
@@ -262,12 +267,16 @@ class _MyHomePageState extends State<HomePageClient> {
       var articleDetails = articleInfo[barcode];
       // var exhibitDetails = exhibitInfo[barcode]?? <String, dynamic>{};
       List<Map<String, dynamic>> exhibitDetails = [];
-      if(exhibitInfo.any((element) => element['article_number'] == barcode)){
-        exhibitDetails = exhibitInfo.where((element) => element['article_number'] == barcode).toList();
+      if (exhibitInfo.any((element) => element['article_number'] == barcode)) {
+        exhibitDetails = exhibitInfo
+            .where((element) => element['article_number'] == barcode)
+            .toList();
       }
       List<Map<String, dynamic>> sittingDetails = [];
-      if(sittingInfo.any((element) => element['article_number'] == barcode)){
-        sittingDetails = sittingInfo.where((element) => element['article_number'] == barcode).toList();
+      if (sittingInfo.any((element) => element['article_number'] == barcode)) {
+        sittingDetails = sittingInfo
+            .where((element) => element['article_number'] == barcode)
+            .toList();
       }
       // var sittingDetails = sittingInfo.where((element) => element['article_number'] == barcode) ?? <String, dynamic>{};
       if (articleDetails != null) {
@@ -284,15 +293,13 @@ class _MyHomePageState extends State<HomePageClient> {
           ),
         );
         return;
-      }else{
+      } else {
         _showPopupAlert('No data found');
       }
-    }
-    else {
-        _showPopupAlert('Failed! Try again...');
+    } else {
+      _showPopupAlert('Failed! Try again...');
     }
   }
-
 
 ///////--------Not Needed in Customer Interface--------/////////
   // void _getAllExhibit() async {
@@ -321,7 +328,7 @@ class _MyHomePageState extends State<HomePageClient> {
   //   }
   // }
 
-  void _getAllSitting() async{
+  void _getAllSitting() async {
     String apiUrl = '$_getAPIkey?action=getSittingAll';
 
     try {
@@ -331,7 +338,8 @@ class _MyHomePageState extends State<HomePageClient> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         var tempList = data['data'] as List;
-        List<Map<String, dynamic>> sittings = tempList.map((e) => e as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> sittings =
+            tempList.map((e) => e as Map<String, dynamic>).toList();
         setState(() {
           sittingInfo = sittings;
           // print("Sitting " + sittingInfo.length.toString());
@@ -339,8 +347,7 @@ class _MyHomePageState extends State<HomePageClient> {
         if (sittingInfo.isEmpty) {
           _showPopupAlert('No data found');
         }
-      }
-      else {
+      } else {
         _showPopupAlert('Failed to load sitting data, Restart App');
       }
     } catch (error) {
@@ -354,36 +361,44 @@ class _MyHomePageState extends State<HomePageClient> {
     List<String>? barcodeListString = prefs.getStringList('barcodeList');
     if (barcodeListString != null) {
       setState(() {
-        _barcodeList = barcodeListString.map<Map<String, String>>((item) => Map<String, String>.from(json.decode(item))).toList();
+        _barcodeList = barcodeListString
+            .map<Map<String, String>>(
+                (item) => Map<String, String>.from(json.decode(item)))
+            .toList();
       });
       _barcodeList.forEach((barcode) {
-        print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
+        print(
+            'Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
         // Add other properties if available
       });
     }
   }
 
-
   _saveBarcodeList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> encodedList = _barcodeList.map((item) => jsonEncode(item)).toList();
+    List<String> encodedList =
+        _barcodeList.map((item) => jsonEncode(item)).toList();
     await prefs.setStringList('barcodeList', encodedList);
   }
 
-  Future<void> doPostRequest(BuildContext context) async {
+  _setDateTime() {
+    date_time = DateTime.now();
+  }
+
+  Future<void> doPostRequestCustomer(BuildContext context) async {
     // URL of your Google Apps Script web app
-    String scriptUrl = 'https://script.google.com/macros/s/AKfycbyd6aJmcHBHy10jRtZmHgWra5cMvJjiGhuzpL_asQQEgli1EB0AXt4eeuD26JtOypp6/exec';
+    String scriptUrl =
+        'https://script.google.com/macros/s/AKfycbz-76mK3HfLEpY2S3Q66GeFrO6Utq82mgyiYH8cccXoEkByXuQSbjDFa8n1ftIL28KY/exec';
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        DocumentSnapshot userSnapshot =
-        await FirebaseFirestore.instance.collection('users')
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
             .doc(user.uid)
             .get();
-        Map<String, dynamic> userData = userSnapshot.data() as Map<
-            String,
-            dynamic>;
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
         String email = userData['email'];
         String name = userData['name'];
         String companyName = userData['companyName'];
@@ -391,6 +406,64 @@ class _MyHomePageState extends State<HomePageClient> {
         String role = userData['role'];
         Email = email;
 
+        _setDateTime();
+
+        // Constructing requestData
+        Map<String, dynamic> requestData = {
+          'date': date_time.toString(),
+          'Sample_picker': email,
+          'Customer_Email': email,
+          'Customer_Name': name,
+          'Company_Name': companyName,
+          'total_Samples': _barcodeList.length,
+        };
+
+        // Adding barcode data dynamically
+        for (int i = 0; i < _barcodeList.length; i++) {
+          requestData['Article ${i + 1}'] = _barcodeList[i]['barcode'];
+          requestData['Qty ${i + 1}'] = _barcodeList[i]['quantity'];
+          requestData['Unit ${i + 1}'] = _barcodeList[i]['unit'];
+        }
+
+        // Sending POST request to the Google Apps Script web app
+        var response = await http.post(
+          Uri.parse(scriptUrl),
+          body: json.encode(requestData),
+        );
+
+        // Checking the response
+        if (response.statusCode == 200 || response.statusCode == 302) {
+          print('Request successful: ${response.body}');
+          await _clearBarcodeList();
+        } else {
+          print('Request failed with status: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
+  /*Future<void> doPostRequest(BuildContext context) async {
+    // URL of your Google Apps Script web app
+    String scriptUrl =
+        'https://script.google.com/macros/s/AKfycbyd6aJmcHBHy10jRtZmHgWra5cMvJjiGhuzpL_asQQEgli1EB0AXt4eeuD26JtOypp6/exec';
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
+        String email = userData['email'];
+        String name = userData['name'];
+        String companyName = userData['companyName'];
+        // ignore: unused_local_variable
+        String role = userData['role'];
+        Email = email;
 
         // Load barcode list
         _loadBarcodeList(); // Assuming this function updates _barcodeList
@@ -422,9 +495,11 @@ class _MyHomePageState extends State<HomePageClient> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  ConfirmPage(
-                    description: 'Mail has been successfully sent to PMT-TXT and your account.',btnText: 'Send',),
+              builder: (context) => ConfirmPage(
+                description:
+                    'Mail has been successfully sent to PMT-TXT and your account.',
+                btnText: 'Send',
+              ),
             ),
           );
 
@@ -433,15 +508,18 @@ class _MyHomePageState extends State<HomePageClient> {
           print('Request failed with status: ${response.statusCode}');
         }
       }
-    }catch (e) {
+    } catch (e) {
       print('Error occurred: $e');
     }
-  }
-
+  }*/
 
   void _addArticleManually(String articleNo, int quantity) {
     setState(() {
-      _barcodeList.insert(0,{'barcode': articleNo, 'quantity': quantity.toString(),'unit':'Header'});
+      _barcodeList.insert(0, {
+        'barcode': articleNo,
+        'quantity': quantity.toString(),
+        'unit': 'Header'
+      });
       _saveBarcodeList();
     });
   }
@@ -474,7 +552,6 @@ class _MyHomePageState extends State<HomePageClient> {
   //     }
   //   });
   // }
-
 
   // Future<void> scanBarcodeNormal() async {
   //   String barcodeScanRes;
@@ -574,7 +651,6 @@ class _MyHomePageState extends State<HomePageClient> {
   //         }
   //       }
 
-
   //     ScaffoldMessenger.of(context).showSnackBar(
   //       SnackBar(
   //         content: Text(
@@ -599,7 +675,6 @@ class _MyHomePageState extends State<HomePageClient> {
   //   }
   // }
 
-
   void removeBarcode(int index) {
     setState(() {
       _barcodeList.removeAt(index);
@@ -607,7 +682,9 @@ class _MyHomePageState extends State<HomePageClient> {
     });
   }
 
-  void sendEmails(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
+  /*void sendEmails(
+      String recipient, String subject, List<Map<String, String>> barcodeList,
+      {required List<String> cc}) async {
     // Construct the email body
     String body = 'Your order is -\n';
 
@@ -634,7 +711,7 @@ class _MyHomePageState extends State<HomePageClient> {
       // If the device cannot send emails, show an error message
       throw 'Could not launch email';
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -654,7 +731,10 @@ class _MyHomePageState extends State<HomePageClient> {
         actions: [
           Row(
             children: [
-              Text(languageProvider.translate('logout'), style: GoogleFonts.poppins(color: Colors.red),),
+              Text(
+                languageProvider.translate('logout'),
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
               IconButton(
                 icon: Image.asset(
                   'assets/logout.png',
@@ -683,27 +763,30 @@ class _MyHomePageState extends State<HomePageClient> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                        if(articleInfo.isNotEmpty){
-                          Navigator.push(
+                      if (articleInfo.isNotEmpty) {
+                        Navigator.push(
                           context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllArticlePage(
-                                    articleDetails: articleInfo, userRole: widget.userRole,
-                                  ),
+                          MaterialPageRoute(
+                            builder: (context) => AllArticlePage(
+                              articleDetails: articleInfo,
+                              userRole: widget.userRole,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
                       elevation: 0,
                     ),
-                    child: Text(languageProvider.translate('all_articles'), style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text('Article Record',
+                        // Text(languageProvider.translate('all_articles'),
+                        style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                   // Second TextButton
                   // ElevatedButton(
@@ -733,20 +816,21 @@ class _MyHomePageState extends State<HomePageClient> {
                   // Third TextButton
                   ElevatedButton(
                     onPressed: () {
-                        if(sittingInfo.isNotEmpty){
-                          Navigator.push(
+                      if (sittingInfo.isNotEmpty) {
+                        Navigator.push(
                           context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllSittingPage(
-                                    articleDetails: sittingInfo, userRole: widget.userRole,
-                                  ),
+                          MaterialPageRoute(
+                            builder: (context) => AllSittingPage(
+                              articleDetails: sittingInfo,
+                              userRole: widget.userRole,
                             ),
-                          );
-                        }
-                      },
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       backgroundColor: Color(0xFFF4F1F1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -754,11 +838,12 @@ class _MyHomePageState extends State<HomePageClient> {
                       elevation: 0,
                       // shadowColor: Colors.black.withOpacity(0.7),
                     ),
-                    child: Text(languageProvider.translate('all_sitting'), style: GoogleFonts.poppins(color: Colors.black)),
+                    child: Text('Sitting Samples',
+                        // Text(languageProvider.translate('all_sitting'),
+                        style: GoogleFonts.poppins(color: Colors.black)),
                   ),
                 ],
               ),
-              
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: Divider(
@@ -769,7 +854,6 @@ class _MyHomePageState extends State<HomePageClient> {
               ),
             ],
           ),
-            
         ),
       ),
       drawer: Drawer(
@@ -799,31 +883,38 @@ class _MyHomePageState extends State<HomePageClient> {
                 setState(() {
                   _selectedLanguage = value;
                 });
-                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
                 Navigator.pop(context); // Close the drawer
               },
             ),
             RadioListTile<String>(
-              title: Text('Chinese (Simplied)', style: GoogleFonts.poppins(),),
+              title: Text(
+                'Chinese (Simplied)',
+                style: GoogleFonts.poppins(),
+              ),
               value: 'ch_si',
               groupValue: _selectedLanguage,
               onChanged: (value) {
                 setState(() {
                   _selectedLanguage = value;
                 });
-                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
                 Navigator.pop(context); // Close the drawer
               },
             ),
             RadioListTile<String>(
-              title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
+              title:
+                  Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
               value: 'ch_td',
               groupValue: _selectedLanguage,
               onChanged: (value) {
                 setState(() {
                   _selectedLanguage = value;
                 });
-                Provider.of<LanguageProvider>(context, listen: false).setLanguage(_selectedLanguage!);
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
                 Navigator.pop(context); // Close the drawer
               },
             ),
@@ -834,7 +925,6 @@ class _MyHomePageState extends State<HomePageClient> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Row(
               children: [
                 Padding(
@@ -851,20 +941,21 @@ class _MyHomePageState extends State<HomePageClient> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: RectangularICBtn(
-                    onPressed: () async{
-                    bool refresh = await Navigator.push(
+                    onPressed: () async {
+                      doPostRequestCustomer(context);
+                      bool refresh = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ConfirmPage2(
-                                description: languageProvider.translate('send_desc'),
-                                btnText: languageProvider.translate('sent'),
-                                userRole: widget.userRole,
-                                Email: Email,),
+                          builder: (context) => ConfirmPage2(
+                            description:
+                                languageProvider.translate('send_desc'),
+                            btnText: languageProvider.translate('sent'),
+                            userRole: widget.userRole,
+                            Email: Email,
+                          ),
                         ),
                       );
-                      if(refresh==true)
-                      {
+                      if (refresh == true) {
                         setState(() {
                           _barcodeList = [];
                         });
@@ -873,24 +964,25 @@ class _MyHomePageState extends State<HomePageClient> {
                     text: languageProvider.translate('Save List @PMT'),
                     color: Color(0xFFF4F1F1),
                     btnText: Colors.black,
-                    iconAssetPath: "assets/mbox.png",
+                    iconAssetPath: "assets/save.png",
                   ),
                 ),
               ],
             ),
-            
-            SizedBox(height: 10), // Add some space between the text and the list
+
+            SizedBox(
+                height: 10), // Add some space between the text and the list
             Expanded(
               child: _barcodeList.length != 0
                   ? Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0), // Add padding from left and right
-                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.0), // Add padding from left and right
+                      child: ListView.builder(
                         itemCount: _barcodeList.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              _fetchArticle(
-                                  _barcodeList[index]['barcode']!);
+                              _fetchArticle(_barcodeList[index]['barcode']!);
                             },
                             child: Card(
                               elevation: 0.0,
@@ -898,53 +990,51 @@ class _MyHomePageState extends State<HomePageClient> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     // Display barcode and leading icon
                                     Row(
                                       children: [
                                         Icon(Icons.qr_code),
-                                        SizedBox(width: 8),
+                                        SizedBox(width: 4),
                                         Text(
                                           '${languageProvider.translate('barcode')}:\n${_barcodeList[index]['barcode']}',
-                                          style:  GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                                          
+                                          style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
                                     // Display quantity input field
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         SizedBox(
-                                          width: 70,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: TextField(
-                                              decoration: InputDecoration(
-                                                labelText: 'Qty',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                              controller: TextEditingController(
-                                                text: _barcodeList[index]
-                                                    ['quantity'],
-                                              ),
-                                              onChanged: (value) {
-                                                _barcodeList[index]['quantity'] =
-                                                    value;
-                                              },
-                                              onEditingComplete: () {
-                                                FocusScope.of(context).unfocus();
-                                                Future.delayed(
-                                                    Duration(milliseconds: 500),
-                                                    () {
-                                                  setState(() {
-                                                    _saveBarcodeList();
-                                                  });
-                                                });
-                                              },
+                                          width: 76,
+                                          child: TextField(
+                                            decoration: InputDecoration(
+                                              labelText: 'Qty',
+                                              border: OutlineInputBorder(),
                                             ),
+                                            controller: TextEditingController(
+                                              text: _barcodeList[index]
+                                                  ['quantity'],
+                                            ),
+                                            onChanged: (value) {
+                                              _barcodeList[index]['quantity'] =
+                                                  value;
+                                            },
+                                            onEditingComplete: () {
+                                              FocusScope.of(context).unfocus();
+                                              Future.delayed(
+                                                  Duration(milliseconds: 500),
+                                                  () {
+                                                setState(() {
+                                                  _saveBarcodeList();
+                                                });
+                                              });
+                                            },
                                           ),
                                         ),
                                         // Display unit dropdown button
@@ -970,38 +1060,37 @@ class _MyHomePageState extends State<HomePageClient> {
                           );
                         },
                       ),
-                  )
-            
+                    )
                   : Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/qr2.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                      SizedBox(height: 25),
-                      Text(
-                        languageProvider.translate('No items in the list, scan or add from below buttons'),
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 16,
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/qr2.png',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(height: 25),
+                            Text(
+                              languageProvider.translate(
+                                  'No items in the list, scan or add from below buttons'),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
             ),
           ],
         ),
       ),
-    
       bottomNavigationBar: BottomAppBar(
         surfaceTintColor: Colors.white,
         child: LayoutBuilder(
@@ -1017,49 +1106,55 @@ class _MyHomePageState extends State<HomePageClient> {
                   color: Color(0xFFF4F1F1),
                   btnText: Colors.black,
                   iconAssetPath: "assets/plus.png",
-                  constraints: constraints, // Pass the constraints for responsiveness
+                  constraints:
+                      constraints, // Pass the constraints for responsiveness
                 ),
-                SizedBox(width: 20,),
+                SizedBox(
+                  width: 20,
+                ),
                 RectangularIBtn(
                   onPressed: () async {
-                     var code = await BarcodeScanner.scan();
-                     String res = code.rawContent;
-                      setState(() {
-                        if (res != '') {
-                          _scanBarcodeResult = res;
-                          if(!_barcodeList.contains({'barcode': _scanBarcodeResult})){
-                            _barcodeList.insert(0,{'barcode': _scanBarcodeResult, 'quantity': '1', 'unit': 'Header',});
-                            _saveBarcodeList();
-                          }
-                          else{
-                            ScaffoldMessenger.of(context).showSnackBar(
+                    var code = await BarcodeScanner.scan();
+                    String res = code.rawContent;
+                    setState(() {
+                      if (res != '') {
+                        _scanBarcodeResult = res;
+                        if (!_barcodeList
+                            .contains({'barcode': _scanBarcodeResult})) {
+                          _barcodeList.insert(0, {
+                            'barcode': _scanBarcodeResult,
+                            'quantity': '1',
+                            'unit': 'Header',
+                          });
+                          _saveBarcodeList();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Barcode Already Scanned!'),
                             ),
                           );
-                          }
-                        } else if(res == "-1") {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Try again to scan a barcode.'),
-                            ),
-                          );
                         }
-                      });
-                    },
+                      } else if (res == "-1") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Try again to scan a barcode.'),
+                          ),
+                        );
+                      }
+                    });
+                  },
                   text: languageProvider.translate('Scan Samples'),
                   color: Colors.red,
                   btnText: Colors.white,
                   iconAssetPath: "assets/qr.png",
-                  constraints: constraints, // Pass the constraints for responsiveness
+                  constraints:
+                      constraints, // Pass the constraints for responsiveness
                 ),
               ],
             );
           },
         ),
       ),
-    
     );
   }
-
 }

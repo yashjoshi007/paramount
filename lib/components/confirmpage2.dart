@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 // import 'package:paramount/ui/screens/homeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +16,11 @@ class ConfirmPage2 extends StatefulWidget {
   final String userRole;
   final String Email;
 
-  ConfirmPage2({required this.description, required this.btnText, required this.userRole,required this.Email});
+  ConfirmPage2(
+      {required this.description,
+      required this.btnText,
+      required this.userRole,
+      required this.Email});
 
   @override
   _ConfirmPage2State createState() => _ConfirmPage2State();
@@ -33,26 +37,27 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
     _loadBarcodeList();
   }
 
-  _setDateTime(){
+  _setDateTime() {
     date_time = DateTime.now();
   }
 
   _loadBarcodeList() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String>? barcodeListString = prefs.getStringList('barcodeList');
-      if (barcodeListString != null) {
-        setState(() {
-          _barcodeList = barcodeListString
-              .map<Map<String, String>>(
-                  (item) => Map<String, String>.from(json.decode(item)))
-              .toList();
-        });
-        _barcodeList.forEach((barcode) {
-          print('Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
-          print(widget.userRole);
-          // Add other properties if available
-        });
-      }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? barcodeListString = prefs.getStringList('barcodeList');
+    if (barcodeListString != null) {
+      setState(() {
+        _barcodeList = barcodeListString
+            .map<Map<String, String>>(
+                (item) => Map<String, String>.from(json.decode(item)))
+            .toList();
+      });
+      _barcodeList.forEach((barcode) {
+        print(
+            'Barcode: ${barcode['barcode']}, Quantity: ${barcode['quantity']}, Unit: ${barcode['unit']}');
+        print(widget.userRole);
+        // Add other properties if available
+      });
+    }
   }
 
   Future<Map<String, dynamic>> loadUserDetails() async {
@@ -66,13 +71,12 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
     }
   }
 
-
   _clearUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('userDetails');
   }
 
-  Future<void> doPostRequestCustomer(BuildContext context) async {
+  /*Future<void> doPostRequestCustomer(BuildContext context) async {
     // URL of your Google Apps Script web app
     String scriptUrl =
         'https://script.google.com/macros/s/AKfycbz-76mK3HfLEpY2S3Q66GeFrO6Utq82mgyiYH8cccXoEkByXuQSbjDFa8n1ftIL28KY/exec';
@@ -85,7 +89,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
             .doc(user.uid)
             .get();
         Map<String, dynamic> userData =
-        userSnapshot.data() as Map<String, dynamic>;
+            userSnapshot.data() as Map<String, dynamic>;
         String email = userData['email'];
         String name = userData['name'];
         String companyName = userData['companyName'];
@@ -98,7 +102,7 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
         // Constructing requestData
         Map<String, dynamic> requestData = {
           'date': date_time.toString(),
-          'Sample_picker': name,
+          'Sample_picker': email,
           'Customer_Email': email,
           'Customer_Name': name,
           'Company_Name': companyName,
@@ -151,21 +155,22 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
       // // Assuming this function updates _barcodeList
       // print("EM - $Email");
       // Constructing requestData
-      String pickerName = '';
+      String pickerEmail = '';
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .get();
-        Map<String, dynamic> appUser = userSnapshot.data() as Map<String, dynamic>;
-        pickerName = appUser['name'];
+        Map<String, dynamic> appUser =
+            userSnapshot.data() as Map<String, dynamic>;
+        pickerEmail = appUser['email'];
       }
       _setDateTime();
 
       Map<String, dynamic> requestData = {
         'date': date_time.toString(),
-        'Sample_picker': pickerName,
+        'Sample_picker': pickerEmail,
         'Customer_Email': userDetails['email'],
         'Customer_Name': userDetails['name'],
         'Company_Name': userDetails['companyName'],
@@ -198,24 +203,28 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
     } catch (e) {
       print('Error occurred: $e');
     }
-  }
+  }*/
 
-  void sendEmailCustomer(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
+  void sendEmailCustomer(
+      String recipient, String subject, List<Map<String, String>> barcodeList,
+      {required List<String> cc}) async {
     String custemail = '';
     String custname = '';
     User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        Map<String, dynamic> appUser = userSnapshot.data() as Map<String, dynamic>;
-        custemail = appUser['email'];
-        custname = appUser['name'];
-      }
-    
+    if (user != null) {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      Map<String, dynamic> appUser =
+          userSnapshot.data() as Map<String, dynamic>;
+      custemail = appUser['email'];
+      custname = appUser['name'];
+    }
+
     // Construct the email body
-      String body = '''Dear Paramount Team,\nI have selected samples from your booth with below items, Please prepare the samples as soon as possible. \n\n------------------------------\n\n''';
+    String body =
+        '''Dear Paramount Team,\nI have selected samples from your booth with below items, Please prepare the samples as soon as possible. \n\n------------------------------\n\n''';
 
     // Append each barcode to the body
     barcodeList.forEach((barcode) {
@@ -247,9 +256,12 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
     }
   }
 
-  void sendEmailColleague(String recipient, String subject, List<Map<String, String>> barcodeList, {required List<String> cc}) async {
+  void sendEmailColleague(
+      String recipient, String subject, List<Map<String, String>> barcodeList,
+      {required List<String> cc}) async {
     // Construct the email body
-      String body = '''Dear Madam/Sir,\nThanks for your visiting our booth, you have selected samples from our booth with below items, we would like to list the items herewith, we will prepare them as soon as possible, my colleague will update you asap. \n\n------------------------------\n\n''';
+    String body =
+        '''Dear Madam/Sir,\nThanks for your visiting our booth, you have selected samples from our booth with below items, we would like to list the items herewith, we will prepare them as soon as possible, my colleague will update you asap. \n\n------------------------------\n\n''';
 
     // Append each barcode to the body
     barcodeList.forEach((barcode) {
@@ -258,7 +270,8 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
       body += 'Unit: ${barcode['unit']}' '\n\n';
     });
 
-    body += '''------------------------------\n\nBest regards,\n\nAuto email sent from Paramount Server, No need to reply this email.
+    body +=
+        '''------------------------------\n\nBest regards,\n\nAuto email sent from Paramount Server, No need to reply this email.
  ''';
 
     // Construct the email URI
@@ -290,13 +303,13 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () async{
-            if(_barcodeList.length==0){
-            _clearUserDetails();
-            _clearBarcodeList();
-            Navigator.pop(context,true);}
-            else{
-              Navigator.pop(context,false);
+          onPressed: () async {
+            if (_barcodeList.length == 0) {
+              _clearUserDetails();
+              _clearBarcodeList();
+              Navigator.pop(context, true);
+            } else {
+              Navigator.pop(context, false);
             }
           },
         ),
@@ -339,69 +352,22 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
             ElevatedButton(
               onPressed: () async {
                 if (_barcodeList.isNotEmpty) {
-                  if(widget.userRole=="customer" || widget.userRole=="Customer") {
-                    doPostRequestCustomer(context);
-                    sendEmailCustomer('Fair.sample@paramountex.com', 'Selected Samples List', _barcodeList,
-                      cc: [widget.Email]);
-                  }else if(widget.userRole=="colleague" || widget.userRole=="Colleague"){
-                    doPostRequestColleague(context);
-                    sendEmailColleague(widget.Email, 'Selected Samples List', _barcodeList,
-                      cc: ['Fair.sample@paramountex.com']);
+                  if (widget.userRole == "customer" ||
+                      widget.userRole == "Customer") {
+                    sendEmailCustomer('Fair.sample@paramountex.com',
+                        'Selected Samples List', _barcodeList,
+                        cc: [widget.Email]);
+                  } else if (widget.userRole == "colleague" ||
+                      widget.userRole == "Colleague") {
+                    sendEmailColleague(
+                        widget.Email, 'Selected Samples List', _barcodeList,
+                        cc: ['Fair.sample@paramountex.com']);
                   }
-                  
+
                   // print(widget.Email);
                   // sendEmails('patricktse100@gmail.com', 'Selected Samples List', _barcodeList,
                   //     cc: [widget.Email]);
-                  Navigator.pop(context,true);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('No barcodes are available.'),
-                    ),
-                  );
-                }
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0xFFF4F1F1)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    // side: BorderSide(color: Colors.red), // Border color
-                  ),
-                ),
-                // shadowColor: MaterialStateProperty.all(
-                //     Colors.orange.withOpacity(0.5)),
-                elevation: MaterialStateProperty.all(0), // Adjust elevation as needed
-              ),
-              child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.75, // Set to 40% of the screen width
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: Text(
-                  widget.btnText,
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_barcodeList.isNotEmpty) {
-                  if(widget.userRole=="customer" || widget.userRole=="Customer") {
-                    doPostRequestCustomer(context);
-                    
-                  }else if(widget.userRole=="colleague" || widget.userRole=="Colleague"){
-                    doPostRequestColleague(context);
-                    
-                  }
-                  Navigator.pop(context,true);
+                  Navigator.pop(context, true);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -420,14 +386,15 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
                 ),
                 // shadowColor: MaterialStateProperty.all(
                 //     Colors.orange.withOpacity(0.5)),
-                elevation: MaterialStateProperty.all(0), // Adjust elevation as needed
+                elevation:
+                    MaterialStateProperty.all(0), // Adjust elevation as needed
               ),
               child: Container(
                 width: MediaQuery.of(context).size.width *
                     0.75, // Set to 40% of the screen width
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: Text(
-                  "List Saved, Click to go back",
+                  widget.btnText,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
@@ -437,7 +404,41 @@ class _ConfirmPage2State extends State<ConfirmPage2> {
                 ),
               ),
             ),
-
+            SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Color(0xFFF4F1F1)),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    // side: BorderSide(color: Colors.red), // Border color
+                  ),
+                ),
+                // shadowColor: MaterialStateProperty.all(
+                //     Colors.orange.withOpacity(0.5)),
+                elevation:
+                    MaterialStateProperty.all(0), // Adjust elevation as needed
+              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width *
+                    0.75, // Set to 40% of the screen width
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Text(
+                  "List Saved, Click to go back",
+                  style: GoogleFonts.poppins(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           ],
         ),
       ),

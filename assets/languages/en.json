@@ -1,10 +1,10 @@
 {
-  "sample_list":"Your Product List",
+  "sample_list": "Your Product List",
   "customer_det": "Customer Details",
   "barcode": "Article No.",
   "email_list": "Email List to PJC",
   "Save List": "Save List @PMT",
-  "empty_list":"Select Sample by scanning the barcode or adding them manually \uD83D\uDC47\uD83C\uDFFB",
+  "empty_list": "Select Sample by scanning the barcode or adding them manually \uD83D\uDC47\uD83C\uDFFB",
   "No items in the list, scan or add from below buttons": "No items in the list, scan or add from below buttons",
   "add_p": "Add Product",
   "Add Manually": "Add Manually",
@@ -18,7 +18,7 @@
   "Login_text": "Login with your username or email",
   "account": "Create an account",
   "email": "Email",
-  "name": "Name",
+  "name": "Reference",
   "details": "Enter Customer Details",
   "comp_name": "Company Name",
   "pass": "Password",
@@ -49,5 +49,5 @@
   "full_width": "Width",
   "weight": "Weight",
   "price_usd": "Price.USD ($)",
-  "price_yen": "Price.Yen (¥)"
+  "price_yen": "Price.CNY (¥)"
 }

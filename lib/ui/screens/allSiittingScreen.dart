@@ -24,7 +24,7 @@ class _AllSittingPageState extends State<AllSittingPage> {
 
   @override
   initState() {
-    _foundDetails = widget.articleDetails;
+    _foundDetails = [];
     super.initState();
   }
 
@@ -86,7 +86,8 @@ class _AllSittingPageState extends State<AllSittingPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${languageProvider.translate('article_no')}: ${value['article_number']}',
+                  Text(
+                      '${languageProvider.translate('article_no')}: ${value['article_number']}',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                       '${languageProvider.translate('similar')}: ${value["Similar"]?.toString() ?? ""}'),
@@ -104,14 +105,20 @@ class _AllSittingPageState extends State<AllSittingPage> {
                       '${languageProvider.translate('color_code')}: ${value["ColorCode"]?.toString() ?? ""}'),
                   Text(
                       '${languageProvider.translate('e_color')}: ${value["E_Color"]?.toString() ?? ""}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text(
-                      '${languageProvider.translate('quantity')}: ${value["Quantity"]?.toString() ?? ""}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague') Text(
-                      '${languageProvider.translate('unit')}: ${value["Unit"]?.toString() ?? ""}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('quantity')}: ${value["Quantity"]?.toString() ?? ""}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('unit')}: ${value["Unit"]?.toString() ?? ""}'),
                   // Text(
                   //     '${languageProvider.translate('l1')}: ${value["L1"]?.toString() ?? ""}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text(
-                      '${languageProvider.translate('remark')}: ${value["Remark"]?.toString() ?? ""}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('remark')}: ${value["Remark"]?.toString() ?? ""}'),
                 ],
               ),
             ),

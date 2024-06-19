@@ -9,25 +9,26 @@ class AllArticlePage extends StatefulWidget {
   final Map<String, Map<String, dynamic>> articleDetails;
   final String userRole; // Assuming user role is passed to this widget
 
-  const AllArticlePage({Key? key, required this.articleDetails, required this.userRole}) : super(key: key);
+  const AllArticlePage(
+      {Key? key, required this.articleDetails, required this.userRole})
+      : super(key: key);
 
   @override
   State<AllArticlePage> createState() => _AllArticlePageState();
 }
 
 class _AllArticlePageState extends State<AllArticlePage> {
-
   Map<String, Map<String, dynamic>> _foundDetails = {};
 
   @override
-  initState(){
-    _foundDetails = widget.articleDetails;
+  initState() {
+    _foundDetails = {};
     super.initState();
   }
 
-  void _searchFunc(String articleNumber){
+  void _searchFunc(String articleNumber) {
     Map<String, Map<String, dynamic>> results = {};
-    if(articleNumber.isEmpty){
+    if (articleNumber.isEmpty) {
       results = widget.articleDetails;
     } else {
       results = widget.articleDetails.entries.where((entry) {
@@ -51,24 +52,24 @@ class _AllArticlePageState extends State<AllArticlePage> {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(56.0),
           child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-              child: TextField(
-                onChanged: (value) => _searchFunc(value),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 15),
-                  hintText: "Search Article",
-                  hintStyle: GoogleFonts.poppins(
-                    color: Colors.grey,
-                    fontStyle: FontStyle.normal,
-                    fontSize: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: TextField(
+              onChanged: (value) => _searchFunc(value),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 15),
+                hintText: "Search Article",
+                hintStyle: GoogleFonts.poppins(
+                  color: Colors.grey,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 14,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
-      ),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: _foundDetails.length,
@@ -83,16 +84,34 @@ class _AllArticlePageState extends State<AllArticlePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${languageProvider.translate('article_no')}: $key', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('${languageProvider.translate('composition')}: ${value["Compo"]?.toString() ?? "NA"}'),
-                  Text('${languageProvider.translate('texture')}: ${value["Texture"]?.toString() ?? "NA"}'),
-                  Text('${languageProvider.translate('finish')}: ${value["Finish"]?.toString() ?? "NA"}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('density')}: ${value["Density"]?.toString() ?? "NA"}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('yarn_count')}: ${value["Yarn_Count"]?.toString() ?? "NA"}'),
-                  Text('${languageProvider.translate('full_width')}: ${value["Width"]?.toString() ?? "NA"}'),
-                  Text('${languageProvider.translate('weight')}: ${value["Weight"]?.toString() ?? "NA"}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('price_usd')}: ${value["Price_D"]?.toString() ?? "NA"}'),
-                  if (widget.userRole == 'colleague' || widget.userRole == 'Colleague')Text('${languageProvider.translate('price_yen')}: ${value["Price_Y"]?.toString() ?? "NA"}'),
+                  Text('${languageProvider.translate('article_no')}: $key',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                      '${languageProvider.translate('composition')}: ${value["Compo"]?.toString() ?? "NA"}'),
+                  Text(
+                      '${languageProvider.translate('texture')}: ${value["Texture"]?.toString() ?? "NA"}'),
+                  Text(
+                      '${languageProvider.translate('finish')}: ${value["Finish"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('density')}: ${value["Density"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('yarn_count')}: ${value["Yarn_Count"]?.toString() ?? "NA"}'),
+                  Text(
+                      '${languageProvider.translate('full_width')}: ${value["Width"]?.toString() ?? "NA"}'),
+                  Text(
+                      '${languageProvider.translate('weight')}: ${value["Weight"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('price_usd')}: ${value["Price_D"]?.toString() ?? "NA"}'),
+                  if (widget.userRole == 'colleague' ||
+                      widget.userRole == 'Colleague')
+                    Text(
+                        '${languageProvider.translate('price_yen')}: ${value["Price_Y"]?.toString() ?? "NA"}'),
                 ],
               ),
             ),

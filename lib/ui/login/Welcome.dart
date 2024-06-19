@@ -25,8 +25,12 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: screenHeight * 0.1), // Adjusted spacing for responsiveness
-            Image.asset('assets/Welcome-text.png', height: screenHeight * 0.55), // Adjusted image size for responsiveness
+            SizedBox(
+                height:
+                    screenHeight * 0.1), // Adjusted spacing for responsiveness
+            Image.asset('assets/Frame 37-3.png',
+                height: screenHeight *
+                    0.55), // Adjusted image size for responsiveness
 
             SizedBox(height: screenHeight * 0.1),
 
@@ -36,7 +40,8 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
                       return signinPage();
                     }));
                   },
@@ -51,7 +56,9 @@ class WelcomeScreen extends StatelessWidget {
                     elevation: MaterialStateProperty.all(0),
                   ),
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: screenHeight * 0.020), // Adjusted padding for responsiveness
+                    padding: EdgeInsets.symmetric(
+                        vertical: screenHeight *
+                            0.020), // Adjusted padding for responsiveness
                     child: Text(
                       'Sign up',
                       style: GoogleFonts.poppins(
@@ -64,11 +71,14 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(width: screenWidth * 0.1), // Adjusted spacing for responsiveness
+                SizedBox(
+                    width: screenWidth *
+                        0.1), // Adjusted spacing for responsiveness
 
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
                       return LoginPage();
                     }));
                   },
@@ -83,7 +93,9 @@ class WelcomeScreen extends StatelessWidget {
                     elevation: MaterialStateProperty.all(0),
                   ),
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: screenHeight * 0.020), // Adjusted padding for responsiveness
+                    padding: EdgeInsets.symmetric(
+                        vertical: screenHeight *
+                            0.020), // Adjusted padding for responsiveness
                     child: Text(
                       'Login',
                       style: GoogleFonts.poppins(
