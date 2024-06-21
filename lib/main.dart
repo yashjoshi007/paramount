@@ -10,7 +10,6 @@ import 'package:paramount/ui/login/login.dart';
 import 'package:paramount/ui/screens/homeColleague.dart';
 import 'package:paramount/ui/screens/homeScreen.dart';
 import 'package:provider/provider.dart';
-
 import 'localization/language_provider.dart';
 
 Future<void> main() async {
@@ -45,7 +44,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Sample Selector',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
 
