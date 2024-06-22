@@ -36,6 +36,7 @@ class HomePageColleague extends StatefulWidget {
 class _MyHomePageState extends State<HomePageColleague> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String? _selectedLanguage = 'en';
+  final TextEditingController _refController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -308,9 +309,10 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
   Future<void> saveUserDetails(
-      String name, String companyName, String email) async {
+      String ref, String name, String companyName, String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> userDetails = {
+      'ref': ref,
       'name': name,
       'companyName': companyName,
       'email': email,
@@ -1053,6 +1055,17 @@ class _MyHomePageState extends State<HomePageColleague> {
                         ),
                       ),
                     ),
+                     Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: _refController,
+                              decoration: InputDecoration(
+                                labelText: languageProvider.translate('ref'),
+                                labelStyle: GoogleFonts.poppins(),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
                     Row(
                       children: [
                         Expanded(
@@ -1106,6 +1119,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               String name = _nameController.text;
                               String companyName = _companyNameController.text;
                               String email = _emailController.text;
+                              String ref = _refController.text;
 
                               if (name.isEmpty ||
                                   companyName.isEmpty ||
@@ -1119,7 +1133,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                   ),
                                 );
                               } else {
-                                await saveUserDetails(name, companyName, email);
+                                await saveUserDetails(ref,name, companyName, email);
                                 setState(() {
                                   showBottom = true;
                                 });
@@ -1159,6 +1173,11 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
+                                    '${languageProvider.translate('ref')}: ${userDetails['ref']}',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
                                     '${languageProvider.translate('name')}: ${userDetails['name']}',
                                     style: GoogleFonts.poppins(),
                                   ),
@@ -1181,10 +1200,10 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 ), // Add delete icon
                                 onPressed: () async {
                                   setState(() {
-                                    _nameController.text =
-                                        ''; // Clear text fields
+                                    _nameController.text = ''; // Clear text fields
                                     _companyNameController.text = '';
                                     _emailController.text = '';
+                                    _refController.text = '';
                                     showBottom = false;
                                   });
                                   //await _clearBarcodeList();
