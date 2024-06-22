@@ -101,7 +101,7 @@ class _AllArticlePageState extends State<AllArticlePage> {
                     Text(
                         '${languageProvider.translate('yarn_count')}: ${value["Yarn_Count"]?.toString() ?? "NA"}'),
                   Text(
-                      '${languageProvider.translate('full_width')}: ${value["Width"]?.toString() ?? "NA"}'),
+                      '${languageProvider.translate('width')}: ${value["Width"]?.toString() ?? "NA"}'),
                   Text(
                       '${languageProvider.translate('weight')}: ${value["Weight"]?.toString() ?? "NA"}'),
                   if (widget.userRole == 'colleague' ||
