@@ -36,6 +36,7 @@ class HomePageColleague extends StatefulWidget {
 class _MyHomePageState extends State<HomePageColleague> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String? _selectedLanguage = 'en';
+  final TextEditingController _refController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -308,12 +309,13 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
   Future<void> saveUserDetails(
-      String name, String companyName, String email) async {
+      String name, String companyName, String email, String ref) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> userDetails = {
       'name': name,
       'companyName': companyName,
       'email': email,
+      'ref': ref,
     };
     await prefs.setString('userDetails', json.encode(userDetails));
   }
@@ -504,7 +506,7 @@ class _MyHomePageState extends State<HomePageColleague> {
     print("Started post function");
     // URL of your Google Apps Script web app
     String scriptUrl =
-        'https://script.google.com/macros/s/AKfycbz-76mK3HfLEpY2S3Q66GeFrO6Utq82mgyiYH8cccXoEkByXuQSbjDFa8n1ftIL28KY/exec';
+        'https://script.google.com/macros/s/AKfycbzdBJ3FJXoYSY_fvWp_Q1DafHYsXaojsywp0yXX7COoRkot-kwpjV-TKe8TokHxuOdj/exec';
 
     try {
       // Load user details
@@ -537,6 +539,7 @@ class _MyHomePageState extends State<HomePageColleague> {
       Map<String, dynamic> requestData = {
         'date': date_time.toString(),
         'Sample_picker': pickerEmail,
+        'Reference': userDetails['ref'],
         'Customer_Email': userDetails['email'],
         'Customer_Name': userDetails['name'],
         'Company_Name': userDetails['companyName'],
@@ -1053,6 +1056,17 @@ class _MyHomePageState extends State<HomePageColleague> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _refController,
+                        decoration: InputDecoration(
+                          labelText: languageProvider.translate('ref'),
+                          labelStyle: GoogleFonts.poppins(),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -1106,6 +1120,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                               String name = _nameController.text;
                               String companyName = _companyNameController.text;
                               String email = _emailController.text;
+                              String ref = _refController.text;
 
                               if (name.isEmpty ||
                                   companyName.isEmpty ||
@@ -1119,7 +1134,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                                   ),
                                 );
                               } else {
-                                await saveUserDetails(name, companyName, email);
+                                await saveUserDetails(
+                                    name, companyName, email, ref);
                                 setState(() {
                                   showBottom = true;
                                 });
@@ -1158,8 +1174,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 ), // Add delete icon
                                 onPressed: () async {
                                   setState(() {
-                                    _nameController.text =
-                                        ''; // Clear text fields
+                                    _refController.text = '';
+                                    _nameController.text = '';
                                     _companyNameController.text = '';
                                     _emailController.text = '';
                                     showBottom = false;
@@ -1177,6 +1193,11 @@ class _MyHomePageState extends State<HomePageColleague> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(
+                                '${languageProvider.translate('ref')}: ${userDetails['ref']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
                               Text(
                                 '${languageProvider.translate('name')}: ${userDetails['name']}',
                                 style: GoogleFonts.poppins(),

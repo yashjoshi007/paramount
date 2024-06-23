@@ -388,7 +388,7 @@ class _MyHomePageState extends State<HomePageClient> {
   Future<void> doPostRequestCustomer(BuildContext context) async {
     // URL of your Google Apps Script web app
     String scriptUrl =
-        'https://script.google.com/macros/s/AKfycbz-76mK3HfLEpY2S3Q66GeFrO6Utq82mgyiYH8cccXoEkByXuQSbjDFa8n1ftIL28KY/exec';
+        'https://script.google.com/macros/s/AKfycbzdBJ3FJXoYSY_fvWp_Q1DafHYsXaojsywp0yXX7COoRkot-kwpjV-TKe8TokHxuOdj/exec';
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
@@ -413,6 +413,7 @@ class _MyHomePageState extends State<HomePageClient> {
           'date': date_time.toString(),
           'Sample_picker': email,
           'Customer_Email': email,
+          'Reference': 'NA',
           'Customer_Name': name,
           'Company_Name': companyName,
           'total_Samples': _barcodeList.length,
