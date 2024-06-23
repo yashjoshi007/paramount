@@ -1141,38 +1141,15 @@ class _MyHomePageState extends State<HomePageColleague> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            languageProvider.translate('customer_det'),
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${languageProvider.translate('name')}: ${userDetails['name']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '${languageProvider.translate('email')}: ${userDetails['email']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                ],
+                              Text(
+                                languageProvider.translate('customer_det'),
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               IconButton(
                                 icon: Image.asset(
@@ -1190,6 +1167,29 @@ class _MyHomePageState extends State<HomePageColleague> {
                                   //await _clearBarcodeList();
                                   await _clearUserDetails();
                                 },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${languageProvider.translate('name')}: ${userDetails['name']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '${languageProvider.translate('email')}: ${userDetails['email']}',
+                                style: GoogleFonts.poppins(),
                               ),
                             ],
                           ),
