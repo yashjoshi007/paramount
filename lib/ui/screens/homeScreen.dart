@@ -857,71 +857,114 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              height: 110,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                ),
-                child: Text(
-                  'Change Language',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Container(
+            height: 110,
+            child: DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
+              child: Text(
+                'Change Language',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 24,
                 ),
               ),
             ),
-            RadioListTile<String>(
-              title: Text('English', style: GoogleFonts.poppins()),
-              value: 'en',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
-            RadioListTile<String>(
-              title: Text(
-                'Chinese (Simplied)',
-                style: GoogleFonts.poppins(),
-              ),
-              value: 'ch_si',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
-            RadioListTile<String>(
-              title:
-                  Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-              value: 'ch_td',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
-          ],
-        ),
+          ),
+          RadioListTile<String>(
+            title: Text('English', style: GoogleFonts.poppins()),
+            value: 'en',
+            groupValue: _selectedLanguage,
+            onChanged: (value) {
+              setState(() {
+                _selectedLanguage = value;
+              });
+              Provider.of<LanguageProvider>(context, listen: false)
+                  .setLanguage(_selectedLanguage!);
+              Navigator.pop(context); // Close the drawer
+            },
+          ),
+          RadioListTile<String>(
+            title: Text('Chinese (Simplified)', style: GoogleFonts.poppins()),
+            value: 'ch_si',
+            groupValue: _selectedLanguage,
+            onChanged: (value) {
+              setState(() {
+                _selectedLanguage = value;
+              });
+              Provider.of<LanguageProvider>(context, listen: false)
+                  .setLanguage(_selectedLanguage!);
+              Navigator.pop(context); // Close the drawer
+            },
+          ),
+          RadioListTile<String>(
+            title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
+            value: 'ch_td',
+            groupValue: _selectedLanguage,
+            onChanged: (value) {
+              setState(() {
+                _selectedLanguage = value;
+              });
+              Provider.of<LanguageProvider>(context, listen: false)
+                  .setLanguage(_selectedLanguage!);
+              Navigator.pop(context); // Close the drawer
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('Delete Account', style: GoogleFonts.poppins()),
+            onTap: () async {
+              // Confirm delete action
+              bool confirmDelete = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Confirm Delete', style: GoogleFonts.poppins(),),
+                  content: Text('Are you sure you want to delete your account? *This action cannot be undone.*', style: GoogleFonts.poppins()),
+                  actions: [
+                    TextButton(
+                      child: Text('Cancel', style: GoogleFonts.poppins()),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Delete', style: GoogleFonts.poppins(color: Colors.red)),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirmDelete) {
+                try {
+                  User? user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    await user.delete();
+                    // Navigate to home page
+                     Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                  }
+                } catch (e) {
+                  // Handle error (e.g., re-authentication required)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting account: ${e.toString()}')),
+                  );
+                }
+              }
+            },
+          ),
+        ],
       ),
-      body: SafeArea(
+    ),body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
