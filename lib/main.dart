@@ -23,8 +23,7 @@ Future<void> main() async {
         projectId: "paramount-4b774",
       ),
     );
-  }
-  else if (Platform.isIOS) {
+  } else if (Platform.isIOS) {
     await Firebase.initializeApp();
   }
 
@@ -38,17 +37,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => LanguageProvider()), // Replace LanguageProvider with your actual provider
+        ChangeNotifierProvider(
+            create: (context) =>
+                LanguageProvider()), // Replace LanguageProvider with your actual provider
       ],
-
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Sample Selector',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-
-        // home: WelcomeScreen(),
+        // home: SplashScreen(),
         home: FutureBuilder<User?>(
           future: FirebaseAuth.instance.authStateChanges().first,
           builder: (context, snapshot) {
@@ -56,26 +56,30 @@ class MyApp extends StatelessWidget {
               return SplashScreen(); // Use SplashScreen while waiting
             } else if (snapshot.hasData && snapshot.data != null) {
               return FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance.collection('users').doc(snapshot.data!.uid).get(),
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(snapshot.data!.uid)
+                    .get(),
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return SplashScreen(); // Use SplashScreen while waiting
-                  } 
-                  else if (userSnapshot.hasData && userSnapshot.data != null) {
+                  } else if (userSnapshot.hasData &&
+                      userSnapshot.data != null) {
                     // Get user role from Firestore
                     String role = userSnapshot.data!['role'];
-                     print(role);
+                    print(role);
                     if (role == 'colleague' || role == 'Colleague') {
-                      return HomePageColleague(userRole: role,); // Navigate to colleague home screen
-                    } 
-                    else if(role == 'customer' || role == 'Customer'){
-                      return HomePageClient(userRole: role,); // Navigate to user home screen
-                    }
-                    else{
+                      return HomePageColleague(
+                        userRole: role,
+                      ); // Navigate to colleague home screen
+                    } else if (role == 'customer' || role == 'Customer') {
+                      return HomePageClient(
+                        userRole: role,
+                      ); // Navigate to user home screen
+                    } else {
                       return LoginPage();
                     }
-                  } 
-                  else {
+                  } else {
                     return LoginPage(); // Navigate to login screen if user data is not available
                   }
                 },
@@ -93,20 +97,19 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FlutterLogo(
-              size: 100,
-            ),
+            Center(
+                child: Image.asset('assets/logo.png', width: 150, height: 150)),
             SizedBox(height: 20),
             CupertinoActivityIndicator(
-          color: Colors.red,
-          radius: 20,
-          animating: true,
-        ),
+              color: Colors.red,
+              radius: 20,
+              animating: true,
+            ),
           ],
         ),
       ),

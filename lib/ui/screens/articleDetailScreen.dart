@@ -15,13 +15,20 @@ class ArticleDetailsPage extends StatelessWidget {
   List<Map<String, dynamic>> exhibitDetails;
   List<Map<String, dynamic>> sittingDetails;
   final String userRole;
-  final String barcode;// Assuming user role is passed to this widget
+  final String barcode; // Assuming user role is passed to this widget
   String btnPressed = '';
 
-  ArticleDetailsPage({Key? key, required this.articleDetails, required this.exhibitDetails,required this.sittingDetails, required this.userRole,required this.barcode}) : super(key: key);
+  ArticleDetailsPage(
+      {Key? key,
+      required this.articleDetails,
+      required this.exhibitDetails,
+      required this.sittingDetails,
+      required this.userRole,
+      required this.barcode})
+      : super(key: key);
 
   void _showPopupAlert(String message, BuildContext context) {
-      showDialog(
+    showDialog(
         context: context,
         builder: (BuildContext context) {
           Future.delayed(Duration(seconds: 5), () {
@@ -31,11 +38,10 @@ class ArticleDetailsPage extends StatelessWidget {
             title: Text('Alert', style: GoogleFonts.poppins()),
             content: Text(message, style: GoogleFonts.poppins()),
           );
-        }
-      );
-    }
+        });
+  }
 
-  void _fetchArticleDetails(BuildContext context,String barcode) async {
+  void _fetchArticleDetails(BuildContext context, String barcode) async {
     // bool snackbarShown = false; // Flag to track whether a Snackbar is shown
     // String apiUrl = '';
     // showDialog(
@@ -70,42 +76,42 @@ class ArticleDetailsPage extends StatelessWidget {
     //   },
     // );
 
-    if(btnPressed=='Exhibit') {
+    if (btnPressed == 'Exhibit') {
       // apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getExhibitSamples&articleNumber=$barcode';
-      if (exhibitDetails.isNotEmpty){
+      if (exhibitDetails.isNotEmpty) {
         Navigator.push(
-        context,
+          context,
           MaterialPageRoute(
-            builder: (context) =>
-                ExhibitDetailsPage(
-                  articleDetails: exhibitDetails, userRole: userRole, barcode: barcode,
-                ),
+            builder: (context) => ExhibitDetailsPage(
+              articleDetails: exhibitDetails,
+              userRole: userRole,
+              barcode: barcode,
+            ),
           ),
         );
-      }
-      else{
+      } else {
         _showPopupAlert('No Exhibit data found', context);
       }
     }
 
-    if(btnPressed=='Sitting') {
+    if (btnPressed == 'Sitting') {
       // apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getExhibitSamples&articleNumber=$barcode';
-      if (sittingDetails.isNotEmpty){
+      if (sittingDetails.isNotEmpty) {
         Navigator.push(
-        context,
+          context,
           MaterialPageRoute(
-            builder: (context) =>
-                SittingDetailsPage(
-                  articleDetails: sittingDetails, userRole: userRole, barcode: barcode,
-                ),
+            builder: (context) => SittingDetailsPage(
+              articleDetails: sittingDetails,
+              userRole: userRole,
+              barcode: barcode,
+            ),
           ),
         );
-      }
-      else{
+      } else {
         _showPopupAlert('No Sitting data found', context);
       }
     }
-    
+
     // else if(btnPressed=='Sitting'){
     //   if(userRole == "customer" || userRole == "Customer") {
     //     apiUrl = 'https://script.google.com/macros/s/AKfycbyTndTH9oJH--MrerYAmUFHDrxpOMmri_8ziWWcEyMUwcoqMQ3beUyhVCAByBlODzNe/exec?action=getSittingCustomer&articleNumber=$barcode';
@@ -115,75 +121,73 @@ class ArticleDetailsPage extends StatelessWidget {
     //     }
     // }
 
-  //   try {
-  //     final response = await http.get(Uri.parse(apiUrl));
-  //     print(response.statusCode);
-  //     if (response.statusCode == 200) {
-  //       var data = json.decode(response.body);
-  //       var article = data['data'];
-  //       if (article != null && article.isNotEmpty) {
-  //         var articleDetails = article[barcode];
-  //         if (articleDetails != null) {
-  //           if(btnPressed=='Exhibit') {
-  //             Navigator.push(
-  //               context,
-  //               MaterialPageRoute(
-  //                 builder: (context) =>
-  //                     ExhibitDetailsPage(
-  //                       articleDetails: articleDetails, userRole: '',
-  //                     ),
-  //               ),
-  //             ).then((_) {
-  //               if (!snackbarShown) {
-  //                 Navigator.pop(context);
-  //               }
-  //             });
-  //           }else if(btnPressed=='Sitting')
-  //             {
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(
-  //                   builder: (context) =>
-  //                       SittingDetailsPage(
-  //                         articleDetails: articleDetails, userRole: '',
-  //                       ),
-  //                 ),
-  //               ).then((_) {
-  //                 if (!snackbarShown) {
-  //                   Navigator.pop(context);
-  //                 }
-  //               });
-  //             }
+    //   try {
+    //     final response = await http.get(Uri.parse(apiUrl));
+    //     print(response.statusCode);
+    //     if (response.statusCode == 200) {
+    //       var data = json.decode(response.body);
+    //       var article = data['data'];
+    //       if (article != null && article.isNotEmpty) {
+    //         var articleDetails = article[barcode];
+    //         if (articleDetails != null) {
+    //           if(btnPressed=='Exhibit') {
+    //             Navigator.push(
+    //               context,
+    //               MaterialPageRoute(
+    //                 builder: (context) =>
+    //                     ExhibitDetailsPage(
+    //                       articleDetails: articleDetails, userRole: '',
+    //                     ),
+    //               ),
+    //             ).then((_) {
+    //               if (!snackbarShown) {
+    //                 Navigator.pop(context);
+    //               }
+    //             });
+    //           }else if(btnPressed=='Sitting')
+    //             {
+    //               Navigator.push(
+    //                 context,
+    //                 MaterialPageRoute(
+    //                   builder: (context) =>
+    //                       SittingDetailsPage(
+    //                         articleDetails: articleDetails, userRole: '',
+    //                       ),
+    //                 ),
+    //               ).then((_) {
+    //                 if (!snackbarShown) {
+    //                   Navigator.pop(context);
+    //                 }
+    //               });
+    //             }
 
-  //           return;
-  //         }
-  //       }
+    //           return;
+    //         }
+    //       }
 
-
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(
-  //             'Article not found',
-  //             style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
-  //           ),
-  //         ),
-  //       );
-  //       snackbarShown = true;
-  //       Navigator.pop(context);
-  //     } else {
-  //       // If the server returns an error response, show an error message
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
-  //       snackbarShown = true;
-  //       Navigator.pop(context);
-  //     }
-  //   } catch (error) {
-  //     print('Error fetching article details: $error');
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
-  //     snackbarShown = true;
-  //     Navigator.pop(context);
-  //   }
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //           content: Text(
+    //             'Article not found',
+    //             style: TextStyle(fontFamily: 'GoogleFonts.poppins'),
+    //           ),
+    //         ),
+    //       );
+    //       snackbarShown = true;
+    //       Navigator.pop(context);
+    //     } else {
+    //       // If the server returns an error response, show an error message
+    //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load article details',style: GoogleFonts.poppins())));
+    //       snackbarShown = true;
+    //       Navigator.pop(context);
+    //     }
+    //   } catch (error) {
+    //     print('Error fetching article details: $error');
+    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching article details',style: GoogleFonts.poppins())));
+    //     snackbarShown = true;
+    //     Navigator.pop(context);
+    //   }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -191,62 +195,81 @@ class ArticleDetailsPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Article Details',style:GoogleFonts.poppins()),
+        title: Text('Article Details', style: GoogleFonts.poppins()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
-            (userRole == 'Customer' || userRole == 'customer') ?
-                  RectangularButton(
+            (userRole == 'Customer' || userRole == 'customer')
+                ? RectangularButton(
                     onPressed: () {
                       btnPressed = 'Sitting';
-                      _fetchArticleDetails(context,barcode);
-                    }, text: 'Sitting Samples', color: Color(0xFFF4F1F1), btnText: Colors.black,
+                      _fetchArticleDetails(context, barcode);
+                    },
+                    text: 'Sitting Samples',
+                    color: Color(0xFFF4F1F1),
+                    btnText: Colors.black,
                   )
-                  :
-            Row(
-              children: [
-                
-                RectangularButton(
-                  onPressed: () {
-                    btnPressed = 'Exhibit';
-                    _fetchArticleDetails(context,barcode);
-                  },
-                  text: 'Exhibit Samples', color: Color(0xFFF4F1F1), btnText: Colors.black,
+                : Row(
+                    children: [
+                      RectangularButton(
+                        onPressed: () {
+                          btnPressed = 'Exhibit';
+                          _fetchArticleDetails(context, barcode);
+                        },
+                        text: 'Exhibit Samples',
+                        color: Color(0xFFF4F1F1),
+                        btnText: Colors.black,
+                      ),
+                      Spacer(), // Add some space between the buttons
+                      RectangularButton(
+                        onPressed: () {
+                          btnPressed = 'Sitting';
+                          _fetchArticleDetails(context, barcode);
+                        },
+                        text: 'Sitting Samples',
+                        color: Color(0xFFF4F1F1),
+                        btnText: Colors.black,
+                      ),
+                    ],
+                  ),
 
-                ),
-                Spacer(),// Add some space between the buttons
-                RectangularButton(
-                  onPressed: () {
-                    btnPressed = 'Sitting';
-                    _fetchArticleDetails(context,barcode);
-                  }, text: 'Sitting Samples', color: Color(0xFFF4F1F1), btnText: Colors.black,
-                ),
-              ],
-            ),
-
-            SizedBox(height: 16), // Add some space between the buttons and the DataTable
+            SizedBox(
+                height:
+                    16), // Add some space between the buttons and the DataTable
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
                 columns: [
-                  DataColumn(label: Text('Detail', style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
-                  DataColumn(label: Text('Value', style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
+                  DataColumn(
+                      label: Text('Detail',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700))),
+                  DataColumn(
+                      label: Text('Value',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700))),
                 ],
                 rows: [
                   _buildDetailRow('Article No', barcode),
                   _buildDetailRow('Composition', '${articleDetails['Compo']}'),
                   _buildDetailRow('Texture', '${articleDetails['Texture']}'),
                   _buildDetailRow('Finish', '${articleDetails['Finish']}'),
-                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Density', '${articleDetails['Density']}'),
-                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Yarn Count', '${articleDetails['Yarn_Count']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague')
+                    _buildDetailRow('Density', '${articleDetails['Density']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague')
+                    _buildDetailRow(
+                        'Yarn Count', '${articleDetails['Yarn_Count']}'),
                   _buildDetailRow('Full Width', '${articleDetails['Width']}'),
                   _buildDetailRow('Weight', '${articleDetails['Weight']}'),
-                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Price.USD (\$)', '${articleDetails['Price_D']}'),
-                  if (userRole == 'colleague' || userRole == 'Colleague') _buildDetailRow('Price.Yen (¥)', '${articleDetails['Price_Y']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague')
+                    _buildDetailRow(
+                        'Price.USD (\$)', '${articleDetails['Price_D']}'),
+                  if (userRole == 'colleague' || userRole == 'Colleague')
+                    _buildDetailRow(
+                        'Price.CNY (¥)', '${articleDetails['Price_Y']}'),
                 ],
               ),
             ),
@@ -258,8 +281,8 @@ class ArticleDetailsPage extends StatelessWidget {
 
   DataRow _buildDetailRow(String title, String value) {
     return DataRow(cells: [
-      DataCell(Text(title,style:GoogleFonts.poppins())),
-      DataCell(Text(value,style:GoogleFonts.poppins())),
+      DataCell(Text(title, style: GoogleFonts.poppins())),
+      DataCell(Text(value, style: GoogleFonts.poppins())),
     ]);
   }
 }

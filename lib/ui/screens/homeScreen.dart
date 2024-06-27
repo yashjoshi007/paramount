@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,8 +16,8 @@ import 'package:paramount/ui/screens/allSiittingScreen.dart';
 // import 'package:paramount/ui/screens/sittingDetailScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../components/confirmation_page.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import '../../components/confirmation_page.dart';
 import '../../components/confirmpage2.dart';
 // import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
@@ -721,10 +720,14 @@ class _MyHomePageState extends State<HomePageClient> {
       backgroundColor: Colors.white,
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Center(child: Image.asset('assets/logo.png')),
+        centerTitle: true,
+        title: Image.asset(
+          'assets/logo.png',
+          scale: 1.5,
+        ),
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Image.asset('assets/lang.png'),
+          icon: Icon(Icons.menu, color: Colors.black),
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer();
           },
@@ -858,67 +861,146 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: 110,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                ),
+              height: 500,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(
+                    height: 120,
+                    child: DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                      ),
+                      child: Text(
+                        'Change Language',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                  RadioListTile<String>(
+                    title: Text('English', style: GoogleFonts.poppins()),
+                    value: 'en',
+                    groupValue: _selectedLanguage,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedLanguage = value;
+                      });
+                      Provider.of<LanguageProvider>(context, listen: false)
+                          .setLanguage(_selectedLanguage!);
+                      Navigator.pop(context); // Close the drawer
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text(
+                      'Chinese (Simplied)',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    value: 'ch_si',
+                    groupValue: _selectedLanguage,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedLanguage = value;
+                      });
+                      Provider.of<LanguageProvider>(context, listen: false)
+                          .setLanguage(_selectedLanguage!);
+                      Navigator.pop(context); // Close the drawer
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('Chinese (Traditional)',
+                        style: GoogleFonts.poppins()),
+                    value: 'ch_td',
+                    groupValue: _selectedLanguage,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedLanguage = value;
+                      });
+                      Provider.of<LanguageProvider>(context, listen: false)
+                          .setLanguage(_selectedLanguage!);
+                      Navigator.pop(context); // Close the drawer
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    leading: Icon(Icons.delete, color: Colors.red),
+                    title: Text('Delete Account', style: GoogleFonts.poppins()),
+                    onTap: () async {
+                      // Confirm delete action
+                      bool confirmDelete = await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(
+                            'Confirm Delete',
+                            style: GoogleFonts.poppins(),
+                          ),
+                          content: Text(
+                              'Are you sure you want to delete your account? This action cannot be undone.',
+                              style: GoogleFonts.poppins()),
+                          actions: [
+                            TextButton(
+                              child:
+                                  Text('Cancel', style: GoogleFonts.poppins()),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Delete',
+                                  style:
+                                      GoogleFonts.poppins(color: Colors.red)),
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirmDelete) {
+                        try {
+                          User? user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            await user.delete();
+                            // Navigate to home page
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            );
+                          }
+                        } catch (e) {
+                          // Handle error (e.g., re-authentication required)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Error deleting account: ${e.toString()}')),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Container(
                 child: Text(
-                  'Change Language',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 24,
+                  "Developers: Jeel, Yash (DevBros)\nEmail: dev.bros97@gmail.com",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ),
-            RadioListTile<String>(
-              title: Text('English', style: GoogleFonts.poppins()),
-              value: 'en',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
-            RadioListTile<String>(
-              title: Text(
-                'Chinese (Simplied)',
-                style: GoogleFonts.poppins(),
-              ),
-              value: 'ch_si',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
-            RadioListTile<String>(
-              title:
-                  Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-              value: 'ch_td',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value;
-                });
-                Provider.of<LanguageProvider>(context, listen: false)
-                    .setLanguage(_selectedLanguage!);
-                Navigator.pop(context); // Close the drawer
-              },
-            ),
+            )
           ],
         ),
       ),
