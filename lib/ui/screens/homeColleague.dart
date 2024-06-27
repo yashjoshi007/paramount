@@ -35,6 +35,7 @@ class HomePageColleague extends StatefulWidget {
 class _MyHomePageState extends State<HomePageColleague> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String? _selectedLanguage = 'en';
+  final TextEditingController _refController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -310,7 +311,6 @@ class _MyHomePageState extends State<HomePageColleague> {
       String name, String companyName, String email, String ref) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> userDetails = {
-      'ref': ref,
       'name': name,
       'companyName': companyName,
       'email': email,
@@ -1020,6 +1020,62 @@ class _MyHomePageState extends State<HomePageColleague> {
                 Navigator.pop(context); // Close the drawer
               },
             ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.delete, color: Colors.red),
+              title: Text('Delete Account', style: GoogleFonts.poppins()),
+              onTap: () async {
+                // Confirm delete action
+                bool confirmDelete = await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(
+                      'Confirm Delete',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    content: Text(
+                        'Are you sure you want to delete your account? This action cannot be undone.',
+                        style: GoogleFonts.poppins()),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel', style: GoogleFonts.poppins()),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Delete',
+                            style: GoogleFonts.poppins(color: Colors.red)),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirmDelete) {
+                  try {
+                    User? user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      await user.delete();
+                      // Navigate to home page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    }
+                  } catch (e) {
+                    // Handle error (e.g., re-authentication required)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Error deleting account: ${e.toString()}')),
+                    );
+                  }
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -1052,6 +1108,17 @@ class _MyHomePageState extends State<HomePageColleague> {
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _refController,
+                        decoration: InputDecoration(
+                          labelText: languageProvider.translate('ref'),
+                          labelStyle: GoogleFonts.poppins(),
+                          border: OutlineInputBorder(),
                         ),
                       ),
                     ),
@@ -1122,7 +1189,8 @@ class _MyHomePageState extends State<HomePageColleague> {
                                   ),
                                 );
                               } else {
-                                await saveUserDetails(name, companyName, email);
+                                await saveUserDetails(
+                                    name, companyName, email, ref);
                                 setState(() {
                                   showBottom = true;
                                 });
