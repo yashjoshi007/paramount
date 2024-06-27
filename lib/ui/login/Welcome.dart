@@ -109,6 +109,16 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(
+              height: 16,
+            ),
+            Text(
+              "Developed by - DevBros (dev.bros97@gmail.com)",
+              style: TextStyle(
+                  color: Color.fromARGB(255, 90, 90, 90),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400),
+            )
           ],
         ),
       ),

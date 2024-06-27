@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 // import 'package:flutter/services.dart';
 // import 'package:flutter/widgets.dart';
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -18,7 +17,7 @@ import 'package:paramount/ui/screens/allSiittingScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:url_launcher/url_launcher.dart';
-import '../../components/confirmation_page.dart';
+// import '../../components/confirmation_page.dart';
 import '../../components/confirmpage2.dart';
 // import '../../components/textField.dart';
 import '../../localization/language_provider.dart';
@@ -36,7 +35,6 @@ class HomePageColleague extends StatefulWidget {
 class _MyHomePageState extends State<HomePageColleague> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String? _selectedLanguage = 'en';
-  final TextEditingController _refController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -309,13 +307,14 @@ class _MyHomePageState extends State<HomePageColleague> {
   }
 
   Future<void> saveUserDetails(
-      String ref, String name, String companyName, String email) async {
+      String name, String companyName, String email, String ref) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> userDetails = {
       'ref': ref,
       'name': name,
       'companyName': companyName,
       'email': email,
+      'ref': ref,
     };
     await prefs.setString('userDetails', json.encode(userDetails));
   }
@@ -506,7 +505,7 @@ class _MyHomePageState extends State<HomePageColleague> {
     print("Started post function");
     // URL of your Google Apps Script web app
     String scriptUrl =
-        'https://script.google.com/macros/s/AKfycbz-76mK3HfLEpY2S3Q66GeFrO6Utq82mgyiYH8cccXoEkByXuQSbjDFa8n1ftIL28KY/exec';
+        'https://script.google.com/macros/s/AKfycbzdBJ3FJXoYSY_fvWp_Q1DafHYsXaojsywp0yXX7COoRkot-kwpjV-TKe8TokHxuOdj/exec';
 
     try {
       // Load user details
@@ -539,6 +538,7 @@ class _MyHomePageState extends State<HomePageColleague> {
       Map<String, dynamic> requestData = {
         'date': date_time.toString(),
         'Sample_picker': pickerEmail,
+        'Reference': userDetails['ref'],
         'Customer_Email': userDetails['email'],
         'Customer_Name': userDetails['name'],
         'Company_Name': userDetails['companyName'],
@@ -811,7 +811,7 @@ class _MyHomePageState extends State<HomePageColleague> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Image.asset('assets/lang.png'),
+          icon: Icon(Icons.menu, color: Colors.black),
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer();
           },
@@ -961,115 +961,68 @@ class _MyHomePageState extends State<HomePageColleague> {
           ),
         ),
       ),
-      drawer:  Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Container(
-            height: 110,
-            child: DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.red,
-              ),
-              child: Text(
-                'Change Language',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 24,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Container(
+              height: 110,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                ),
+                child: Text(
+                  'Change Language',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
                 ),
               ),
             ),
-          ),
-          RadioListTile<String>(
-            title: Text('English', style: GoogleFonts.poppins()),
-            value: 'en',
-            groupValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() {
-                _selectedLanguage = value;
-              });
-              Provider.of<LanguageProvider>(context, listen: false)
-                  .setLanguage(_selectedLanguage!);
-              Navigator.pop(context); // Close the drawer
-            },
-          ),
-          RadioListTile<String>(
-            title: Text('Chinese (Simplified)', style: GoogleFonts.poppins()),
-            value: 'ch_si',
-            groupValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() {
-                _selectedLanguage = value;
-              });
-              Provider.of<LanguageProvider>(context, listen: false)
-                  .setLanguage(_selectedLanguage!);
-              Navigator.pop(context); // Close the drawer
-            },
-          ),
-          RadioListTile<String>(
-            title: Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
-            value: 'ch_td',
-            groupValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() {
-                _selectedLanguage = value;
-              });
-              Provider.of<LanguageProvider>(context, listen: false)
-                  .setLanguage(_selectedLanguage!);
-              Navigator.pop(context); // Close the drawer
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('Delete Account', style: GoogleFonts.poppins()),
-            onTap: () async {
-              // Confirm delete action
-              bool confirmDelete = await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Confirm Delete', style: GoogleFonts.poppins()),
-                  content: Text('Are you sure you want to delete your account? *This action cannot be undone.*', style: GoogleFonts.poppins()),
-                  actions: [
-                    TextButton(
-                      child: Text('Cancel', style: GoogleFonts.poppins()),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    TextButton(
-                      child: Text('Delete', style: GoogleFonts.poppins(color: Colors.red)),
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                    ),
-                  ],
-                ),
-              );
-
-              if (confirmDelete) {
-                try {
-                  User? user = FirebaseAuth.instance.currentUser;
-                  if (user != null) {
-                    await user.delete();
-                    // Navigate to home page
-                     Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                  }
-                } catch (e) {
-                  // Handle error (e.g., re-authentication required)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error deleting account: ${e.toString()}')),
-                  );
-                }
-              }
-            },
-          ),
-        ],
+            RadioListTile<String>(
+              title: Text('English', style: GoogleFonts.poppins()),
+              value: 'en',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            RadioListTile<String>(
+              title: Text('Chinese (Simplied)', style: GoogleFonts.poppins()),
+              value: 'ch_si',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            RadioListTile<String>(
+              title:
+                  Text('Chinese (Traditional)', style: GoogleFonts.poppins()),
+              value: 'ch_td',
+              groupValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value;
+                });
+                Provider.of<LanguageProvider>(context, listen: false)
+                    .setLanguage(_selectedLanguage!);
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+          ],
+        ),
       ),
-    ),
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>>(
           future: loadUserDetails(),
@@ -1102,17 +1055,6 @@ class _MyHomePageState extends State<HomePageColleague> {
                         ),
                       ),
                     ),
-                     Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _refController,
-                              decoration: InputDecoration(
-                                labelText: languageProvider.translate('ref'),
-                                labelStyle: GoogleFonts.poppins(),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
                     Row(
                       children: [
                         Expanded(
@@ -1180,7 +1122,7 @@ class _MyHomePageState extends State<HomePageColleague> {
                                   ),
                                 );
                               } else {
-                                await saveUserDetails(ref,name, companyName, email);
+                                await saveUserDetails(name, companyName, email);
                                 setState(() {
                                   showBottom = true;
                                 });
@@ -1202,43 +1144,15 @@ class _MyHomePageState extends State<HomePageColleague> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            languageProvider.translate('customer_det'),
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${languageProvider.translate('ref')}: ${userDetails['ref']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '${languageProvider.translate('name')}: ${userDetails['name']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '${languageProvider.translate('email')}: ${userDetails['email']}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                ],
+                              Text(
+                                languageProvider.translate('customer_det'),
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               IconButton(
                                 icon: Image.asset(
@@ -1247,15 +1161,43 @@ class _MyHomePageState extends State<HomePageColleague> {
                                 ), // Add delete icon
                                 onPressed: () async {
                                   setState(() {
-                                    _nameController.text = ''; // Clear text fields
+                                    _refController.text = '';
+                                    _nameController.text = '';
                                     _companyNameController.text = '';
                                     _emailController.text = '';
-                                    _refController.text = '';
                                     showBottom = false;
                                   });
                                   //await _clearBarcodeList();
                                   await _clearUserDetails();
                                 },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${languageProvider.translate('ref')}: ${userDetails['ref']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '${languageProvider.translate('name')}: ${userDetails['name']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '${languageProvider.translate('comp_name')}: ${userDetails['companyName']}',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '${languageProvider.translate('email')}: ${userDetails['email']}',
+                                style: GoogleFonts.poppins(),
                               ),
                             ],
                           ),
