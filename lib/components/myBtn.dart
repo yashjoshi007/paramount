@@ -136,13 +136,13 @@ class RectangularIBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    var fontSize = isPortrait ? 14.0 : 14.0; 
+    var fontSize = isPortrait ? constraints.maxWidth * 0.04 : constraints.maxWidth * 0.02;
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(
           horizontal: constraints.maxWidth * 0.05,
-          vertical: constraints.maxWidth * 0.01,
+          vertical: constraints.maxHeight * 0.01,
         ),
         backgroundColor: color,
         shape: RoundedRectangleBorder(

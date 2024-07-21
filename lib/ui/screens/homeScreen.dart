@@ -1175,65 +1175,65 @@ class _MyHomePageState extends State<HomePageClient> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        surfaceTintColor: Colors.white,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                RectangularIBtn(
-                  onPressed: () {
-                    showAddArticleDialog(context);
-                  },
-                  text: languageProvider.translate('Add Manually'),
-                  color: Color(0xFFF4F1F1),
-                  btnText: Colors.black,
-                  iconAssetPath: "assets/plus.png",
-                  constraints:
-                      constraints, // Pass the constraints for responsiveness
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                RectangularIBtn(
-                  onPressed: () async {
-                    var code = await BarcodeScanner.scan();
-                    String res = code.rawContent;
-                    setState(() {
-                      if (res != '') {
-                        _scanBarcodeResult = res;
-                        if (!_barcodeList
-                            .contains({'barcode': _scanBarcodeResult})) {
-                          _barcodeList.insert(0, {
-                            'barcode': _scanBarcodeResult,
-                            'quantity': '1',
-                            'unit': 'Header',
-                          });
-                          _saveBarcodeList();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Barcode Already Scanned!'),
-                            ),
-                          );
-                        }
-                      } else if (res == "-1") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Try again to scan a barcode.'),
-                          ),
-                        );
-                      }
-                    });
-                  },
-                  text: languageProvider.translate('Scan Samples'),
-                  color: Colors.red,
-                  btnText: Colors.white,
-                  iconAssetPath: "assets/qr.png",
-                  constraints:
-                      constraints, // Pass the constraints for responsiveness
-                ),
-              ],
+  surfaceTintColor: Colors.white,
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: constraints.maxHeight * 0.1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            RectangularIBtn(
+              onPressed: () {
+                showAddArticleDialog(context);
+              },
+              text: languageProvider.translate('Add Manually'),
+              color: Color(0xFFF4F1F1),
+              btnText: Colors.black,
+              iconAssetPath: "assets/plus.png",
+              constraints: constraints, // Pass the constraints for responsiveness
+            ),
+            SizedBox(
+              width: constraints.maxWidth * 0.05, // Adjust space between buttons
+            ),
+            RectangularIBtn(
+              onPressed: () async {
+                var code = await BarcodeScanner.scan();
+                String res = code.rawContent;
+                setState(() {
+                  if (res != '') {
+                    _scanBarcodeResult = res;
+                    if (!_barcodeList.contains({'barcode': _scanBarcodeResult})) {
+                      _barcodeList.insert(0, {
+                        'barcode': _scanBarcodeResult,
+                        'quantity': '1',
+                        'unit': 'Header',
+                      });
+                      _saveBarcodeList();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Barcode Already Scanned!'),
+                        ),
+                      );
+                    }
+                  } else if (res == "-1") {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Try again to scan a barcode.'),
+                      ),
+                    );
+                  }
+                });
+              },
+              text: languageProvider.translate('Scan Samples'),
+              color: Colors.red,
+              btnText: Colors.white,
+              iconAssetPath: "assets/qr.png",
+              constraints: constraints, // Pass the constraints for responsiveness
+            ),
+          ],
+          ),
             );
           },
         ),
