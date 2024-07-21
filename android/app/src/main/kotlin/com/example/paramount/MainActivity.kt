@@ -1,4 +1,4 @@
-package com.example.paramount
+package com.paramount.app
 
 import io.flutter.embedding.android.FlutterActivity
 

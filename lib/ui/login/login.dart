@@ -342,6 +342,9 @@ class _LoginScreenState extends State<LoginPage> {
               textColor: Colors.white,
               fontSize: 16.0);
         }
+        setState(() {
+          _loading = false;
+        });
       }
     }
   }
